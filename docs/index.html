@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Revana — Browser Strategy Game</title>
-  <meta name="description" content="Revana is a free, open-source browser-based strategy game engine inspired by classic titles like Travian. Build towns, forge alliances, and conquer the world." />
+  <meta name="description" content="Revana is a free browser-based strategy game engine inspired by Travian. Build towns, forge alliances, and conquer the world." />
   <meta property="og:title" content="Revana — Browser Strategy Game" />
   <meta property="og:description" content="Build towns, forge alliances, and conquer the world." />
   <meta property="og:type" content="website" />
@@ -18,15 +18,9 @@
       --text: #e8e0d0;
       --muted: #8a8070;
       --border: #2a3040;
-      --red: #c04040;
-      --green: #4a9060;
-      --blue: #4070b0;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -40,7 +34,7 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      background: rgba(13,15,20,0.92);
+      background: rgba(13,15,20,0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       display: flex;
@@ -48,8 +42,8 @@
       justify-content: space-between;
       padding: 0 2rem;
       height: 60px;
+      gap: 1rem;
     }
-
     .nav-logo {
       font-size: 1.4rem;
       font-weight: bold;
@@ -57,19 +51,45 @@
       color: var(--accent);
       text-decoration: none;
       text-transform: uppercase;
+      flex-shrink: 0;
     }
-
-    .nav-links a {
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .nav-center a {
       color: var(--muted);
       text-decoration: none;
-      margin-left: 2rem;
       font-family: 'Arial', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       letter-spacing: 1px;
       text-transform: uppercase;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: var(--accent); }
+    .nav-center a:hover { color: var(--accent); }
+    .lang-switcher {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .lang-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.25rem 0.55rem;
+      border-radius: 3px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.5px;
+    }
+    .lang-btn:hover, .lang-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
 
     /* ── HERO ── */
     .hero {
@@ -83,25 +103,20 @@
       position: relative;
       overflow: hidden;
     }
-
     .hero-bg {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background:
         radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,164,90,0.08) 0%, transparent 60%),
         radial-gradient(ellipse 60% 40% at 20% 80%, rgba(64,112,176,0.06) 0%, transparent 50%),
         radial-gradient(ellipse 40% 30% at 80% 90%, rgba(192,64,64,0.05) 0%, transparent 50%);
     }
-
     .hero-grid {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background-image:
         linear-gradient(rgba(200,164,90,0.04) 1px, transparent 1px),
         linear-gradient(90deg, rgba(200,164,90,0.04) 1px, transparent 1px);
       background-size: 60px 60px;
     }
-
     .hero-badge {
       display: inline-block;
       background: rgba(200,164,90,0.12);
@@ -116,7 +131,6 @@
       margin-bottom: 2rem;
       position: relative;
     }
-
     .hero h1 {
       font-size: clamp(3rem, 8vw, 7rem);
       letter-spacing: 0.15em;
@@ -127,7 +141,6 @@
       line-height: 1;
       margin-bottom: 0.5rem;
     }
-
     .hero-subtitle {
       font-size: clamp(0.9rem, 2vw, 1.1rem);
       color: var(--muted);
@@ -137,15 +150,13 @@
       margin-bottom: 1.5rem;
       position: relative;
     }
-
     .hero-desc {
       max-width: 600px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #b0a898;
       margin-bottom: 3rem;
       position: relative;
     }
-
     .hero-buttons {
       display: flex;
       gap: 1rem;
@@ -153,7 +164,6 @@
       justify-content: center;
       position: relative;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -168,42 +178,20 @@
       font-weight: bold;
       transition: all 0.2s;
     }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #0d0f14;
-    }
-    .btn-primary:hover {
-      background: var(--accent2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(200,164,90,0.3);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
-
+    .btn-primary { background: var(--accent); color: #0d0f14; }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,164,90,0.3); }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
     .hero-scroll {
       position: absolute;
-      bottom: 2rem;
-      left: 50%;
+      bottom: 2rem; left: 50%;
       transform: translateX(-50%);
       color: var(--muted);
       font-size: 0.75rem;
       letter-spacing: 2px;
       text-transform: uppercase;
       font-family: 'Arial', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
       animation: bounce 2s infinite;
     }
     @keyframes bounce {
@@ -212,308 +200,79 @@
     }
 
     /* ── DIVIDER ── */
-    .divider {
-      text-align: center;
-      color: var(--accent);
-      letter-spacing: 8px;
-      font-size: 1.2rem;
-      opacity: 0.4;
-      padding: 1rem 0;
-    }
-
-    /* ── SECTIONS ── */
-    section {
-      padding: 5rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .section-label {
-      font-family: 'Arial', sans-serif;
-      font-size: 0.75rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-    }
-
-    .section-title {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      color: var(--text);
-      margin-bottom: 1rem;
-      letter-spacing: 0.05em;
-    }
-
-    .section-desc {
-      color: var(--muted);
-      max-width: 600px;
-      margin-bottom: 3rem;
-      font-size: 1rem;
-    }
-
-    /* ── FEATURES GRID ── */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .feature-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 2rem;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .feature-card:hover {
-      border-color: rgba(200,164,90,0.4);
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    .feature-title {
-      font-size: 1.1rem;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.05em;
-    }
-
-    .feature-text {
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.6;
-      font-family: 'Arial', sans-serif;
-    }
-
-    /* ── STATS BAR ── */
-    .stats-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 0;
-      overflow: hidden;
-      margin: 4rem 0;
-    }
-
-    .stat-item {
-      padding: 2rem;
-      text-align: center;
-      border-right: 1px solid var(--border);
-    }
-    .stat-item:last-child { border-right: none; }
-
-    .stat-number {
-      font-size: 2.5rem;
-      color: var(--accent);
-      font-weight: bold;
-      display: block;
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-family: 'Arial', sans-serif;
-      font-size: 0.75rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 0.5rem;
-    }
-
-    /* ── TECH STACK ── */
-    .tech-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .tech-tag {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.4rem 1rem;
-      border-radius: 4px;
-      font-family: 'Arial', sans-serif;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
-    }
-
-    /* ── FACTIONS ── */
-    .factions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .faction-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 2rem;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .faction-card.empire { border-color: rgba(200,164,90,0.3); }
-    .faction-card.guild  { border-color: rgba(64,112,176,0.3); }
-    .faction-card.order  { border-color: rgba(192,64,64,0.3); }
-
-    .faction-emblem {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      margin: 0 auto 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-    }
-
-    .empire .faction-emblem { background: rgba(200,164,90,0.15); }
-    .guild  .faction-emblem { background: rgba(64,112,176,0.15); }
-    .order  .faction-emblem { background: rgba(192,64,64,0.15); }
-
-    .faction-name {
-      font-size: 1.2rem;
-      color: var(--text);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-
-    .faction-desc {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-family: 'Arial', sans-serif;
-    }
-
-    /* ── INSTALL STEPS ── */
-    .steps {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .step {
-      display: flex;
-      gap: 2rem;
-      align-items: flex-start;
-      padding: 1.5rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .step:last-child { border-bottom: none; }
-
-    .step-num {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(200,164,90,0.1);
-      border: 1px solid rgba(200,164,90,0.3);
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-family: 'Arial', sans-serif;
-      flex-shrink: 0;
-    }
-
-    .step-content h4 {
-      color: var(--text);
-      font-size: 1rem;
-      margin-bottom: 0.3rem;
-    }
-
-    .step-content p {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-family: 'Arial', sans-serif;
-    }
-
-    code {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 0.1em 0.4em;
-      font-family: 'Courier New', monospace;
-      font-size: 0.85em;
-      color: var(--accent2);
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--muted);
-      font-family: 'Arial', sans-serif;
-      font-size: 0.85rem;
-    }
-
-    footer .footer-logo {
-      font-size: 1.5rem;
-      font-family: 'Georgia', serif;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    footer a {
-      color: var(--muted);
-      text-decoration: none;
-      margin: 0 1rem;
-      transition: color 0.2s;
-    }
-    footer a:hover { color: var(--accent); }
-
-    .footer-links { margin: 1rem 0; }
-
-    /* ── LANG SWITCHER ── */
-    .lang-switcher {
-      display: flex;
-      gap: 0.4rem;
-      align-items: center;
-    }
-
-    .lang-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.2rem 0.6rem;
-      border-radius: 3px;
-      font-family: 'Arial', sans-serif;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.15s;
-      letter-spacing: 0.5px;
-    }
-    .lang-btn:hover, .lang-btn.active {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .divider { text-align: center; color: var(--accent); letter-spacing: 8px; font-size: 1.2rem; opacity: 0.4; padding: 1rem 0; }
 
     /* ── PREVIEW GIF ── */
+    .preview-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem 2rem; }
     .preview-img {
-      max-width: 780px;
-      width: 100%;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      display: block;
-      margin: 0 auto 3rem;
-      position: relative;
+      max-width: 780px; width: 100%;
+      border-radius: 8px; border: 1px solid var(--border);
+      display: block; margin: 0 auto;
       box-shadow: 0 16px 48px rgba(0,0,0,0.5);
     }
 
+    /* ── STATS ── */
+    .stats-wrap { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+    .stats-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      overflow: hidden; margin: 3rem 0;
+    }
+    .stat-item { padding: 2rem; text-align: center; border-right: 1px solid var(--border); }
+    .stat-item:last-child { border-right: none; }
+    .stat-number { font-size: 2.5rem; color: var(--accent); font-weight: bold; display: block; line-height: 1; }
+    .stat-label { font-family: 'Arial', sans-serif; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 0.5rem; display: block; }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .section-label { font-family: 'Arial', sans-serif; font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+    .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--text); margin-bottom: 1rem; letter-spacing: 0.05em; }
+    .section-desc { color: var(--muted); max-width: 600px; margin-bottom: 3rem; font-size: 1rem; }
+
+    /* ── FEATURES ── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; transition: border-color 0.2s, transform 0.2s; }
+    .feature-card:hover { border-color: rgba(200,164,90,0.4); transform: translateY(-4px); }
+    .feature-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .feature-title { font-size: 1.1rem; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+    .feature-text { color: var(--muted); font-size: 0.9rem; line-height: 1.6; font-family: 'Arial', sans-serif; }
+
+    /* ── FACTIONS ── */
+    .factions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+    .faction-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; text-align: center; transition: all 0.2s; }
+    .faction-card.empire { border-color: rgba(200,164,90,0.3); }
+    .faction-card.guild  { border-color: rgba(64,112,176,0.3); }
+    .faction-card.order  { border-color: rgba(192,64,64,0.3); }
+    .faction-emblem { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+    .empire .faction-emblem { background: rgba(200,164,90,0.15); }
+    .guild  .faction-emblem { background: rgba(64,112,176,0.15); }
+    .order  .faction-emblem { background: rgba(192,64,64,0.15); }
+    .faction-name { font-size: 1.2rem; color: var(--text); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .faction-desc { color: var(--muted); font-size: 0.85rem; font-family: 'Arial', sans-serif; }
+
+    /* ── TECH ── */
+    .tech-list { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .tech-tag { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 0.4rem 1rem; border-radius: 4px; font-family: 'Arial', sans-serif; font-size: 0.8rem; letter-spacing: 1px; }
+
+    /* ── STEPS ── */
+    .steps { display: flex; flex-direction: column; }
+    .step { display: flex; gap: 2rem; align-items: flex-start; padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; background: rgba(200,164,90,0.1); border: 1px solid rgba(200,164,90,0.3); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: 'Arial', sans-serif; flex-shrink: 0; }
+    .step-content h4 { color: var(--text); font-size: 1rem; margin-bottom: 0.3rem; }
+    .step-content p { color: var(--muted); font-size: 0.85rem; font-family: 'Arial', sans-serif; }
+    code { background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 0.1em 0.4em; font-family: 'Courier New', monospace; font-size: 0.85em; color: var(--accent2); }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; color: var(--muted); font-family: 'Arial', sans-serif; font-size: 0.85rem; }
+    footer .footer-logo { font-size: 1.5rem; font-family: 'Georgia', serif; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; display: block; }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 0.75rem; transition: color 0.2s; }
+    footer a:hover { color: var(--accent); }
+    .footer-links { margin: 1rem 0; }
+
     /* ── RESPONSIVE ── */
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
+    @media (max-width: 768px) {
+      .nav-center { display: none; }
       .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
       .stat-item:last-child { border-bottom: none; }
       .step { flex-direction: column; gap: 1rem; }
@@ -525,17 +284,17 @@
   <!-- NAV -->
   <nav>
     <a class="nav-logo" href="#">Revana</a>
-    <div class="nav-links">
+    <div class="nav-center">
       <a href="#features" data-i18n="nav_features">Features</a>
       <a href="#factions" data-i18n="nav_factions">Factions</a>
       <a href="#install" data-i18n="nav_install">Install</a>
       <a href="https://github.com/unkownpr/Revana" target="_blank">GitHub</a>
-      <div class="lang-switcher">
-        <button class="lang-btn active" onclick="setLang('en')">EN</button>
-        <button class="lang-btn" onclick="setLang('tr')">TR</button>
-        <button class="lang-btn" onclick="setLang('fr')">FR</button>
-        <button class="lang-btn" onclick="setLang('de')">DE</button>
-      </div>
+    </div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('tr')">TR</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('de')">DE</button>
     </div>
   </nav>
 
@@ -546,21 +305,13 @@
     <span class="hero-badge" data-i18n="hero_badge">Open Source · Browser Strategy Game</span>
     <h1>Revana</h1>
     <p class="hero-subtitle" data-i18n="hero_sub">Build · Conquer · Dominate</p>
-    <p class="hero-desc" data-i18n="hero_desc">
-      A classic browser-based strategy game engine. Build your empire town by town,
-      forge powerful alliances, wage war on your enemies, and leave your mark on
-      the world map.
-    </p>
+    <p class="hero-desc" data-i18n="hero_desc">A classic browser-based strategy game engine. Build your empire town by town, forge powerful alliances, wage war on your enemies, and leave your mark on the world map.</p>
     <div class="hero-buttons">
-      <a class="btn btn-primary" href="https://github.com/unkownpr/Revana" target="_blank">
-        ★ GitHub
-      </a>
-      <a class="btn btn-secondary" href="#install" data-i18n="btn_start">
-        Get Started
-      </a>
+      <a class="btn btn-primary" href="https://github.com/unkownpr/Revana" target="_blank">★ GitHub</a>
+      <a class="btn btn-secondary" href="#install" data-i18n="btn_start">Get Started</a>
     </div>
     <div class="hero-scroll">
-      <span>Scroll</span>
+      <span data-i18n="scroll">Scroll</span>
       <span>▼</span>
     </div>
   </div>
@@ -568,127 +319,104 @@
   <div class="divider">✦ ✦ ✦</div>
 
   <!-- PREVIEW GIF -->
-  <div style="max-width:1100px;margin:0 auto;padding:0 2rem 2rem;">
+  <div class="preview-wrap">
     <img src="https://i.hizliresim.com/d7o4wfa.gif" alt="Revana gameplay preview" class="preview-img" />
   </div>
 
   <!-- STATS -->
-  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
+  <div class="stats-wrap">
     <div class="stats-bar">
-      <div class="stat-item">
-        <span class="stat-number">25+</span>
-        <span class="stat-label">Database Tables</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">34</span>
-        <span class="stat-label">Service Classes</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">299</span>
-        <span class="stat-label">Routes</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">7</span>
-        <span class="stat-label">Languages</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-number">3</span>
-        <span class="stat-label">Factions</span>
-      </div>
+      <div class="stat-item"><span class="stat-number">25+</span><span class="stat-label" data-i18n="stat_db">Database Tables</span></div>
+      <div class="stat-item"><span class="stat-number">34</span><span class="stat-label" data-i18n="stat_svc">Service Classes</span></div>
+      <div class="stat-item"><span class="stat-number">299</span><span class="stat-label" data-i18n="stat_routes">Routes</span></div>
+      <div class="stat-item"><span class="stat-number">7</span><span class="stat-label" data-i18n="stat_lang">Languages</span></div>
+      <div class="stat-item"><span class="stat-number">3</span><span class="stat-label" data-i18n="stat_factions">Factions</span></div>
     </div>
   </div>
 
   <!-- FEATURES -->
   <section id="features">
-    <p class="section-label">Capabilities</p>
-    <h2 class="section-title">Everything a Strategy Game Needs</h2>
-    <p class="section-desc">
-      Revana ships with a complete game engine — from resource management to real-time
-      combat — all running on a standard PHP + MySQL stack.
-    </p>
+    <p class="section-label" data-i18n="feat_label">Capabilities</p>
+    <h2 class="section-title" data-i18n="feat_title">Everything a Strategy Game Needs</h2>
+    <p class="section-desc" data-i18n="feat_desc">Revana ships with a complete game engine — from resource management to real-time combat — all running on a standard PHP + MySQL stack.</p>
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">🏰</div>
-        <div class="feature-title">Town Building</div>
-        <p class="feature-text">Build and upgrade 22 distinct building types across your towns. Manage granaries, barracks, blacksmiths, embassies, and more with a live construction queue.</p>
+        <div class="feature-title" data-i18n="f1_title">Town Building</div>
+        <p class="feature-text" data-i18n="f1_text">Build and upgrade 22 distinct building types across your towns. Manage granaries, barracks, blacksmiths, embassies, and more with a live construction queue.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">⚔️</div>
-        <div class="feature-title">Military System</div>
-        <p class="feature-text">Train 13 unique unit types — infantry, cavalry, archers, siege weapons, and naval units. Upgrade your army's stats, forge weapons, and dispatch your forces.</p>
+        <div class="feature-title" data-i18n="f2_title">Military System</div>
+        <p class="feature-text" data-i18n="f2_text">Train 13 unique unit types — infantry, cavalry, archers, siege weapons, and naval units. Upgrade your army's stats, forge weapons, and dispatch your forces.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🤝</div>
-        <div class="feature-title">Alliances & Wars</div>
-        <p class="feature-text">Form alliances with other players, establish pacts, declare wars, and coordinate attacks. Alliance forums keep your members organized.</p>
+        <div class="feature-title" data-i18n="f3_title">Alliances & Wars</div>
+        <p class="feature-text" data-i18n="f3_text">Form alliances with other players, establish pacts, declare wars, and coordinate attacks. Alliance forums keep your members organized.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🗺️</div>
-        <div class="feature-title">World Map</div>
-        <p class="feature-text">An interactive world map with plains, resource lands, and water tiles. Settle new towns, scout enemy territory, and launch coordinated campaigns.</p>
+        <div class="feature-title" data-i18n="f4_title">World Map</div>
+        <p class="feature-text" data-i18n="f4_text">An interactive world map with plains, resource lands, and water tiles. Settle new towns, scout enemy territory, and launch coordinated campaigns.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📦</div>
-        <div class="feature-title">Economy & Market</div>
-        <p class="feature-text">Produce five resource types, manage storage limits, and trade with other players or NPC merchants through the marketplace system.</p>
+        <div class="feature-title" data-i18n="f5_title">Economy & Market</div>
+        <p class="feature-text" data-i18n="f5_text">Produce five resource types, manage storage limits, and trade with other players or NPC merchants through the marketplace system.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🏆</div>
-        <div class="feature-title">Missions & Achievements</div>
-        <p class="feature-text">Daily and weekly missions keep players engaged. An achievement system rewards long-term progression and milestones.</p>
+        <div class="feature-title" data-i18n="f6_title">Missions & Achievements</div>
+        <p class="feature-text" data-i18n="f6_text">Daily and weekly missions keep players engaged. An achievement system rewards long-term progression and milestones.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">💬</div>
-        <div class="feature-title">Social Features</div>
-        <p class="feature-text">Built-in forums, real-time chat rooms, private messaging, and battle reports keep your community connected.</p>
+        <div class="feature-title" data-i18n="f7_title">Social Features</div>
+        <p class="feature-text" data-i18n="f7_text">Built-in forums, real-time chat rooms, private messaging, and battle reports keep your community connected.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">👑</div>
-        <div class="feature-title">Admin Panel</div>
-        <p class="feature-text">Full admin dashboard: manage users, configure game seasons, spawn barbarians, edit the world map, manage premium products, and monitor game state.</p>
+        <div class="feature-title" data-i18n="f8_title">Admin Panel</div>
+        <p class="feature-text" data-i18n="f8_text">Full admin dashboard: manage users, configure game seasons, spawn barbarians, edit the world map, manage premium products, and monitor game state.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">💎</div>
-        <div class="feature-title">Premium System</div>
-        <p class="feature-text">Optional premium store with configurable packages. Monetize your server while keeping the game accessible for free players.</p>
+        <div class="feature-title" data-i18n="f9_title">Premium System</div>
+        <p class="feature-text" data-i18n="f9_text">Optional premium store with configurable packages. Monetize your server while keeping the game accessible for free players.</p>
       </div>
     </div>
   </section>
 
   <!-- FACTIONS -->
   <section id="factions">
-    <p class="section-label">Choose Your Path</p>
-    <h2 class="section-title">Three Factions</h2>
-    <p class="section-desc">
-      Each faction offers a distinct playstyle with unique buildings, units, and bonuses.
-    </p>
+    <p class="section-label" data-i18n="fac_label">Choose Your Path</p>
+    <h2 class="section-title" data-i18n="fac_title">Three Factions</h2>
+    <p class="section-desc" data-i18n="fac_desc">Each faction offers a distinct playstyle with unique buildings, units, and bonuses.</p>
     <div class="factions-grid">
       <div class="faction-card empire">
         <div class="faction-emblem">⚜️</div>
-        <div class="faction-name">The Empire</div>
-        <p class="faction-desc">Masters of order and discipline. The Empire excels at defense and long-term economic growth. Their superior infrastructure makes sieges costly for any attacker.</p>
+        <div class="faction-name" data-i18n="emp_name">The Empire</div>
+        <p class="faction-desc" data-i18n="emp_desc">Masters of order and discipline. The Empire excels at defense and long-term economic growth. Their superior infrastructure makes sieges costly for any attacker.</p>
       </div>
       <div class="faction-card guild">
         <div class="faction-emblem">⚓</div>
-        <div class="faction-name">The Guild</div>
-        <p class="faction-desc">Cunning merchants and sea traders. The Guild leverages trade and naval power to outmaneuver opponents. Lower unit costs give them an edge in prolonged conflicts.</p>
+        <div class="faction-name" data-i18n="gui_name">The Guild</div>
+        <p class="faction-desc" data-i18n="gui_desc">Cunning merchants and sea traders. The Guild leverages trade and naval power to outmaneuver opponents. Lower unit costs give them an edge in prolonged conflicts.</p>
       </div>
       <div class="faction-card order">
         <div class="faction-emblem">🔥</div>
-        <div class="faction-name">The Order</div>
-        <p class="faction-desc">Fierce warriors driven by conquest. The Order fields the most powerful offensive units in the game. High costs, but unmatched on the battlefield.</p>
+        <div class="faction-name" data-i18n="ord_name">The Order</div>
+        <p class="faction-desc" data-i18n="ord_desc">Fierce warriors driven by conquest. The Order fields the most powerful offensive units in the game. High costs, but unmatched on the battlefield.</p>
       </div>
     </div>
   </section>
 
   <!-- TECH STACK -->
   <section>
-    <p class="section-label">Technology</p>
-    <h2 class="section-title">Built on a Solid Stack</h2>
-    <p class="section-desc">
-      Revana runs on battle-tested, widely-supported technologies — easy to self-host
-      on any standard web server.
-    </p>
+    <p class="section-label" data-i18n="tech_label">Technology</p>
+    <h2 class="section-title" data-i18n="tech_title">Built on a Solid Stack</h2>
+    <p class="section-desc" data-i18n="tech_desc">Revana runs on battle-tested, widely-supported technologies — easy to self-host on any standard web server.</p>
     <div class="tech-list">
       <span class="tech-tag">PHP 8.0+</span>
       <span class="tech-tag">Fat-Free Framework</span>
@@ -707,45 +435,43 @@
 
   <!-- INSTALL -->
   <section id="install">
-    <p class="section-label">Quick Start</p>
-    <h2 class="section-title">Get Running in Minutes</h2>
-    <p class="section-desc">
-      Revana is designed to be self-hosted. A standard LAMP/LEMP stack is all you need.
-    </p>
+    <p class="section-label" data-i18n="inst_label">Quick Start</p>
+    <h2 class="section-title" data-i18n="inst_title">Get Running in Minutes</h2>
+    <p class="section-desc" data-i18n="inst_desc">Revana is designed to be self-hosted. A standard LAMP/LEMP stack is all you need.</p>
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h4>Clone the Repository</h4>
-          <p><code>git clone https://github.com/unkownpr/Revana.git</code> — then run <code>composer install</code> to fetch dependencies.</p>
+          <h4 data-i18n="s1_title">Clone the Repository</h4>
+          <p data-i18n="s1_text">Run <code>git clone https://github.com/unkownpr/Revana.git</code> then <code>composer install</code> to fetch dependencies.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h4>Create the Database</h4>
-          <p>Create a new MySQL/MariaDB database, then import <code>revana.sql</code> to set up all tables and seed data.</p>
+          <h4 data-i18n="s2_title">Create the Database</h4>
+          <p data-i18n="s2_text">Create a new MySQL/MariaDB database. The web installer will import all tables and seed data automatically.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <h4>Configure the App</h4>
-          <p>Copy <code>config.example.ini</code> to <code>config.ini</code> and fill in your database credentials and game settings.</p>
+          <h4 data-i18n="s3_title">Run the Web Installer</h4>
+          <p data-i18n="s3_text">Navigate to <code>/install</code> in your browser. The wizard checks requirements, imports the database, and creates your admin account.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-content">
-          <h4>Run the Installer</h4>
-          <p>Navigate to <code>/install</code> in your browser to complete the setup wizard, create your admin account, and configure the first season.</p>
+          <h4 data-i18n="s4_title">Configure &amp; Launch</h4>
+          <p data-i18n="s4_text">Open the Admin Panel at <code>/admin</code>, create a game season, design the world map, and enable player registration.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-content">
-          <h4>Start Playing</h4>
-          <p>That's it. Register players, configure the map, and launch your server. Invite your community and let the conquest begin.</p>
+          <h4 data-i18n="s5_title">Start Playing</h4>
+          <p data-i18n="s5_text">Share your server URL with players. The conquest begins.</p>
         </div>
       </div>
     </div>
@@ -763,58 +489,154 @@
       <a href="https://github.com/unkownpr/Revana/blob/main/README.md" target="_blank">Docs</a>
       <a href="https://ssilistre.dev" target="_blank">ssilistre.dev</a>
     </div>
-    <p style="margin-top:0.75rem; color: var(--muted);">
-      Developed &amp; rebuilt with AI &mdash; <a href="https://ssilistre.dev" target="_blank" style="color:var(--accent);">ssilistre.dev</a>
+    <p style="margin-top:0.75rem;">
+      <span data-i18n="footer_built">Developed &amp; rebuilt with AI</span> &mdash; <a href="https://ssilistre.dev" target="_blank" style="color:var(--accent);">ssilistre.dev</a>
     </p>
-    <p style="margin-top:0.5rem;">
-      &copy; 2026 <a href="https://github.com/unkownpr" target="_blank">unkownpr</a> &mdash; Free to use. All rights reserved.
+    <p style="margin-top:0.4rem;">
+      &copy; 2026 <a href="https://github.com/unkownpr" target="_blank">unkownpr</a> &mdash; <span data-i18n="footer_copy">Free to use. All rights reserved.</span>
     </p>
   </footer>
 
   <script>
-    const i18n = {
-      en: {
-        nav_features: 'Features', nav_factions: 'Factions', nav_install: 'Install',
-        hero_badge: 'Open Source · Browser Strategy Game',
-        hero_sub: 'Build · Conquer · Dominate',
-        hero_desc: 'A classic browser-based strategy game engine. Build your empire town by town, forge powerful alliances, wage war on your enemies, and leave your mark on the world map.',
-        btn_start: 'Get Started',
-      },
-      tr: {
-        nav_features: 'Özellikler', nav_factions: 'Fraksiyonlar', nav_install: 'Kurulum',
-        hero_badge: 'Açık Kaynak · Tarayıcı Strateji Oyunu',
-        hero_sub: 'İnşa Et · Fethet · Hükmet',
-        hero_desc: 'Klasik tarayıcı tabanlı strateji oyun motoru. Şehir şehir imparatorluk kur, güçlü ittifaklar yap, düşmanlarınla savaş ve dünya haritasında izini bırak.',
-        btn_start: 'Başla',
-      },
-      fr: {
-        nav_features: 'Fonctionnalités', nav_factions: 'Factions', nav_install: 'Installation',
-        hero_badge: 'Open Source · Jeu de Stratégie par Navigateur',
-        hero_sub: 'Construire · Conquérir · Dominer',
-        hero_desc: 'Un moteur de jeu de stratégie classique par navigateur. Construisez votre empire ville par ville, forgez des alliances puissantes, faites la guerre à vos ennemis et laissez votre empreinte sur la carte du monde.',
-        btn_start: 'Commencer',
-      },
-      de: {
-        nav_features: 'Funktionen', nav_factions: 'Fraktionen', nav_install: 'Installation',
-        hero_badge: 'Open Source · Browser-Strategiespiel',
-        hero_sub: 'Bauen · Erobern · Dominieren',
-        hero_desc: 'Eine klassische browserbasierte Strategie-Spiel-Engine. Baue dein Imperium Stadt für Stadt auf, schmiede mächtige Allianzen, führe Krieg gegen deine Feinde und hinterlasse deine Spur auf der Weltkarte.',
-        btn_start: 'Loslegen',
-      }
-    };
-
-    function setLang(lang) {
-      const t = i18n[lang];
-      if (!t) return;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (t[key]) el.textContent = t[key];
-      });
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
-      });
-      document.documentElement.lang = lang;
+  const i18n = {
+    en: {
+      nav_features:'Features', nav_factions:'Factions', nav_install:'Install',
+      hero_badge:'Open Source · Browser Strategy Game',
+      hero_sub:'Build · Conquer · Dominate',
+      hero_desc:'A classic browser-based strategy game engine. Build your empire town by town, forge powerful alliances, wage war on your enemies, and leave your mark on the world map.',
+      btn_start:'Get Started', scroll:'Scroll',
+      stat_db:'Database Tables', stat_svc:'Service Classes', stat_routes:'Routes', stat_lang:'Languages', stat_factions:'Factions',
+      feat_label:'Capabilities', feat_title:'Everything a Strategy Game Needs',
+      feat_desc:'Revana ships with a complete game engine — from resource management to real-time combat — all running on a standard PHP + MySQL stack.',
+      f1_title:'Town Building', f1_text:'Build and upgrade 22 distinct building types across your towns. Manage granaries, barracks, blacksmiths, embassies, and more with a live construction queue.',
+      f2_title:'Military System', f2_text:"Train 13 unique unit types — infantry, cavalry, archers, siege weapons, and naval units. Upgrade your army's stats, forge weapons, and dispatch your forces.",
+      f3_title:'Alliances & Wars', f3_text:'Form alliances with other players, establish pacts, declare wars, and coordinate attacks. Alliance forums keep your members organized.',
+      f4_title:'World Map', f4_text:'An interactive world map with plains, resource lands, and water tiles. Settle new towns, scout enemy territory, and launch coordinated campaigns.',
+      f5_title:'Economy & Market', f5_text:'Produce five resource types, manage storage limits, and trade with other players or NPC merchants through the marketplace system.',
+      f6_title:'Missions & Achievements', f6_text:'Daily and weekly missions keep players engaged. An achievement system rewards long-term progression and milestones.',
+      f7_title:'Social Features', f7_text:'Built-in forums, real-time chat rooms, private messaging, and battle reports keep your community connected.',
+      f8_title:'Admin Panel', f8_text:'Full admin dashboard: manage users, configure game seasons, spawn barbarians, edit the world map, manage premium products, and monitor game state.',
+      f9_title:'Premium System', f9_text:'Optional premium store with configurable packages. Monetize your server while keeping the game accessible for free players.',
+      fac_label:'Choose Your Path', fac_title:'Three Factions', fac_desc:'Each faction offers a distinct playstyle with unique buildings, units, and bonuses.',
+      emp_name:'The Empire', emp_desc:'Masters of order and discipline. The Empire excels at defense and long-term economic growth. Their superior infrastructure makes sieges costly for any attacker.',
+      gui_name:'The Guild', gui_desc:'Cunning merchants and sea traders. The Guild leverages trade and naval power to outmaneuver opponents. Lower unit costs give them an edge in prolonged conflicts.',
+      ord_name:'The Order', ord_desc:'Fierce warriors driven by conquest. The Order fields the most powerful offensive units in the game. High costs, but unmatched on the battlefield.',
+      tech_label:'Technology', tech_title:'Built on a Solid Stack', tech_desc:'Revana runs on battle-tested, widely-supported technologies — easy to self-host on any standard web server.',
+      inst_label:'Quick Start', inst_title:'Get Running in Minutes', inst_desc:'Revana is designed to be self-hosted. A standard LAMP/LEMP stack is all you need.',
+      s1_title:'Clone the Repository', s1_text:'Run git clone https://github.com/unkownpr/Revana.git then composer install to fetch dependencies.',
+      s2_title:'Create the Database', s2_text:'Create a new MySQL/MariaDB database. The web installer will import all tables and seed data automatically.',
+      s3_title:'Run the Web Installer', s3_text:'Navigate to /install in your browser. The wizard checks requirements, imports the database, and creates your admin account.',
+      s4_title:'Configure & Launch', s4_text:'Open the Admin Panel at /admin, create a game season, design the world map, and enable player registration.',
+      s5_title:'Start Playing', s5_text:'Share your server URL with players. The conquest begins.',
+      footer_built:'Developed & rebuilt with AI', footer_copy:'Free to use. All rights reserved.'
+    },
+    tr: {
+      nav_features:'Özellikler', nav_factions:'Fraksiyonlar', nav_install:'Kurulum',
+      hero_badge:'Açık Kaynak · Tarayıcı Strateji Oyunu',
+      hero_sub:'İnşa Et · Fethet · Hükmet',
+      hero_desc:'Klasik tarayıcı tabanlı strateji oyun motoru. Şehir şehir imparatorluk kur, güçlü ittifaklar yap, düşmanlarınla savaş ve dünya haritasında izini bırak.',
+      btn_start:'Başla', scroll:'Kaydır',
+      stat_db:'Veritabanı Tablosu', stat_svc:'Servis Sınıfı', stat_routes:'Rota', stat_lang:'Dil', stat_factions:'Fraksiyon',
+      feat_label:'Özellikler', feat_title:'Bir Strateji Oyununun İhtiyacı Olan Her Şey',
+      feat_desc:'Revana kaynak yönetiminden gerçek zamanlı savaşa kadar eksiksiz bir oyun motoru ile geliyor — hepsi standart PHP + MySQL üzerinde çalışıyor.',
+      f1_title:'Şehir İnşaatı', f1_text:'22 farklı bina türünü inşa et ve yükselt. Tahıl ambarları, kışlalar, demirciler, elçilikler ve daha fazlasını canlı inşaat kuyruğuyla yönet.',
+      f2_title:'Askeri Sistem', f2_text:'13 benzersiz birlik türü eğit — piyade, süvari, okçu, kuşatma silahları ve deniz kuvvetleri. Ordunu yükselt, silah dövdür ve kuvvetlerini sevk et.',
+      f3_title:'İttifaklar & Savaşlar', f3_text:'Diğer oyuncularla ittifak kur, anlaşmalar yap, savaş ilan et ve saldırıları koordine et. İttifak forumları üyelerini organize tutar.',
+      f4_title:'Dünya Haritası', f4_text:'Ovalar, kaynak arazileri ve su karolarından oluşan etkileşimli dünya haritası. Yeni şehirler kur, düşman topraklarını keşfet ve koordineli kampanyalar başlat.',
+      f5_title:'Ekonomi & Pazar', f5_text:'Beş kaynak türü üret, depolama limitlerini yönet ve pazar sistemi aracılığıyla diğer oyuncularla veya NPC tüccarlarla ticaret yap.',
+      f6_title:'Görevler & Başarımlar', f6_text:'Günlük ve haftalık görevler oyuncuları aktif tutar. Başarım sistemi uzun vadeli ilerlemeyi ve önemli anları ödüllendirir.',
+      f7_title:'Sosyal Özellikler', f7_text:'Yerleşik forumlar, gerçek zamanlı sohbet odaları, özel mesajlar ve savaş raporları topluluğunu bağlı tutar.',
+      f8_title:'Yönetim Paneli', f8_text:'Tam yönetim paneli: kullanıcıları yönet, oyun sezonlarını yapılandır, barbarlar oluştur, dünya haritasını düzenle, premium ürünleri yönet.',
+      f9_title:'Premium Sistemi', f9_text:'Yapılandırılabilir paketli isteğe bağlı premium mağaza. Ücretsiz oyuncular için erişilebilirliği korurken sunucunu para kazandır.',
+      fac_label:'Yolunu Seç', fac_title:'Üç Fraksiyon', fac_desc:'Her fraksiyon kendine özgü binalar, birimler ve bonuslarla farklı bir oyun stili sunar.',
+      emp_name:'İmparatorluk', emp_desc:'Düzen ve disiplinin ustası. İmparatorluk savunma ve uzun vadeli ekonomik büyümede öne çıkar. Üstün altyapısı her saldırgan için kuşatmayı pahalıya mal eder.',
+      gui_name:'Lonca', gui_desc:'Kurnaz tüccarlar ve deniz casusları. Lonca, rakipleri alt etmek için ticaret ve deniz gücünü kullanır. Düşük birim maliyetleri uzun çatışmalarda avantaj sağlar.',
+      ord_name:'Tarikat', ord_desc:'Fetih tutkusuyla yanan savaşçılar. Tarikat oyunun en güçlü saldırı birimlerini kullanır. Yüksek maliyet ama savaş alanında eşsiz.',
+      tech_label:'Teknoloji', tech_title:'Sağlam Bir Yığın Üzerine İnşa Edildi', tech_desc:'Revana savaşta test edilmiş, geniş çapta desteklenen teknolojiler üzerinde çalışır — herhangi bir standart web sunucusunda kolayca kurulabilir.',
+      inst_label:'Hızlı Başlangıç', inst_title:'Dakikalar İçinde Çalıştır', inst_desc:"Revana kendi sunucuna kurulmak için tasarlanmış. Standart bir LAMP/LEMP yığını tek ihtiyacın.",
+      s1_title:'Depoyu Klonla', s1_text:'git clone https://github.com/unkownpr/Revana.git komutunu çalıştır, ardından composer install ile bağımlılıkları yükle.',
+      s2_title:'Veritabanını Oluştur', s2_text:'Yeni bir MySQL/MariaDB veritabanı oluştur. Web yükleyicisi tüm tabloları ve tohum verilerini otomatik olarak içe aktaracak.',
+      s3_title:'Web Yükleyiciyi Çalıştır', s3_text:"Tarayıcında /install adresine git. Sihirbaz gereksinimleri kontrol eder, veritabanını içe aktarır ve admin hesabını oluşturur.",
+      s4_title:'Yapılandır ve Başlat', s4_text:"/admin adresindeki Yönetim Paneli'ni aç, oyun sezonu oluştur, dünya haritasını tasarla ve oyuncu kaydını etkinleştir.",
+      s5_title:'Oynamaya Başla', s5_text:'Sunucu URL\'ini oyuncularla paylaş. Fetih başlıyor.',
+      footer_built:'Yapay zeka ile geliştirildi ve yeniden inşa edildi', footer_copy:'Ücretsiz kullanım. Tüm haklar saklıdır.'
+    },
+    fr: {
+      nav_features:'Fonctionnalités', nav_factions:'Factions', nav_install:'Installation',
+      hero_badge:'Open Source · Jeu de Stratégie par Navigateur',
+      hero_sub:'Construire · Conquérir · Dominer',
+      hero_desc:'Un moteur de jeu de stratégie classique par navigateur. Construisez votre empire ville par ville, forgez des alliances puissantes, faites la guerre à vos ennemis et laissez votre empreinte sur la carte du monde.',
+      btn_start:'Commencer', scroll:'Défiler',
+      stat_db:'Tables BDD', stat_svc:'Classes Service', stat_routes:'Routes', stat_lang:'Langues', stat_factions:'Factions',
+      feat_label:'Capacités', feat_title:'Tout ce qu\'un Jeu de Stratégie Nécessite',
+      feat_desc:'Revana est livré avec un moteur de jeu complet — de la gestion des ressources au combat en temps réel — fonctionnant sur un stack PHP + MySQL standard.',
+      f1_title:'Construction de Villes', f1_text:'Construisez et améliorez 22 types de bâtiments distincts dans vos villes. Gérez greniers, casernes, forgerons, ambassades et plus encore avec une file de construction en direct.',
+      f2_title:'Système Militaire', f2_text:"Entraînez 13 types d'unités uniques — infanterie, cavalerie, archers, engins de siège et unités navales. Améliorez les statistiques de votre armée, forgez des armes et envoyez vos forces.",
+      f3_title:'Alliances & Guerres', f3_text:'Formez des alliances avec d\'autres joueurs, établissez des pactes, déclarez la guerre et coordonnez les attaques. Les forums d\'alliance gardent vos membres organisés.',
+      f4_title:'Carte du Monde', f4_text:'Une carte du monde interactive avec plaines, terres de ressources et tuiles aquatiques. Fondez de nouvelles villes, explorez le territoire ennemi et lancez des campagnes coordonnées.',
+      f5_title:'Économie & Marché', f5_text:'Produisez cinq types de ressources, gérez les limites de stockage et échangez avec d\'autres joueurs ou marchands PNJ via le système de marché.',
+      f6_title:'Missions & Succès', f6_text:'Les missions quotidiennes et hebdomadaires maintiennent les joueurs engagés. Un système de succès récompense la progression à long terme.',
+      f7_title:'Fonctionnalités Sociales', f7_text:'Forums intégrés, salons de chat en temps réel, messagerie privée et rapports de bataille maintiennent votre communauté connectée.',
+      f8_title:'Panneau d\'Admin', f8_text:'Tableau de bord admin complet : gérez les utilisateurs, configurez les saisons de jeu, générez des barbares, éditez la carte du monde, gérez les produits premium.',
+      f9_title:'Système Premium', f9_text:'Boutique premium optionnelle avec packages configurables. Monétisez votre serveur tout en gardant le jeu accessible aux joueurs gratuits.',
+      fac_label:'Choisissez Votre Voie', fac_title:'Trois Factions', fac_desc:'Chaque faction offre un style de jeu distinct avec des bâtiments, unités et bonus uniques.',
+      emp_name:"L'Empire", emp_desc:"Maîtres de l'ordre et de la discipline. L'Empire excelle en défense et en croissance économique à long terme. Leur infrastructure supérieure rend les sièges coûteux pour tout attaquant.",
+      gui_name:'La Guilde', gui_desc:'Marchands rusés et commerçants maritimes. La Guilde exploite le commerce et la puissance navale pour déjouer les adversaires. Des coûts d\'unités réduits leur donnent un avantage dans les conflits prolongés.',
+      ord_name:"L'Ordre", ord_desc:"Guerriers féroces animés par la conquête. L'Ordre aligne les unités offensives les plus puissantes du jeu. Coûts élevés, mais inégalés sur le champ de bataille.",
+      tech_label:'Technologie', tech_title:'Construit sur une Base Solide', tech_desc:'Revana fonctionne sur des technologies éprouvées et largement supportées — facile à auto-héberger sur n\'importe quel serveur web standard.',
+      inst_label:'Démarrage Rapide', inst_title:'Opérationnel en Minutes', inst_desc:'Revana est conçu pour être auto-hébergé. Un stack LAMP/LEMP standard est tout ce dont vous avez besoin.',
+      s1_title:'Cloner le Dépôt', s1_text:'Exécutez git clone https://github.com/unkownpr/Revana.git puis composer install pour récupérer les dépendances.',
+      s2_title:'Créer la Base de Données', s2_text:"Créez une nouvelle base de données MySQL/MariaDB. L'installateur web importera automatiquement toutes les tables et données.",
+      s3_title:"Lancer l'Assistant d'Installation", s3_text:"Accédez à /install dans votre navigateur. L'assistant vérifie les prérequis, importe la base de données et crée votre compte administrateur.",
+      s4_title:'Configurer et Lancer', s4_text:"Ouvrez le panneau d'administration sur /admin, créez une saison de jeu, concevez la carte du monde et activez l'inscription des joueurs.",
+      s5_title:'Commencer à Jouer', s5_text:"Partagez l'URL de votre serveur avec les joueurs. La conquête commence.",
+      footer_built:"Développé et reconstruit avec l'IA", footer_copy:'Utilisation gratuite. Tous droits réservés.'
+    },
+    de: {
+      nav_features:'Funktionen', nav_factions:'Fraktionen', nav_install:'Installation',
+      hero_badge:'Open Source · Browser-Strategiespiel',
+      hero_sub:'Bauen · Erobern · Dominieren',
+      hero_desc:'Eine klassische browserbasierte Strategie-Spiel-Engine. Baue dein Imperium Stadt für Stadt auf, schmiede mächtige Allianzen, führe Krieg gegen deine Feinde und hinterlasse deine Spur auf der Weltkarte.',
+      btn_start:'Loslegen', scroll:'Scrollen',
+      stat_db:'Datenbanktabellen', stat_svc:'Service-Klassen', stat_routes:'Routen', stat_lang:'Sprachen', stat_factions:'Fraktionen',
+      feat_label:'Fähigkeiten', feat_title:'Alles, was ein Strategiespiel braucht',
+      feat_desc:'Revana wird mit einer vollständigen Spiel-Engine geliefert — von der Ressourcenverwaltung bis zum Echtzeit-Kampf — alles auf einem Standard PHP + MySQL Stack.',
+      f1_title:'Stadtbau', f1_text:'Baue und verbessere 22 verschiedene Gebäudetypen in deinen Städten. Verwalte Getreidespeicher, Kasernen, Schmieden, Botschaften und mehr mit einer Live-Bauwarteschlange.',
+      f2_title:'Militärsystem', f2_text:'Trainiere 13 einzigartige Einheitentypen — Infanterie, Kavallerie, Bogenschützen, Belagerungswaffen und Marineeinheiten. Verbessere die Stats deiner Armee, schmiede Waffen und entsende deine Streitkräfte.',
+      f3_title:'Allianzen & Kriege', f3_text:'Schließe Allianzen mit anderen Spielern, etabliere Pakte, erkläre Krieg und koordiniere Angriffe. Allianzforen halten deine Mitglieder organisiert.',
+      f4_title:'Weltkarte', f4_text:'Eine interaktive Weltkarte mit Ebenen, Ressourcenländern und Wasserkacheln. Gründe neue Städte, erkunde feindliches Gebiet und starte koordinierte Kampagnen.',
+      f5_title:'Wirtschaft & Markt', f5_text:'Produziere fünf Ressourcentypen, verwalte Lagerlimits und handle mit anderen Spielern oder NPC-Händlern über das Marktplatzsystem.',
+      f6_title:'Missionen & Errungenschaften', f6_text:'Tägliche und wöchentliche Missionen halten Spieler engagiert. Ein Errungenschaftssystem belohnt langfristigen Fortschritt.',
+      f7_title:'Soziale Funktionen', f7_text:'Integrierte Foren, Echtzeit-Chatrooms, private Nachrichten und Kampfberichte halten deine Community verbunden.',
+      f8_title:'Admin-Panel', f8_text:'Vollständiges Admin-Dashboard: Benutzer verwalten, Spielsaisonen konfigurieren, Barbaren spawnen, Weltkarte bearbeiten, Premium-Produkte verwalten.',
+      f9_title:'Premium-System', f9_text:'Optionaler Premium-Shop mit konfigurierbaren Paketen. Monetarisiere deinen Server und halte das Spiel für kostenlose Spieler zugänglich.',
+      fac_label:'Wähle deinen Weg', fac_title:'Drei Fraktionen', fac_desc:'Jede Fraktion bietet einen eigenen Spielstil mit einzigartigen Gebäuden, Einheiten und Boni.',
+      emp_name:'Das Imperium', emp_desc:'Meister der Ordnung und Disziplin. Das Imperium glänzt bei Verteidigung und langfristigem Wirtschaftswachstum. Ihre überlegene Infrastruktur macht Belagerungen für jeden Angreifer kostspielig.',
+      gui_name:'Die Gilde', gui_desc:'Gerissene Händler und Seefahrer. Die Gilde nutzt Handel und Seemacht, um Gegner auszumanövrieren. Niedrigere Einheitenkosten verschaffen ihnen einen Vorteil in langen Konflikten.',
+      ord_name:'Der Orden', ord_desc:'Wilde Krieger, angetrieben von Eroberung. Der Orden stellt die mächtigsten Angriffseinheiten des Spiels auf. Hohe Kosten, aber auf dem Schlachtfeld unübertroffen.',
+      tech_label:'Technologie', tech_title:'Auf einem soliden Stack gebaut', tech_desc:'Revana läuft auf bewährten, weit verbreiteten Technologien — einfach selbst zu hosten auf jedem Standard-Webserver.',
+      inst_label:'Schnellstart', inst_title:'In Minuten einsatzbereit', inst_desc:'Revana ist für das Selbst-Hosting konzipiert. Ein Standard LAMP/LEMP Stack ist alles, was du brauchst.',
+      s1_title:'Repository klonen', s1_text:'Führe git clone https://github.com/unkownpr/Revana.git aus, dann composer install um Abhängigkeiten zu laden.',
+      s2_title:'Datenbank erstellen', s2_text:'Erstelle eine neue MySQL/MariaDB-Datenbank. Der Web-Installer importiert automatisch alle Tabellen und Seed-Daten.',
+      s3_title:'Web-Installer starten', s3_text:'Öffne /install in deinem Browser. Der Assistent prüft Voraussetzungen, importiert die Datenbank und erstellt dein Admin-Konto.',
+      s4_title:'Konfigurieren & starten', s4_text:'Öffne das Admin-Panel unter /admin, erstelle eine Spielsaison, gestalte die Weltkarte und aktiviere die Spielerregistrierung.',
+      s5_title:'Spielen beginnen', s5_text:'Teile deine Server-URL mit Spielern. Die Eroberung beginnt.',
+      footer_built:'Entwickelt & neu gebaut mit KI', footer_copy:'Kostenlos nutzbar. Alle Rechte vorbehalten.'
     }
+  };
+
+  function setLang(lang) {
+    const t = i18n[lang];
+    if (!t) return;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+    });
+    document.documentElement.lang = lang;
+  }
   </script>
 
 </body>
