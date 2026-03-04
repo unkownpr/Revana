@@ -1,0 +1,55 @@
+<style>
+.hof-page { max-width: 800px; margin: 0 auto; }
+.hof-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.season-links { display:flex; gap:10px; margin-bottom:16px; }
+.season-link { padding:7px 16px; border-radius:6px; background:rgba(22,14,10,0.7); border:1px solid rgba(136,103,65,0.4); color:#c8a96e; text-decoration:none; font-size:0.88em; }
+.season-link:hover, .season-link.active { background:rgba(136,103,65,0.3); }
+.hof-season { background:rgba(22,14,10,0.7); border:1px solid rgba(136,103,65,0.4); border-radius:10px; padding:18px; margin-bottom:18px; }
+.hof-season-title { font-size:1.05em; color:#e8c97e; font-weight:700; margin-bottom:12px; border-bottom:1px solid rgba(136,103,65,0.3); padding-bottom:8px; }
+.hof-entries { display:flex; flex-direction:column; gap:6px; }
+.hof-entry { display:flex; align-items:center; gap:14px; padding:8px 12px; border-radius:6px; background:rgba(0,0,0,0.2); }
+.hof-rank { font-size:1.3em; width:32px; text-align:center; }
+.hof-rank-1 { color:#ffd700; }
+.hof-rank-2 { color:#c0c0c0; }
+.hof-rank-3 { color:#cd7f32; }
+.hof-username { flex:1; color:#ddd; font-weight:600; }
+.hof-title-badge { background:rgba(136,103,65,0.3); border-radius:4px; padding:3px 10px; font-size:0.78em; color:#c8a96e; border:1px solid rgba(136,103,65,0.4); }
+.hof-score { color:#a8bdcc; font-size:0.88em; }
+.no-hof { text-align:center; padding:40px 20px; color:#a8bdcc; }
+</style>
+
+<div class="hof-page">
+  <div class="hof-header">
+    <h2>{{ @lang.hallOfFame ?: 'Hall of Fame' }}</h2>
+  </div>
+
+  <div class="season-links">
+    <a href="/season" class="season-link">{{ @lang.season ?: 'Season' }}</a>
+    <a href="/season/hall-of-fame" class="season-link active">{{ @lang.hallOfFame ?: 'Hall of Fame' }}</a>
+  </div>
+
+  <check if="{{ count(@grouped) }}">
+    <true>
+      <repeat group="{{ @grouped }}" key="{{ @gid }}" value="{{ @gdata }}">
+        <div class="hof-season">
+          <div class="hof-season-title">{{ @gdata.season_name }}</div>
+          <div class="hof-entries">
+            <repeat group="{{ @gdata.entries }}" value="{{ @entry }}">
+              <div class="hof-entry">
+                <span class="hof-rank {{ @entry.rank_pos == 1 ? 'hof-rank-1' : (@entry.rank_pos == 2 ? 'hof-rank-2' : (@entry.rank_pos == 3 ? 'hof-rank-3' : '')) }}">
+                  {{ @entry.rank_pos == 1 ? '&#127881;' : (@entry.rank_pos == 2 ? '&#129352;' : (@entry.rank_pos == 3 ? '&#129353;' : @entry.rank_pos)) }}
+                </span>
+                <span class="hof-username"><a href="/profile/{{ @entry.user_id }}">{{ @entry.username }}</a></span>
+                <span class="hof-title-badge">{{ @entry.title }}</span>
+                <span class="hof-score">{{ @entry.score }} pts</span>
+              </div>
+            </repeat>
+          </div>
+        </div>
+      </repeat>
+    </true>
+    <false>
+      <div class="hof-season no-hof">{{ @lang.noHallOfFame ?: 'No completed seasons yet.' }}</div>
+    </false>
+  </check>
+</div>

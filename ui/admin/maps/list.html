@@ -1,0 +1,59 @@
+<div class="admin-card">
+	<div class="admin-card-header">
+		<span>{{ @lang.adminMaps ?: 'Harita Editörü' }}</span>
+		<div class="map-admin-actions">
+			<a class="admin-btn admin-btn--sm admin-btn--primary" href="/admin/maps/create">{{ @lang.newMap ?: 'Yeni Harita' }}</a>
+			<a class="admin-btn admin-btn--sm" href="/admin">{{ @lang.backToAdmin ?: 'Admin\'e Dön' }}</a>
+		</div>
+	</div>
+	<div class="admin-card-body">
+		<check if="{{ count(@editor_maps) }}">
+			<div class="admin-table-wrap">
+				<table class="admin-table">
+					<thead>
+						<tr>
+							<th>{{ @lang.name ?: 'Ad' }}</th>
+							<th>{{ @lang.mapSize ?: 'Boyut' }}</th>
+							<th>{{ @lang.status ?: 'Durum' }}</th>
+							<th>{{ @lang.createdAt ?: 'Oluşturulma' }}</th>
+							<th style="width:260px;">{{ @lang.actions ?: 'İşlemler' }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<repeat group="{{ @editor_maps }}" value="{{ @m }}">
+						<tr>
+							<td>
+								<a class="map-admin-name" href="/admin/maps/{{ @m.id }}/edit">{{ @m.name }}</a>
+							</td>
+							<td>{{ @m.width }}x{{ @m.height }}</td>
+							<td>
+								<check if="{{ @m.is_active }}">
+									<true><span class="map-admin-status is-active">{{ @lang.active ?: 'Aktif' }}</span></true>
+									<false><span class="map-admin-status">{{ @lang.inactive ?: 'Pasif' }}</span></false>
+								</check>
+							</td>
+							<td>{{ @m.created_at }}</td>
+							<td>
+								<div class="map-admin-actions">
+									<a class="admin-btn admin-btn--sm" href="/admin/maps/{{ @m.id }}/edit">{{ @lang.edit ?: 'Düzenle' }}</a>
+									<form action="/admin/maps/{{ @m.id }}/activate" method="post" style="margin:0;">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<button class="admin-btn admin-btn--sm admin-btn--primary" type="submit" onclick="return confirm('{{ @lang.confirmActivateMap ?: 'Bu harita oyuna deploy edilsin mi? Şehir konumları korunur.' }}');">{{ @lang.activate ?: 'Aktifleştir' }}</button>
+									</form>
+									<form action="/admin/maps/{{ @m.id }}/delete" method="post" style="margin:0;">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<button class="admin-btn admin-btn--sm admin-btn--danger" type="submit" onclick="return confirm('{{ @lang.confirmDeleteMap ?: 'Bu harita kalıcı olarak silinsin mi?' }}');">{{ @lang.delete ?: 'Sil' }}</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+						</repeat>
+					</tbody>
+				</table>
+			</div>
+		</check>
+		<check if="{{ !count(@editor_maps) }}">
+			<p class="text-muted" style="margin:0;">{{ @lang.noMaps ?: 'Henüz harita yok.' }} <a href="/admin/maps/create">{{ @lang.createFirstMap ?: 'Yeni harita oluştur' }}</a>.</p>
+		</check>
+	</div>
+</div>

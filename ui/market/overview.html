@@ -1,0 +1,340 @@
+<style>
+.market-shell {
+	display: grid;
+	gap: 14px;
+	max-width: 980px;
+	margin: 0 auto;
+}
+
+.market-hero {
+	background:
+		linear-gradient(145deg, rgba(224, 176, 92, 0.16), rgba(60, 40, 24, 0.92));
+	border: 1px solid rgba(180, 137, 77, 0.62);
+	border-radius: var(--radius-lg);
+	padding: 16px;
+	text-align: left;
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+}
+
+.market-hero h2 {
+	margin: 0 0 6px;
+	font-size: 22px;
+	color: var(--color-text-heading);
+}
+
+.market-hero p {
+	margin: 0;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+}
+
+.market-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 10px;
+	margin-top: 12px;
+}
+
+.market-stat {
+	background: rgba(17, 10, 6, 0.55);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	padding: 10px;
+}
+
+.market-stat-label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+}
+
+.market-stat-value {
+	font-size: var(--font-size-lg);
+	font-weight: 700;
+	color: var(--color-accent);
+}
+
+.market-grid {
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 14px;
+}
+
+.market-card {
+	background: linear-gradient(180deg, rgba(46, 32, 21, 0.96), rgba(24, 15, 9, 0.98));
+	border: 1px solid rgba(133, 100, 63, 0.78);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow:
+		0 10px 20px rgba(0,0,0,0.24),
+		inset 0 0 0 1px rgba(214, 170, 94, 0.06);
+}
+
+.market-card-head {
+	padding: 10px 14px;
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	color: var(--color-accent);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid rgba(161, 122, 63, 0.44);
+	background: linear-gradient(180deg, rgba(59, 39, 22, 0.9), rgba(40, 26, 15, 0.92));
+	box-shadow: inset 0 1px 0 rgba(241, 208, 145, 0.08);
+}
+
+.market-card-body {
+	padding: 14px;
+}
+
+.market-form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.market-form-block {
+	padding: 12px;
+	border: 1px solid rgba(200, 149, 42, 0.2);
+	border-radius: var(--radius-md);
+	background: rgba(255, 255, 255, 0.02);
+	text-align: left;
+}
+
+.market-form-block h3 {
+	margin: 0 0 10px;
+	font-size: 15px;
+	color: var(--color-text-heading);
+}
+
+.market-field {
+	display: grid;
+	gap: 6px;
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+.market-field label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+}
+
+.market-field .textbox,
+.market-field .dropdown {
+	width: 100%;
+}
+
+.market-submit {
+	text-align: right;
+	margin-top: 6px;
+}
+
+.market-links {
+	display: grid;
+	gap: 8px;
+}
+
+.market-action-link {
+	display: block;
+	text-decoration: none;
+	text-align: left;
+	padding: 10px 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(200, 149, 42, 0.08);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.market-action-link:hover {
+	background: rgba(200, 149, 42, 0.16);
+	border-color: var(--color-border-light);
+	color: var(--color-accent);
+}
+
+.offer-list {
+	display: grid;
+	gap: 10px;
+}
+
+.offer-item {
+	display: grid;
+	grid-template-columns: 1fr 1fr auto auto;
+	gap: 8px;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0, 0, 0, 0.2);
+	text-align: left;
+}
+
+.offer-meta {
+	font-size: var(--font-size-sm);
+	color: var(--color-text);
+}
+
+.offer-status {
+	padding: 4px 8px;
+	border-radius: 999px;
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	justify-self: start;
+}
+
+.offer-status.open {
+	color: #10240f;
+	background: #7eb16f;
+}
+
+.offer-status.active {
+	color: #221608;
+	background: #d6a24a;
+}
+
+.offer-empty {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+	text-align: left;
+}
+
+@media (max-width: 800px) {
+	.market-grid,
+	.market-form-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.offer-item {
+		grid-template-columns: 1fr;
+	}
+
+	.market-submit {
+		text-align: left;
+	}
+}
+</style>
+
+<div class="market-shell">
+	<div class="market-hero">
+		<h2>{{ @lang.marketplace ?: 'Marketplace' }} - {{ @town.name }}</h2>
+		<p>{{ isset(@lang.marketDesc) ? @lang.marketDesc : 'Manage offers, exchange resources, and send supplies from one place.' }}</p>
+		<div class="market-stats">
+			<div class="market-stat">
+				<div class="market-stat-label">{{ @lang.marketLevel ?: 'Marketplace Level' }}</div>
+				<div class="market-stat-value">{{ @building_level }}</div>
+			</div>
+			<div class="market-stat">
+				<div class="market-stat-label">{{ @lang.merchants ?: 'Merchants' }}</div>
+				<div class="market-stat-value">{{ @merchants_available }} / {{ @merchants_total }}</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="market-grid">
+		<div class="market-card">
+			<div class="market-card-head">{{ @lang.createOffer ?: 'Create Offer' }}</div>
+			<div class="market-card-body">
+				<form action="/town/{{ @town.id }}/trade" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input type="hidden" name="sell_type" value="0">
+					<input type="hidden" name="buy_type" value="0">
+					<div class="market-form-grid">
+						<div class="market-form-block">
+							<h3>{{ @lang.sell ?: 'Sell' }}</h3>
+							<div class="market-field">
+								<label for="sell_subtype">{{ @lang.resource ?: 'Resource' }}</label>
+								<select class="dropdown" id="sell_subtype" name="sell_subtype">
+									<option value="0">{{ @lang.crop ?: 'Crop' }}</option>
+									<option value="1">{{ @lang.lumber ?: 'Lumber' }}</option>
+									<option value="2">{{ @lang.stone ?: 'Stone' }}</option>
+									<option value="3">{{ @lang.iron ?: 'Iron' }}</option>
+								</select>
+							</div>
+							<div class="market-field">
+								<label for="sell_quantity">{{ @lang.quantity ?: 'Quantity' }}</label>
+								<input class="textbox" id="sell_quantity" type="text" name="sell_quantity" placeholder="0">
+							</div>
+						</div>
+						<div class="market-form-block">
+							<h3>{{ @lang.buy ?: 'Buy' }}</h3>
+							<div class="market-field">
+								<label for="buy_subtype">{{ @lang.resource ?: 'Resource' }}</label>
+								<select class="dropdown" id="buy_subtype" name="buy_subtype">
+									<option value="0">{{ @lang.crop ?: 'Crop' }}</option>
+									<option value="1">{{ @lang.lumber ?: 'Lumber' }}</option>
+									<option value="2">{{ @lang.stone ?: 'Stone' }}</option>
+									<option value="3">{{ @lang.iron ?: 'Iron' }}</option>
+								</select>
+							</div>
+							<div class="market-field">
+								<label for="buy_quantity">{{ @lang.quantity ?: 'Quantity' }}</label>
+								<input class="textbox" id="buy_quantity" type="text" name="buy_quantity" placeholder="0">
+							</div>
+						</div>
+					</div>
+					<include href="shared/recaptcha-widget.html" />
+					<div class="market-submit">
+						<input class="button" type="submit" name="create" value="{{ @lang.createOffer ?: 'Create Offer' }}">
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="market-card">
+			<div class="market-card-head">{{ @lang.actions ?: 'Actions' }}</div>
+			<div class="market-card-body">
+				<div class="market-links">
+					<a class="market-action-link" href="/town/{{ @town.id }}/offers/all">{{ @lang.browseOffers ?: 'Browse All Offers' }}</a>
+					<a class="market-action-link" href="/town/{{ @town.id }}/offers">{{ @lang.myOffers ?: 'My Offers' }}</a>
+					<a class="market-action-link" href="/town/{{ @town.id }}/market/trade">{{ @lang.sendResources ?: 'Send Resources' }}</a>
+					<a class="market-action-link" href="/town/{{ @town.id }}">{{ @lang.back ?: 'Back' }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="market-card">
+		<div class="market-card-head">{{ @lang.myOffers ?: 'My Offers' }}</div>
+		<div class="market-card-body">
+			<check if="{{ count(@my_offers) }}">
+				<div class="offer-list">
+					<repeat group="{{ @my_offers }}" value="{{ @offer }}">
+						<div class="offer-item">
+							<div class="offer-meta">
+								<strong>{{ @lang.sell ?: 'Sell' }}:</strong> {{ @offer.sQ }} ({{ @offer.sType }}:{{ @offer.sSubType }})
+							</div>
+							<div class="offer-meta">
+								<strong>{{ @lang.buy ?: 'Buy' }}:</strong> {{ @offer.bQ }} ({{ @offer.bType }}:{{ @offer.bSubType }})
+							</div>
+							<check if="{{ (int) @offer.type === 0 }}">
+								<div class="offer-status open">open</div>
+							</check>
+							<check if="{{ (int) @offer.type !== 0 }}">
+								<div class="offer-status active">active</div>
+							</check>
+							<div>
+								<check if="{{ (int) @offer.type === 0 }}">
+									<form action="/town/{{ @town.id }}/cancel/trade" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="sType" value="{{ @offer.sType }}">
+										<input type="hidden" name="sSubType" value="{{ @offer.sSubType }}">
+										<input type="hidden" name="bType" value="{{ @offer.bType }}">
+										<input type="hidden" name="bSubType" value="{{ @offer.bSubType }}">
+										<input class="button" type="submit" value="{{ @lang.cancel ?: 'Cancel' }}">
+									</form>
+								</check>
+							</div>
+						</div>
+					</repeat>
+				</div>
+			</check>
+			<check if="{{ !count(@my_offers) }}">
+				<div class="offer-empty">{{ @lang.noOffers ?: 'No offers yet. Create your first offer above.' }}</div>
+			</check>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,288 @@
+<style>
+.bc-page { max-width: 100%; margin: 0 auto; }
+
+.bc-table-wrap {
+	background: rgba(22, 14, 10, 0.7);
+	border: 1px solid rgba(136, 103, 65, 0.4);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.bc-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.88em;
+}
+
+.bc-table th {
+	padding: 10px 14px;
+	text-align: left;
+	color: var(--color-accent);
+	font-weight: 600;
+	background: rgba(30, 20, 12, 0.6);
+	border-bottom: 1px solid rgba(136, 103, 65, 0.3);
+}
+
+.bc-table td {
+	padding: 10px 14px;
+	border-bottom: 1px solid rgba(80, 60, 35, 0.2);
+	color: var(--color-text);
+	vertical-align: middle;
+}
+
+.bc-table tr:last-child td { border-bottom: none; }
+.bc-table tr.is-defeated td { opacity: 0.45; }
+
+.bc-level-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-weight: 700;
+	font-size: 0.82em;
+}
+.bc-level-badge.lv1 { background: rgba(60,120,60,0.35);  color: #88cc88; border: 1px solid rgba(80,140,80,0.4); }
+.bc-level-badge.lv2 { background: rgba(80,130,60,0.35);  color: #aad070; border: 1px solid rgba(100,150,70,0.4); }
+.bc-level-badge.lv3 { background: rgba(160,130,30,0.35); color: #e0b840; border: 1px solid rgba(180,150,40,0.4); }
+.bc-level-badge.lv4 { background: rgba(160,80,30,0.35);  color: #e09050; border: 1px solid rgba(180,100,40,0.4); }
+.bc-level-badge.lv5 { background: rgba(150,30,30,0.35);  color: #e07070; border: 1px solid rgba(170,50,50,0.4); }
+
+.bc-status-active  { color: #88cc88; font-size: 0.82em; }
+.bc-status-respawn { color: #a8bdcc; font-size: 0.82em; }
+
+.bc-map-link {
+	color: var(--color-accent);
+	text-decoration: none;
+	font-size: 0.85em;
+}
+.bc-map-link:hover { text-decoration: underline; }
+
+/* Combined forces cell (units + loot side by side) */
+.bc-forces {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.bc-forces-sep {
+	width: 1px;
+	min-height: 48px;
+	background: rgba(136, 103, 65, 0.28);
+	flex-shrink: 0;
+}
+
+.bc-units {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	gap: 5px;
+	align-items: center;
+}
+
+.bc-unit-entry {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+.bc-unit-entry img {
+	width: 38px;
+	height: 38px;
+	object-fit: contain;
+	filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+	border: 1px solid rgba(136, 103, 65, 0.3);
+	border-radius: 3px;
+	background: rgba(20, 13, 8, 0.6);
+	cursor: default;
+}
+
+
+.bc-unit-count {
+	font-size: 10px;
+	font-weight: 700;
+	color: var(--color-text-muted);
+	line-height: 1;
+}
+
+.bc-loot {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.bc-loot-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	color: var(--color-accent);
+	font-size: 0.82em;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.bc-loot-item img {
+	width: 15px;
+	height: 15px;
+	object-fit: contain;
+	filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+.bc-map-card {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	padding: 8px;
+	background: rgba(22, 14, 10, 0.6);
+	border: 1px solid rgba(127, 97, 64, 0.3);
+	border-radius: var(--radius-sm);
+	text-decoration: none;
+	transition: border-color 0.2s, transform 0.2s;
+}
+.bc-map-card:hover {
+	border-color: var(--color-accent);
+	transform: translateY(-2px);
+}
+.bc-map-card-label {
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	color: var(--color-accent);
+	white-space: nowrap;
+}
+.bc-minimap {
+	position: relative;
+	width: 120px;
+	height: 80px;
+	overflow: hidden;
+	flex-shrink: 0;
+	border-radius: 3px;
+}
+.bc-minimap-inner {
+	position: absolute;
+	top: 0; left: 0;
+	width: 240px;
+	height: 160px;
+	transform: scale(0.5);
+	transform-origin: top left;
+}
+.bc-minimap-tile {
+	position: absolute;
+	width: 80px;
+	height: 80px;
+}
+.bc-minimap-marker {
+	position: absolute;
+	left: 120px;
+	top: 60px;
+	transform: translate(-50%, -50%);
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: radial-gradient(circle at 38% 32%, #ff9a4a, #c93820 60%, #7a1a0a);
+	box-shadow: 0 0 6px 3px rgba(220, 70, 15, 0.85), 0 0 14px 5px rgba(180, 40, 10, 0.45);
+	animation: campMarkerPulse 1.8s ease-in-out infinite;
+	z-index: 10;
+	pointer-events: none;
+}
+.bc-minimap-marker::after {
+	content: '';
+	position: absolute;
+	inset: -5px;
+	border-radius: 50%;
+	border: 1.5px solid rgba(255, 130, 50, 0.55);
+	animation: campMarkerRing 1.8s ease-in-out infinite;
+}
+@keyframes campMarkerPulse {
+	0%, 100% { box-shadow: 0 0 6px 3px rgba(220,70,15,0.85), 0 0 14px 5px rgba(180,40,10,0.45); }
+	50% { box-shadow: 0 0 10px 5px rgba(255,120,30,1), 0 0 22px 9px rgba(200,60,20,0.6); transform: translate(-50%,-50%) scale(1.25); }
+}
+@keyframes campMarkerRing {
+	0%, 100% { opacity: 0.6; transform: scale(1); }
+	50% { opacity: 0; transform: scale(2); }
+}
+</style>
+
+<div class="bc-page">
+	<h2 style="margin-bottom:4px;color:var(--color-accent)">&#9760; {{ @lang.barbarianCamps ?: 'Barbarian Camps' }}</h2>
+	<p class="text-muted" style="margin-bottom:18px;font-size:0.88em;">{{ @lang.campsPageDesc ?: 'Explore the map and attack camps to earn resources and XP.' }}</p>
+
+	<div class="bc-table-wrap">
+		<check if="{{ count(@camps) }}">
+		<table class="bc-table">
+			<thead>
+				<tr>
+					<th>{{ @lang.campLevel ?: 'Level' }}</th>
+					<th>{{ @lang.campCoords ?: 'Coordinates' }}</th>
+					<th>{{ @lang.campUnits ?: 'Units' }} &amp; {{ @lang.campLoot ?: 'Loot' }}</th>
+					<th>{{ @lang.campStatus ?: 'Status' }}</th>
+					<th style="width:170px;"></th>
+				<th>{{ @lang.map ?: 'Map' }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<repeat group="{{ @camps }}" value="{{ @c }}">
+				<tr class="{{ @c.active ? '' : 'is-defeated' }}">
+					<td>
+						<span class="bc-level-badge lv{{ @c.level }}">{{ @lang.campLv ?: 'Lv.' }}{{ @c.level }}</span>
+					</td>
+					<td>
+						<a href="/map?x={{ @c.x }}&y={{ @c.y }}" class="bc-map-link">({{ @c.x }}, {{ @c.y }})</a>
+					</td>
+					<td>
+						<div class="bc-forces">
+							<div class="bc-units">
+								<repeat group="{{ @c.unit_list }}" value="{{ @u }}">
+								<div class="bc-unit-entry" data-tooltip="{{ @u.name }}">
+									<img src="/default/images/units/0/{{ @u.idx }}.png" alt="{{ @u.name }}">
+									<span class="bc-unit-count">{{ @u.count }}</span>
+								</div>
+								</repeat>
+							</div>
+							<div class="bc-forces-sep"></div>
+							<div class="bc-loot">
+								<span class="bc-loot-item"><img src="/default/images/resources/0.png" alt="crop">{{ @c.crop }}</span>
+								<span class="bc-loot-item"><img src="/default/images/resources/1.png" alt="lumber">{{ @c.lumber }}</span>
+								<span class="bc-loot-item"><img src="/default/images/resources/2.png" alt="stone">{{ @c.stone }}</span>
+								<span class="bc-loot-item"><img src="/default/images/resources/3.png" alt="iron">{{ @c.iron }}</span>
+							</div>
+						</div>
+					</td>
+					<td>
+						<check if="{{ @c.active }}">
+							<span class="bc-status-active">&#9679; {{ @lang.campActive ?: 'Active' }}</span>
+						</check>
+						<check if="{{ !@c.active }}">
+							<span class="bc-status-respawn">&#9702; {{ @lang.campRespawning ?: 'Respawning' }}</span>
+						</check>
+					</td>
+					<td>
+						<check if="{{ @c.active && @my_town_id && @has_army }}">
+						<a href="/town/{{ @my_town_id }}/dispatch?target_camp_id={{ @c.id }}"
+						   class="btn btn-secondary btn-sm">
+							{{ @lang.attackCamp ?: 'Attack' }}
+						</a>
+						</check>
+					</td>
+					<td style="padding:6px 10px;">
+						<a class="bc-map-card" href="/map?x={{ @c.x }}&y={{ @c.y }}">
+							<div class="bc-minimap">
+								<div class="bc-minimap-inner">
+									<repeat group="{{ @c.mini_tiles }}" value="{{ @mt }}">
+										<img class="bc-minimap-tile" style="left:{{ @mt.st_x }}px;top:{{ @mt.st_y }}px;" src="{{ @mt.img }}">
+									</repeat>
+									<span class="bc-minimap-marker"></span>
+								</div>
+							</div>
+							<span class="bc-map-card-label">({{ @c.x }}, {{ @c.y }})</span>
+						</a>
+					</td>
+				</tr>
+				</repeat>
+			</tbody>
+		</table>
+		</check>
+		<check if="{{ !count(@camps) }}">
+			<p class="text-muted" style="padding:24px 20px;margin:0;">{{ @lang.noCamps ?: 'No barbarian camps on the map yet.' }}</p>
+		</check>
+	</div>
+</div>

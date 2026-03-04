@@ -1,0 +1,123 @@
+<style>
+.building-unified {
+	text-align: left;
+}
+
+.building-unified-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--space-md);
+	flex-wrap: wrap;
+	margin-bottom: var(--space-md);
+	padding: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72));
+}
+
+.building-unified-title {
+	margin: 0;
+	color: var(--color-text-heading);
+	font-size: var(--font-size-xl);
+}
+
+.building-unified-sub {
+	margin: 4px 0 0 0;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+}
+
+.building-unified-level {
+	padding: 6px 12px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border-light);
+	background: rgba(0,0,0,0.22);
+	color: var(--color-accent);
+	font-weight: 700;
+}
+
+.building-unified .q_table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	background: rgba(0,0,0,0.16);
+	margin-bottom: var(--space-md);
+}
+
+/* Header card now owns title/level; hide legacy first title row in first table */
+.building-unified table.q_table:first-of-type > tbody > tr:first-child,
+.building-unified table.q_table:first-of-type > tr:first-child {
+	display: none !important;
+}
+
+.building-unified .head_table {
+	background: rgba(0,0,0,0.22);
+	color: var(--color-text-heading);
+	font-size: var(--font-size-sm);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+}
+
+.building-unified .q_text,
+.building-unified .head_table {
+	padding: 10px 12px;
+	border-bottom: 1px solid rgba(199,154,57,0.14);
+}
+
+.building-unified .q_link {
+	color: var(--color-accent);
+}
+
+.building-unified .q_label {
+	color: #d59f67;
+}
+
+.building-unified .module {
+	max-width: 120px;
+	height: auto;
+}
+
+.building-unified .button-link {
+	display: inline-block;
+	text-decoration: none;
+	padding: 6px 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+}
+
+.building-unified input.button,
+.building-unified button.button,
+.building-unified a.button,
+.building-unified .button-link {
+	display: inline-block;
+	text-decoration: none;
+	padding: 8px 14px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.building-unified input.button:hover,
+.building-unified button.button:hover,
+.building-unified a.button:hover,
+.building-unified .button-link:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: linear-gradient(180deg, rgba(199,154,57,0.15), rgba(0,0,0,0.18));
+}
+
+.building-unified input.button[disabled],
+.building-unified button.button[disabled] {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+</style>

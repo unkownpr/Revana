@@ -1,0 +1,66 @@
+<div class="admin">
+
+	<div class="admin-card">
+		<div class="admin-card-header">
+			{{ @lang.editCamp ?: 'Edit Camp' }} #{{ @camp.id }}
+			<a href="/admin#camps" class="admin-btn admin-btn--sm" style="margin-left:auto;">&#8592; {{ @lang.back ?: 'Back' }}</a>
+		</div>
+		<div class="admin-card-body">
+			<form action="/admin/camps/{{ @camp.id }}/edit" method="post" class="admin-form">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+
+				<div class="admin-form-row">
+					<div class="admin-form-group">
+						<label>X</label>
+						<input class="textbox" type="number" name="x" value="{{ @camp.x }}" min="0" required>
+					</div>
+					<div class="admin-form-group">
+						<label>Y</label>
+						<input class="textbox" type="number" name="y" value="{{ @camp.y }}" min="0" required>
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.level ?: 'Level' }} (1-5)</label>
+						<select class="dropdown" name="level">
+							<option value="1" <check if="{{ @camp.level == 1 }}">selected</check>>1</option>
+							<option value="2" <check if="{{ @camp.level == 2 }}">selected</check>>2</option>
+							<option value="3" <check if="{{ @camp.level == 3 }}">selected</check>>3</option>
+							<option value="4" <check if="{{ @camp.level == 4 }}">selected</check>>4</option>
+							<option value="5" <check if="{{ @camp.level == 5 }}">selected</check>>5</option>
+						</select>
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.active ?: 'Active' }}</label>
+						<select class="dropdown" name="active">
+							<option value="1" <check if="{{ @camp.active }}">selected</check>>{{ @lang.yes ?: 'Yes' }}</option>
+							<option value="0" <check if="{{ !@camp.active }}">selected</check>>{{ @lang.no ?: 'No' }}</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="admin-form-group">
+					<label>{{ @lang.army ?: 'Ordu' }} <span class="text-muted" style="font-size:var(--font-size-xs);">(13 {{ @lang.values ?: 'değer' }}, {{ @lang.hyphenSeparated ?: 'tire ile ayrılmış' }})</span></label>
+					<input class="textbox" type="text" name="army" value="{{ @camp.army }}" pattern="^\d+(-\d+){12}$" required style="font-family:monospace;">
+				</div>
+
+				<div class="admin-form-group">
+					<label>{{ @lang.resources ?: 'Resources' }} <span class="text-muted" style="font-size:var(--font-size-xs);">(crop-lumber-stone-iron-gold)</span></label>
+					<input class="textbox" type="text" name="resources" value="{{ @camp.resources }}" pattern="^\d+(-\d+){4}$" required style="font-family:monospace;">
+				</div>
+
+				<check if="{{ @camp.respawn_at }}">
+					<div class="admin-form-group">
+						<label>Respawn At</label>
+						<input class="textbox" type="text" value="{{ @camp.respawn_at }}" readonly style="opacity:0.6;">
+						<p class="text-muted" style="margin:4px 0 0;font-size:var(--font-size-xs);">{{ @lang.respawnNote ?: 'Setting active=Yes will clear the respawn timer.' }}</p>
+					</div>
+				</check>
+
+				<div class="admin-form-actions">
+					<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.save ?: 'Save Changes' }}</button>
+					<a href="/admin#camps" class="admin-btn">{{ @lang.cancel ?: 'Cancel' }}</a>
+				</div>
+			</form>
+		</div>
+	</div>
+
+</div>

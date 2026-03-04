@@ -1,0 +1,80 @@
+<style>
+.checkout-shell { max-width: 760px; margin: 0 auto; display: grid; gap: 14px; }
+.checkout-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(46,32,21,0.92), rgba(27,18,12,0.95));
+	overflow: hidden;
+}
+.checkout-head {
+	padding: 12px 14px;
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	background: linear-gradient(180deg, rgba(63,43,27,0.75), rgba(40,27,17,0.75));
+	color: var(--color-text-heading);
+	font-weight: 700;
+}
+.checkout-body { padding: 14px; display: grid; gap: 12px; }
+.checkout-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.checkout-meta {
+	display: flex; justify-content: space-between; align-items: center;
+	padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.2);
+}
+.checkout-price { color: var(--color-accent); font-weight: 700; }
+.checkout-submit {
+	width: 100%;
+	padding: 10px 12px;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgba(199,154,57,0.5);
+	background: linear-gradient(180deg, rgba(150,107,46,0.95), rgba(114,78,30,0.95));
+	color: #fff8e8;
+	font-weight: 700;
+	cursor: pointer;
+}
+@media (max-width: 760px) { .checkout-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="checkout-shell">
+	<div class="checkout-card">
+		<div class="checkout-head">{{ @lang.checkout ?: 'Checkout' }}</div>
+		<div class="checkout-body">
+			<div class="checkout-meta">
+				<div>{{ @premium_package.name }} • &#9670;{{ @premium_package.credits }} {{ @lang.gems ?: 'Gems' }}</div>
+				<div class="checkout-price">${{ number_format((@premium_package.price_usd_cents ?: 0) / 100, 2) }}</div>
+			</div>
+			<form action="/premium/checkout/package/{{ @premium_package.id }}" method="post" class="admin-form">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<div class="admin-form-group">
+					<label>{{ @lang.cardHolder ?: 'Card Holder' }}</label>
+					<input class="textbox" type="text" name="card_holder" required>
+				</div>
+				<div class="admin-form-group">
+					<label>{{ @lang.cardNumber ?: 'Card Number' }}</label>
+					<input class="textbox" type="text" name="card_number" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" required>
+				</div>
+				<div class="checkout-row">
+					<div class="admin-form-group">
+						<label>{{ @lang.expiryMonth ?: 'Expiry Month' }}</label>
+						<input class="textbox" type="number" name="exp_month" min="1" max="12" value="{{ date('n') }}">
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.expiryYear ?: 'Expiry Year' }}</label>
+						<input class="textbox" type="number" name="exp_year" min="{{ date('Y') }}" value="{{ date('Y') }}">
+					</div>
+				</div>
+				<div class="admin-form-group">
+					<label>{{ @lang.cvv ?: 'CVV' }}</label>
+					<input class="textbox" type="password" name="cvv" inputmode="numeric" autocomplete="cc-csc" maxlength="4" required>
+				</div>
+				<div class="admin-form-group">
+					<label><input type="checkbox" name="accept_terms" value="1" required> {{ @lang.acceptPaymentTerms ?: 'I confirm this payment request and agree to be contacted by admin.' }}</label>
+				</div>
+				<button class="checkout-submit" type="submit">{{ @lang.createPaymentRequest ?: 'Create Payment Request' }}</button>
+			</form>
+			<div class="text-muted" style="font-size:12px;">
+				{{ @lang.checkoutSecurityNote ?: 'For security, card number/CVV are not stored in full. Only masked metadata is kept with the request.' }}
+			</div>
+		</div>
+	</div>
+</div>
+

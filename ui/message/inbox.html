@@ -1,0 +1,99 @@
+<include href="shared/message-center-style.html" />
+
+<div class="msg-shell">
+	<div class="msg-hero">
+		<h2>
+			<check if="{{ @box == 'messages' }}">{{ @lang.messages ?: 'Messages' }}</check>
+			<check if="{{ @box == 'reports' }}">{{ @lang.reports ?: 'Reports' }}</check>
+		</h2>
+		<p>{{ @lang.manageCommsDesc ?: 'View and manage your communication records here.' }}</p>
+	</div>
+
+	<div class="msg-tabs">
+		<a href="/messages" class="msg-tab {{ @box == 'messages' ? 'active' : '' }}">{{ @lang.messages ?: 'Messages' }}</a>
+		<a href="/reports" class="msg-tab {{ @box == 'reports' ? 'active' : '' }}">{{ @lang.reports ?: 'Reports' }}</a>
+		<a href="/messages/compose" class="msg-tab">{{ @lang.compose ?: 'Compose' }}</a>
+	</div>
+
+	<div class="msg-card">
+		<div class="msg-card-head">
+			<check if="{{ @box == 'messages' }}">{{ @lang.inbox ?: 'Inbox' }}</check>
+			<check if="{{ @box == 'reports' }}">{{ @lang.reports ?: 'Reports' }}</check>
+		</div>
+		<div class="msg-card-body">
+			<div class="msg-list-head">
+				<div>{{ @lang.subject ?: 'Subject' }}</div>
+				<div>{{ @lang.from ?: 'From' }}</div>
+				<div>{{ @lang.date ?: 'Date' }}</div>
+				<div>{{ @lang.actions ?: 'Actions' }}</div>
+			</div>
+
+			<check if="{{ count(@messages) }}">
+				<repeat group="{{ @messages }}" value="{{ @msg }}">
+					<div class="msg-list-row {{ !@msg.read ? 'unread' : '' }}">
+						<div>
+							<a class="msg-subject" href="/message/{{ @msg.id }}">
+								<check if="{{ !@msg.read }}"><span class="msg-dot"></span></check>
+								<check if="{{ !@msg.read }}"><b>{{ @msg.subject }}</b></check>
+								<check if="{{ @msg.read }}">{{ @msg.subject }}</check>
+							</a>
+						</div>
+						<div>
+							<check if="{{ @msg.from_id }}">
+								<a class="q_link" href="/profile/{{ @msg.from_id }}">{{ @msg.from_name }}</a>
+							</check>
+							<check if="{{ !@msg.from_id }}">{{ @lang.system ?: 'System' }}</check>
+						</div>
+						<div>{{ @msg.date }}</div>
+						<div class="msg-actions">
+							<a class="msg-btn" href="/message/{{ @msg.id }}">{{ @lang.view ?: 'View' }}</a>
+							<check if="{{ @box == 'reports' }}">
+								<form action="/report/{{ @msg.id }}/delete" method="post">
+									<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+									<button class="msg-btn msg-btn-danger" type="submit">{{ @lang.delete ?: 'Delete' }}</button>
+								</form>
+							</check>
+							<check if="{{ @box != 'reports' }}">
+								<form action="/message/{{ @msg.id }}/delete" method="post">
+									<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+									<button class="msg-btn msg-btn-danger" type="submit">{{ @lang.delete ?: 'Delete' }}</button>
+								</form>
+							</check>
+						</div>
+					</div>
+				</repeat>
+			</check>
+
+			<check if="{{ !count(@messages) }}">
+				<div class="msg-empty">
+					<check if="{{ @box == 'messages' }}">{{ @lang.noMessages ?: 'No messages.' }}</check>
+					<check if="{{ @box == 'reports' }}">{{ @lang.noReports ?: 'No reports.' }}</check>
+				</div>
+			</check>
+
+			<div class="msg-toolbar">
+				<check if="{{ @box == 'reports' }}">
+					<form action="/reports/delete-all" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input class="button" type="submit" value="{{ @lang.deleteAll ?: 'Delete all' }}">
+					</form>
+				</check>
+				<check if="{{ @box != 'reports' }}">
+					<form action="/messages/delete-all" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input class="button" type="submit" value="{{ @lang.deleteAll ?: 'Delete all' }}">
+					</form>
+				</check>
+				<div class="msg-pagination">
+					<check if="{{ @page > 1 }}">
+						<a class="q_link" href="/{{ @box }}?page={{ @page - 1 }}">{{ @lang.prev ?: '<< Prev' }}</a>
+					</check>
+					{{ @lang.page ?: 'Page' }} {{ @page }} / {{ @total_pages }}
+					<check if="{{ @page < @total_pages }}">
+						<a class="q_link" href="/{{ @box }}?page={{ @page + 1 }}">{{ @lang.next ?: 'Next >>' }}</a>
+					</check>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,52 @@
+Revana Game Engine License
+Copyright (c) 2024 unkownpr
+
+TERMS AND CONDITIONS
+
+1. GRANT OF LICENSE
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to use,
+   run, and deploy the Software for personal or commercial purposes, subject to
+   the following conditions:
+
+2. RESTRICTIONS
+   a) Modification: You may NOT modify, adapt, translate, or create derivative
+      works based upon the Software, in whole or in part, without the express
+      written permission of the copyright holder.
+   b) Redistribution: You may NOT redistribute, sublicense, sell, or otherwise
+      transfer the Software or any portion thereof to third parties without the
+      express written permission of the copyright holder.
+   c) Reverse Engineering: You may NOT decompile, disassemble, or reverse
+      engineer the Software except to the extent required by applicable law.
+
+3. ATTRIBUTION
+   Any permitted use of the Software must retain the above copyright notice,
+   this list of conditions, and a visible attribution to the original project
+   (e.g., "Powered by Revana").
+
+4. RESERVATION OF RIGHTS
+   The copyright holder expressly reserves the right to:
+   a) Change the licensing terms of future versions of the Software, including
+      introducing commercial licensing or subscription-based models.
+   b) Revoke free access for future releases at any time without prior notice.
+   c) Issue paid licenses with additional rights (modification, redistribution, etc.).
+
+   Any such changes will apply only to future versions and will NOT retroactively
+   affect the version of the Software to which this license is attached.
+
+5. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+   OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+6. TERMINATION
+   This license is automatically terminated if you violate any of its terms.
+   Upon termination, you must destroy all copies of the Software in your possession.
+
+For permissions beyond the scope of this license, commercial licensing inquiries,
+or any other questions, please contact the copyright holder via GitHub:
+https://github.com/unkownpr

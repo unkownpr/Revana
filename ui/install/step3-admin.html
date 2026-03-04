@@ -1,0 +1,80 @@
+<html>
+<link rel="stylesheet" type="text/css" href="/default/1/default.css">
+<head>
+<title>Devana - Installation</title>
+</head>
+<body class="q_body">
+<div align="center">
+
+<table class="q_table">
+	<tr>
+		<td class="td_logo"><img src="/default/1/logo.jpg"></td>
+	</tr>
+	<tr>
+		<td class="td_top_menu">
+			<font class="q_label">Installation Wizard - Step 3: Admin Account</font>
+		</td>
+	</tr>
+	<tr>
+		<td class="td_content">
+			<br>
+			<check if="{{ isset(@errors) }}">
+				<repeat group="{{ @errors }}" value="{{ @err }}">
+					<font color="red"><b>{{ @err }}</b></font><br>
+				</repeat>
+				<br>
+			</check>
+			<font class="q_text">Database imported successfully! Now create your admin account.</font>
+			<br><br>
+			<form method="post" action="/install/step3">
+				<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+					<tr>
+						<td class="head_table" colspan="2">Admin Account</td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right" width="200">Username:</td>
+						<td><input class="textbox" type="text" name="username" value="{{ isset(@username) ? @username : '' }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Password:</td>
+						<td><input class="textbox" type="password" name="password"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Confirm Password:</td>
+						<td><input class="textbox" type="password" name="password_confirm"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Email:</td>
+						<td><input class="textbox" type="text" name="email" value="{{ isset(@email) ? @email : '' }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Faction:</td>
+						<td>
+							<select class="dropdown" name="faction">
+								<repeat group="{{ @factions }}" value="{{ @faction }}">
+									<option value="{{ @faction.id }}">{{ @faction.name }}</option>
+								</repeat>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">First Town Name:</td>
+						<td><input class="textbox" type="text" name="town_name" value="{{ isset(@town_name) ? @town_name : 'My Town' }}"></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<br>
+							<input class="button" type="submit" value="Create Admin & Finish">
+							<br><br>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<br>
+		</td>
+	</tr>
+</table>
+
+</div>
+</body>
+</html>

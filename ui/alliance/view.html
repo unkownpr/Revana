@@ -1,0 +1,145 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="2">{{ @alliance.name }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.tag ?: 'Tag' }}</td>
+		<td class="q_text">[{{ @alliance.tag }}]</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.leader ?: 'Leader' }}</td>
+		<td class="q_text"><a class="q_link" href="/profile/{{ @alliance.leader_id }}">{{ @alliance.leader_name }}</a></td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.members ?: 'Members' }}</td>
+		<td class="q_text">{{ @alliance.member_count }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.totalPoints ?: 'Total Points' }}</td>
+		<td class="q_text">{{ @alliance.total_points }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.description ?: 'Description' }}</td>
+		<td class="q_text">{{ @alliance.description }}</td>
+	</tr>
+</table>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="3">{{ @lang.memberList ?: 'Member List' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">#</td>
+		<td class="head_table">{{ @lang.name ?: 'Name' }}</td>
+		<td class="head_table">{{ @lang.points ?: 'Points' }}</td>
+	</tr>
+	<repeat group="{{ @members }}" key="{{ @i }}" value="{{ @member }}">
+	<tr>
+		<td class="q_text">{{ @i + 1 }}</td>
+		<td class="q_text"><a class="q_link" href="/profile/{{ @member.id }}">{{ @member.name }}</a>
+			<check if="{{ @member.id == @alliance.leader_id }}"> ({{ @lang.leader ?: 'Leader' }})</check>
+		</td>
+		<td class="q_text">{{ @member.points }}</td>
+	</tr>
+	</repeat>
+</table>
+
+<check if="{{ count(@pacts) }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="3">{{ @lang.pacts ?: 'Pacts' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">{{ @lang.alliance ?: 'Alliance' }}</td>
+		<td class="head_table">{{ @lang.type ?: 'Type' }}</td>
+		<td class="head_table">{{ @lang.status ?: 'Status' }}</td>
+	</tr>
+	<repeat group="{{ @pacts }}" value="{{ @pact }}">
+	<tr>
+		<td class="q_text"><a class="q_link" href="/alliance/{{ @pact.alliance_id }}">{{ @pact.alliance_name }}</a></td>
+		<td class="q_text">{{ @pact.type }}</td>
+		<td class="q_text">{{ @pact.status }}</td>
+	</tr>
+	</repeat>
+</table>
+</check>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="2">{{ @lang.treasury ?: 'Treasury' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.crop ?: 'Crop' }}</td>
+		<td class="q_text">{{ @treasury.crop }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.lumber ?: 'Lumber' }}</td>
+		<td class="q_text">{{ @treasury.lumber }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.stone ?: 'Stone' }}</td>
+		<td class="q_text">{{ @treasury.stone }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.iron ?: 'Iron' }}</td>
+		<td class="q_text">{{ @treasury.iron }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.gold ?: 'Gold' }}</td>
+		<td class="q_text">{{ @treasury.gold }}</td>
+	</tr>
+</table>
+
+<check if="{{ @is_member && count(@user_towns) }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.donate ?: 'Donate to Treasury' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/alliance/{{ @alliance.id }}/donate" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.fromTown ?: 'From town' }}
+						<select class="dropdown" name="town_id">
+							<repeat group="{{ @user_towns }}" value="{{ @ut }}">
+							<option value="{{ @ut.id }}">{{ @ut.name }}</option>
+							</repeat>
+						</select>
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.crop ?: 'Crop' }} <input class="textbox" type="text" name="d_crop" size="6" value="0"></label>
+					<label>{{ @lang.lumber ?: 'Lumber' }} <input class="textbox" type="text" name="d_lumber" size="6" value="0"></label>
+				</p>
+				<p>
+					<label>{{ @lang.stone ?: 'Stone' }} <input class="textbox" type="text" name="d_stone" size="6" value="0"></label>
+					<label>{{ @lang.iron ?: 'Iron' }} <input class="textbox" type="text" name="d_iron" size="6" value="0"></label>
+				</p>
+				<p>
+					<label>{{ @lang.gold ?: 'Gold' }} <input class="textbox" type="text" name="d_gold" size="6" value="0"></label>
+				</p>
+				<p>
+					<input class="button" type="submit" value="{{ @lang.donate ?: 'Donate' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+
+<check if="{{ @is_leader }}">
+	<a class="q_link" href="/alliance/{{ @alliance.id }}/edit">{{ @lang.editAlliance ?: 'Edit Alliance' }}</a>
+</check>
+<check if="{{ @is_member && !@is_leader }}">
+	<form action="/alliance/quit" method="post" style="display:inline;">
+		<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+		<input class="button" type="submit" name="leave" value="{{ @lang.leaveAlliance ?: 'Leave Alliance' }}" onclick="return confirm('{{ @lang.confirmLeave ?: 'Are you sure?' }}');">
+	</form>
+</check>
+<check if="{{ !@is_member }}">
+	<form action="/alliance/{{ @alliance.id }}/join" method="post" style="display:inline;">
+		<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+		<input class="button" type="submit" name="apply" value="{{ @lang.applyToJoin ?: 'Apply to Join' }}">
+	</form>
+</check>

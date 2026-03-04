@@ -1,0 +1,91 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @thread.title }}</td>
+	</tr>
+</table>
+
+<repeat group="{{ @posts }}" value="{{ @post }}">
+<div class="post-card">
+	<div class="post-sidebar">
+		<img class="avatar avatar-md" src="{{ @post.author_avatar }}" alt="{{ @post.author_name }}">
+		<div class="post-author">
+			<a class="q_link" href="/profile/{{ @post.author_id }}">{{ @post.author_name }}</a>
+		</div>
+		<div class="post-meta">
+			{{ @lang.posts ?: 'Posts' }}: {{ @post.author_post_count }}
+			<check if="{{ @post.author_alliance }}">
+				<br>[{{ @post.author_alliance }}]
+			</check>
+		</div>
+	</div>
+	<div class="post-content">
+		<div class="post-date">{{ @post.date }}</div>
+		{{ @post.content }}
+		<check if="{{ @post.edited }}">
+			<br><small><i>{{ @lang.editedAt ?: 'Edited at' }} {{ @post.edited_at }}</i></small>
+		</check>
+		<check if="{{ isset(@SESSION.user) }}">
+		<div class="post-actions">
+			<check if="{{ @SESSION.user.id == @post.author_id || @SESSION.user.level > 3 }}">
+				<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/edit/{{ @post.id }}">{{ @lang.edit ?: 'Edit' }}</a>
+				<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/delete/{{ @post.id }}" onclick="return confirm('{{ @lang.confirmDelete ?: 'Are you sure?' }}');">{{ @lang.delete ?: 'Delete' }}</a>
+			</check>
+		</div>
+		</check>
+	</div>
+</div>
+</repeat>
+
+<div class="pagination">
+	<check if="{{ @page > 1 }}">
+		<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}?page={{ @page - 1 }}">{{ @lang.prev ?: '<< Prev' }}</a>
+	</check>
+	{{ @lang.page ?: 'Page' }} {{ @page }} / {{ @total_pages }}
+	<check if="{{ @page < @total_pages }}">
+		<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}?page={{ @page + 1 }}">{{ @lang.next ?: 'Next >>' }}</a>
+	</check>
+</div>
+
+<check if="{{ isset(@SESSION.user) && !@thread.locked }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.reply ?: 'Reply' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/forum/{{ @forum.id }}/thread/{{ @thread.id }}" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<textarea class="textbox" name="content" rows="6" cols="55"></textarea>
+				</p>
+				<p>
+					<input class="button" type="submit" name="reply" value="{{ @lang.post ?: 'Post' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+
+<check if="{{ @thread.locked }}">
+<font class="q_label">{{ @lang.threadLocked ?: 'This thread is locked.' }}</font>
+</check>
+
+<check if="{{ isset(@SESSION.user) && @SESSION.user.level > 3 }}">
+{{ @lang.modActions ?: 'Mod actions' }}:
+<check if="{{ !@thread.locked }}">
+	<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/lock">{{ @lang.lock ?: 'Lock' }}</a>
+</check>
+<check if="{{ @thread.locked }}">
+	<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/unlock">{{ @lang.unlock ?: 'Unlock' }}</a>
+</check>
+<check if="{{ !@thread.pinned }}">
+	<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/pin">{{ @lang.pin ?: 'Pin' }}</a>
+</check>
+<check if="{{ @thread.pinned }}">
+	<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/unpin">{{ @lang.unpin ?: 'Unpin' }}</a>
+</check>
+<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}/delete" onclick="return confirm('{{ @lang.confirmDelete ?: 'Are you sure?' }}');">{{ @lang.deleteThread ?: 'Delete Thread' }}</a>
+</check>
+
+<a class="q_link" href="/forum/{{ @forum.id }}">{{ @lang.backToThreads ?: 'Back to Threads' }}</a>

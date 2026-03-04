@@ -1,0 +1,313 @@
+<style>
+.town-stats-shell {
+	text-align: left;
+}
+
+.town-stats-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--space-md);
+	flex-wrap: wrap;
+	margin-bottom: var(--space-md);
+	padding: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72));
+}
+
+.town-stats-title {
+	margin: 0;
+	color: var(--color-text-heading);
+	font-size: var(--font-size-xl);
+}
+
+.town-stats-sub {
+	margin: 4px 0 0 0;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+}
+
+.town-stats-badge {
+	padding: 6px 12px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border-light);
+	background: rgba(0,0,0,0.22);
+	color: var(--color-accent);
+	font-weight: 700;
+}
+
+.town-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-md);
+}
+
+.town-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+
+.town-card h3 {
+	margin: 0;
+	padding: 10px 12px;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-heading);
+	background: rgba(0,0,0,0.22);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+}
+
+.town-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.town-table td,
+.town-table th {
+	padding: 9px 12px;
+	border-bottom: 1px solid rgba(199,154,57,0.14);
+}
+
+.town-table th {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	text-align: left;
+}
+
+.value-cell {
+	text-align: right;
+	font-weight: 700;
+	color: var(--color-accent);
+}
+
+.resource-name {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.resource {
+	width: 16px;
+	height: 16px;
+}
+
+.meter {
+	width: 120px;
+	height: 7px;
+	border-radius: 999px;
+	border: 1px solid rgba(199,154,57,0.3);
+	background: rgba(0,0,0,0.35);
+	overflow: hidden;
+	margin-left: auto;
+}
+
+.meter > span {
+	display: block;
+	height: 100%;
+	background: linear-gradient(90deg, #7d571b, #c79a39);
+}
+
+.town-full {
+	grid-column: 1 / -1;
+}
+
+.town-empty {
+	padding: var(--space-md);
+	color: var(--color-text-muted);
+}
+
+.town-stats-footer {
+	margin-top: var(--space-md);
+}
+
+.town-stats-footer .button {
+	display: inline-block;
+}
+
+.table-action .button {
+	display: inline-block;
+	padding: 4px 10px;
+	font-size: var(--font-size-xs);
+	text-decoration: none;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+}
+
+.town-stats-footer .button {
+	text-decoration: none;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+	padding: 6px 12px;
+}
+
+.table-action .button:hover,
+.town-stats-footer .button:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: linear-gradient(180deg, rgba(199,154,57,0.15), rgba(0,0,0,0.18));
+}
+
+@media (max-width: 900px) {
+	.town-stats-grid {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+<div class="town-stats-shell">
+	<div class="town-stats-header">
+		<div>
+			<h2 class="town-stats-title">{{ @town.name }} - {{ @lang.statistics ?: 'Statistics' }}</h2>
+			<p class="town-stats-sub">{{ @lang.coordinates ?: 'Coordinates' }}: {{ @town.x }}, {{ @town.y }}</p>
+		</div>
+		<div class="town-stats-badge">{{ @lang.population ?: 'Population' }}: {{ @town.population }}</div>
+	</div>
+
+	<div class="town-stats-grid">
+		<div class="town-card">
+			<h3>{{ @lang.resources ?: 'Resources' }}</h3>
+			<table class="town-table">
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource"> {{ @lang.crop ?: 'Crop' }}</span></td>
+					<td class="value-cell">
+						<div>{{ floor(@resources.crop) }} / {{ @limits.crop }}</div>
+						<div class="meter"><span style="width:{{ @resource_fill.crop }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource"> {{ @lang.lumber ?: 'Lumber' }}</span></td>
+					<td class="value-cell">
+						<div>{{ floor(@resources.lumber) }} / {{ @limits.resources }}</div>
+						<div class="meter"><span style="width:{{ @resource_fill.lumber }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource"> {{ @lang.stone ?: 'Stone' }}</span></td>
+					<td class="value-cell">
+						<div>{{ floor(@resources.stone) }} / {{ @limits.resources }}</div>
+						<div class="meter"><span style="width:{{ @resource_fill.stone }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource"> {{ @lang.iron ?: 'Iron' }}</span></td>
+					<td class="value-cell">
+						<div>{{ floor(@resources.iron) }} / {{ @limits.resources }}</div>
+						<div class="meter"><span style="width:{{ @resource_fill.iron }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource"> {{ @lang.gold ?: 'Gold' }}</span></td>
+					<td class="value-cell">
+						<div>{{ floor(@resources.gold) }} / {{ @limits.gold }}</div>
+						<div class="meter"><span style="width:{{ @resource_fill.gold }}%"></span></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="town-card">
+			<h3>{{ @lang.production ?: 'Production' }} ({{ @lang.perHour ?: '/h' }})</h3>
+			<table class="town-table">
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource"> {{ @lang.crop ?: 'Crop' }}</span></td>
+					<td class="value-cell">
+						<div>{{ @crop_net }}{{ @lang.perHour ?: '/h' }}</div>
+						<div class="meter"><span style="width:{{ @production_fill.crop }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource"> {{ @lang.lumber ?: 'Lumber' }}</span></td>
+					<td class="value-cell">
+						<div>{{ @production.lumber }}{{ @lang.perHour ?: '/h' }}</div>
+						<div class="meter"><span style="width:{{ @production_fill.lumber }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource"> {{ @lang.stone ?: 'Stone' }}</span></td>
+					<td class="value-cell">
+						<div>{{ @production.stone }}{{ @lang.perHour ?: '/h' }}</div>
+						<div class="meter"><span style="width:{{ @production_fill.stone }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource"> {{ @lang.iron ?: 'Iron' }}</span></td>
+					<td class="value-cell">
+						<div>{{ @production.iron }}{{ @lang.perHour ?: '/h' }}</div>
+						<div class="meter"><span style="width:{{ @production_fill.iron }}%"></span></div>
+					</td>
+				</tr>
+				<tr>
+					<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource"> {{ @lang.gold ?: 'Gold' }}</span></td>
+					<td class="value-cell">
+						<div>{{ @production.gold }}{{ @lang.perHour ?: '/h' }}</div>
+						<div class="meter"><span style="width:{{ @production_fill.gold }}%"></span></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="town-card">
+			<h3>{{ @lang.townInfo ?: 'Town Info' }}</h3>
+			<table class="town-table">
+				<tr><td>{{ @lang.population ?: 'Population' }}</td><td class="value-cell">{{ @town.population }}</td></tr>
+				<tr><td>{{ @lang.upkeep ?: 'Upkeep' }}</td><td class="value-cell">{{ @town.upkeep }}</td></tr>
+				<tr><td>{{ @lang.morale ?: 'Morale' }}</td><td class="value-cell">{{ @town.morale }}%</td></tr>
+				<tr>
+					<td>{{ @lang.capital ?: 'Capital' }}</td>
+					<td class="value-cell">
+						<check if="{{ @town.isCapital }}">{{ @lang.yes ?: 'Yes' }}</check>
+						<check if="{{ !@town.isCapital }}">{{ @lang.no ?: 'No' }}</check>
+					</td>
+				</tr>
+				<tr><td>{{ @lang.coordinates ?: 'Coordinates' }}</td><td class="value-cell">{{ @town.x }}, {{ @town.y }}</td></tr>
+			</table>
+		</div>
+
+		<div class="town-card">
+			<h3>{{ @lang.army ?: 'Army' }}</h3>
+			<check if="{{ count(@army) }}">
+				<table class="town-table">
+					<tr><th>{{ @lang.unit ?: 'Unit' }}</th><th class="value-cell">{{ @lang.quantity ?: 'Quantity' }}</th></tr>
+					<repeat group="{{ @army }}" value="{{ @unit }}">
+						<tr><td>{{ @unit.name }}</td><td class="value-cell">{{ @unit.count }}</td></tr>
+					</repeat>
+				</table>
+			</check>
+			<check if="{{ !count(@army) }}">
+				<div class="town-empty">{{ @lang.noResults ?: 'No results found.' }}</div>
+			</check>
+		</div>
+
+		<div class="town-card town-full">
+			<h3>{{ @lang.buildingsLabel ?: 'Binalar' }}</h3>
+			<table class="town-table">
+				<tr>
+					<th>{{ @lang.name ?: 'Name' }}</th>
+					<th class="value-cell">{{ @lang.level ?: 'Level' }}</th>
+					<th>{{ @lang.actions ?: 'Actions' }}</th>
+				</tr>
+				<repeat group="{{ @buildings }}" key="{{ @bid }}" value="{{ @bld }}">
+					<check if="{{ @bld.level > 0 }}">
+					<tr>
+						<td><span class="resource-name"><img src="{{ @imgs }}{{ @fimgs }}b{{ @bld.type }}.png" width="40" height="52"> {{ @bld.name }}</span></td>
+						<td class="value-cell">{{ @bld.level }}</td>
+						<td class="table-action"><a class="button" href="/town/{{ @town.id }}/building/{{ @bld.type }}">{{ @lang.view ?: 'View' }}</a></td>
+					</tr>
+					</check>
+				</repeat>
+			</table>
+		</div>
+	</div>
+
+	<div class="town-stats-footer">
+		<a class="button" href="/town/{{ @town.id }}">{{ @lang.back ?: 'Back' }}</a>
+	</div>
+</div>

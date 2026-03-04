@@ -1,0 +1,15 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.trainUnits ?: 'Train Units' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			{{ @lang.trainRedirect ?: 'To train units, visit the appropriate military building in your town.' }}
+			<a class="q_link" href="/town/{{ @town.id }}/building/15">{{ @lang.barracks ?: 'Barracks' }}</a>
+			<a class="q_link" href="/town/{{ @town.id }}/building/19">{{ @lang.stable ?: 'Stable' }}</a>
+			<a class="q_link" href="/town/{{ @town.id }}/building/20">{{ @lang.siegeShop ?: 'Siege Shop' }}</a>
+			<a class="q_link" href="/town/{{ @town.id }}/building/17">{{ @lang.blacksmith ?: 'Blacksmith' }}</a>
+		</td>
+	</tr>
+</table>
+<a class="q_link" href="/town/{{ @town.id }}">{{ @lang.back ?: 'Back' }}</a>

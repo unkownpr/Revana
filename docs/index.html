@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revana — Browser Strategy Game</title>
+  <meta name="description" content="Revana is a free, open-source browser-based strategy game engine inspired by classic titles like Travian. Build towns, forge alliances, and conquer the world." />
+  <meta property="og:title" content="Revana — Browser Strategy Game" />
+  <meta property="og:description" content="Build towns, forge alliances, and conquer the world." />
+  <meta property="og:type" content="website" />
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a24;
+      --surface2: #1e2433;
+      --accent: #c8a45a;
+      --accent2: #e8c878;
+      --text: #e8e0d0;
+      --muted: #8a8070;
+      --border: #2a3040;
+      --red: #c04040;
+      --green: #4a9060;
+      --blue: #4070b0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(13,15,20,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+    }
+
+    .nav-logo {
+      font-size: 1.4rem;
+      font-weight: bold;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      margin-left: 2rem;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,164,90,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(64,112,176,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 30% at 80% 90%, rgba(192,64,64,0.05) 0%, transparent 50%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200,164,90,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,164,90,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(200,164,90,0.12);
+      border: 1px solid rgba(200,164,90,0.3);
+      color: var(--accent);
+      padding: 0.3rem 1.2rem;
+      border-radius: 999px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 7rem);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-shadow: 0 0 60px rgba(200,164,90,0.4), 0 0 120px rgba(200,164,90,0.1);
+      position: relative;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: var(--muted);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-family: 'Arial', sans-serif;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .hero-desc {
+      max-width: 600px;
+      font-size: 1.1rem;
+      color: #b0a898;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0f14;
+    }
+    .btn-primary:hover {
+      background: var(--accent2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(200,164,90,0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      text-align: center;
+      color: var(--accent);
+      letter-spacing: 8px;
+      font-size: 1.2rem;
+      opacity: 0.4;
+      padding: 1rem 0;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 5rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+      font-size: 1rem;
+    }
+
+    /* ── FEATURES GRID ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(200,164,90,0.4);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .feature-text {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0;
+      overflow: hidden;
+      margin: 4rem 0;
+    }
+
+    .stat-item {
+      padding: 2rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+
+    .stat-number {
+      font-size: 2.5rem;
+      color: var(--accent);
+      font-weight: bold;
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    /* ── TECH STACK ── */
+    .tech-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tech-tag {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      font-family: 'Arial', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+
+    /* ── FACTIONS ── */
+    .factions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .faction-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .faction-card.empire { border-color: rgba(200,164,90,0.3); }
+    .faction-card.guild  { border-color: rgba(64,112,176,0.3); }
+    .faction-card.order  { border-color: rgba(192,64,64,0.3); }
+
+    .faction-emblem {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      margin: 0 auto 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+
+    .empire .faction-emblem { background: rgba(200,164,90,0.15); }
+    .guild  .faction-emblem { background: rgba(64,112,176,0.15); }
+    .order  .faction-emblem { background: rgba(192,64,64,0.15); }
+
+    .faction-name {
+      font-size: 1.2rem;
+      color: var(--text);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .faction-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* ── INSTALL STEPS ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(200,164,90,0.1);
+      border: 1px solid rgba(200,164,90,0.3);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-family: 'Arial', sans-serif;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .step-content p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-family: 'Arial', sans-serif;
+    }
+
+    code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1em 0.4em;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      color: var(--accent2);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-family: 'Arial', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    footer .footer-logo {
+      font-size: 1.5rem;
+      font-family: 'Georgia', serif;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: color 0.2s;
+    }
+    footer a:hover { color: var(--accent); }
+
+    .footer-links { margin: 1rem 0; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+      .step { flex-direction: column; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">Revana</a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#factions">Factions</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/unkownpr/Revana" target="_blank">GitHub</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <span class="hero-badge">Open Source · Browser Strategy Game</span>
+    <h1>Revana</h1>
+    <p class="hero-subtitle">Build · Conquer · Dominate</p>
+    <p class="hero-desc">
+      A classic browser-based strategy game engine. Build your empire town by town,
+      forge powerful alliances, wage war on your enemies, and leave your mark on
+      the world map.
+    </p>
+    <div class="hero-buttons">
+      <a class="btn btn-primary" href="https://github.com/unkownpr/Revana" target="_blank">
+        ★ View on GitHub
+      </a>
+      <a class="btn btn-secondary" href="#install">
+        Get Started
+      </a>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <span>▼</span>
+    </div>
+  </div>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- STATS -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-number">25+</span>
+        <span class="stat-label">Database Tables</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">34</span>
+        <span class="stat-label">Service Classes</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">299</span>
+        <span class="stat-label">Routes</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">7</span>
+        <span class="stat-label">Languages</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">3</span>
+        <span class="stat-label">Factions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <p class="section-label">Capabilities</p>
+    <h2 class="section-title">Everything a Strategy Game Needs</h2>
+    <p class="section-desc">
+      Revana ships with a complete game engine — from resource management to real-time
+      combat — all running on a standard PHP + MySQL stack.
+    </p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏰</div>
+        <div class="feature-title">Town Building</div>
+        <p class="feature-text">Build and upgrade 22 distinct building types across your towns. Manage granaries, barracks, blacksmiths, embassies, and more with a live construction queue.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚔️</div>
+        <div class="feature-title">Military System</div>
+        <p class="feature-text">Train 13 unique unit types — infantry, cavalry, archers, siege weapons, and naval units. Upgrade your army's stats, forge weapons, and dispatch your forces.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <div class="feature-title">Alliances & Wars</div>
+        <p class="feature-text">Form alliances with other players, establish pacts, declare wars, and coordinate attacks. Alliance forums keep your members organized.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <div class="feature-title">World Map</div>
+        <p class="feature-text">An interactive world map with plains, resource lands, and water tiles. Settle new towns, scout enemy territory, and launch coordinated campaigns.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <div class="feature-title">Economy & Market</div>
+        <p class="feature-text">Produce five resource types, manage storage limits, and trade with other players or NPC merchants through the marketplace system.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏆</div>
+        <div class="feature-title">Missions & Achievements</div>
+        <p class="feature-text">Daily and weekly missions keep players engaged. An achievement system rewards long-term progression and milestones.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Social Features</div>
+        <p class="feature-text">Built-in forums, real-time chat rooms, private messaging, and battle reports keep your community connected.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👑</div>
+        <div class="feature-title">Admin Panel</div>
+        <p class="feature-text">Full admin dashboard: manage users, configure game seasons, spawn barbarians, edit the world map, manage premium products, and monitor game state.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💎</div>
+        <div class="feature-title">Premium System</div>
+        <p class="feature-text">Optional premium store with configurable packages. Monetize your server while keeping the game accessible for free players.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACTIONS -->
+  <section id="factions">
+    <p class="section-label">Choose Your Path</p>
+    <h2 class="section-title">Three Factions</h2>
+    <p class="section-desc">
+      Each faction offers a distinct playstyle with unique buildings, units, and bonuses.
+    </p>
+    <div class="factions-grid">
+      <div class="faction-card empire">
+        <div class="faction-emblem">⚜️</div>
+        <div class="faction-name">The Empire</div>
+        <p class="faction-desc">Masters of order and discipline. The Empire excels at defense and long-term economic growth. Their superior infrastructure makes sieges costly for any attacker.</p>
+      </div>
+      <div class="faction-card guild">
+        <div class="faction-emblem">⚓</div>
+        <div class="faction-name">The Guild</div>
+        <p class="faction-desc">Cunning merchants and sea traders. The Guild leverages trade and naval power to outmaneuver opponents. Lower unit costs give them an edge in prolonged conflicts.</p>
+      </div>
+      <div class="faction-card order">
+        <div class="faction-emblem">🔥</div>
+        <div class="faction-name">The Order</div>
+        <p class="faction-desc">Fierce warriors driven by conquest. The Order fields the most powerful offensive units in the game. High costs, but unmatched on the battlefield.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section>
+    <p class="section-label">Technology</p>
+    <h2 class="section-title">Built on a Solid Stack</h2>
+    <p class="section-desc">
+      Revana runs on battle-tested, widely-supported technologies — easy to self-host
+      on any standard web server.
+    </p>
+    <div class="tech-list">
+      <span class="tech-tag">PHP 8.0+</span>
+      <span class="tech-tag">Fat-Free Framework</span>
+      <span class="tech-tag">MariaDB / MySQL</span>
+      <span class="tech-tag">PSR-4 Autoloading</span>
+      <span class="tech-tag">Composer</span>
+      <span class="tech-tag">Vanilla JavaScript</span>
+      <span class="tech-tag">CSS3</span>
+      <span class="tech-tag">CSRF Protection</span>
+      <span class="tech-tag">Role-Based Auth</span>
+      <span class="tech-tag">MVC Architecture</span>
+      <span class="tech-tag">Service Layer Pattern</span>
+      <span class="tech-tag">i18n (7 languages)</span>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install">
+    <p class="section-label">Quick Start</p>
+    <h2 class="section-title">Get Running in Minutes</h2>
+    <p class="section-desc">
+      Revana is designed to be self-hosted. A standard LAMP/LEMP stack is all you need.
+    </p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Clone the Repository</h4>
+          <p><code>git clone https://github.com/unkownpr/Revana.git</code> — then run <code>composer install</code> to fetch dependencies.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Create the Database</h4>
+          <p>Create a new MySQL/MariaDB database, then import <code>revana.sql</code> to set up all tables and seed data.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Configure the App</h4>
+          <p>Copy <code>config.example.ini</code> to <code>config.ini</code> and fill in your database credentials and game settings.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Run the Installer</h4>
+          <p>Navigate to <code>/install</code> in your browser to complete the setup wizard, create your admin account, and configure the first season.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <h4>Start Playing</h4>
+          <p>That's it. Register players, configure the map, and launch your server. Invite your community and let the conquest begin.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦ ✦ ✦</div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">Revana</span>
+    <div class="footer-links">
+      <a href="https://github.com/unkownpr/Revana" target="_blank">GitHub</a>
+      <a href="https://github.com/unkownpr/Revana/issues" target="_blank">Issues</a>
+      <a href="https://github.com/unkownpr/Revana/blob/main/LICENSE" target="_blank">License</a>
+      <a href="https://github.com/unkownpr/Revana/blob/main/README.md" target="_blank">Docs</a>
+    </div>
+    <p style="margin-top:1rem;">
+      &copy; 2024 unkownpr &mdash; Free to use. All rights reserved.
+    </p>
+  </footer>
+
+</body>
+</html>

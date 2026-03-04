@@ -1,0 +1,30 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.createAlliance ?: 'Create Alliance' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/alliance/create" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.allianceName ?: 'Alliance Name' }}
+						<input class="textbox" type="text" name="name" maxlength="30">
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.allianceTag ?: 'Alliance Tag' }}
+						<input class="textbox" type="text" name="tag" maxlength="5">
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.description ?: 'Description' }}<br>
+						<textarea class="textbox" name="description" rows="4" cols="40"></textarea>
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" name="create" value="{{ @lang.create ?: 'Create' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>

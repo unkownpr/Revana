@@ -1,0 +1,172 @@
+<style>
+.inv-shell {
+	display: grid;
+	gap: 14px;
+}
+
+.inv-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	padding: 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.18);
+}
+
+.inv-title {
+	margin: 0;
+	font-size: var(--font-size-lg);
+	color: var(--color-text-heading);
+}
+
+.inv-balance {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border: 1px solid rgba(199,154,57,0.48);
+	border-radius: 999px;
+	background: rgba(199,154,57,0.12);
+	color: var(--color-accent);
+	font-weight: 700;
+}
+
+.inv-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+
+.inv-card-head {
+	padding: 10px 12px;
+	font-weight: 700;
+	color: var(--color-text-heading);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	background: rgba(0,0,0,0.2);
+}
+
+.inv-card-body {
+	padding: 12px;
+}
+
+.inv-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 12px;
+}
+
+.inv-item {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.14);
+	padding: 10px;
+	display: grid;
+	gap: 8px;
+}
+
+.inv-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.inv-badge {
+	display: inline-flex;
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: var(--font-size-xs);
+}
+
+.inv-badge-active {
+	border: 1px solid rgba(84,166,101,0.48);
+	background: rgba(84,166,101,0.16);
+	color: #caefcf;
+}
+
+.inv-badge-slot {
+	border: 1px solid rgba(199,154,57,0.38);
+	background: rgba(199,154,57,0.12);
+	color: var(--color-accent);
+}
+
+.inv-btn {
+	padding: 6px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, rgba(78,54,32,0.95), rgba(52,35,22,0.95));
+	color: var(--color-text);
+	cursor: pointer;
+}
+
+.inv-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+</style>
+
+<div class="inv-shell">
+	<div class="inv-head">
+		<h2 class="inv-title">{{ @lang.inventory ?: 'Inventory' }}</h2>
+		<div class="inv-balance">&#9670; {{ @nav_premium_balance ?: @premium_balance ?: 0 }} {{ @lang.gems ?: 'Gems' }}</div>
+	</div>
+
+	<div class="inv-card">
+		<div class="inv-card-head">{{ @lang.activeCosmetics ?: 'Active Cosmetics' }}</div>
+		<div class="inv-card-body">
+			<check if="{{ count(@active_cosmetics ?: []) }}">
+				<repeat group="{{ @active_cosmetics }}" key="{{ @slot }}" value="{{ @item }}">
+					<div class="inv-row">
+						<span class="inv-badge inv-badge-slot">{{ @slot }}</span>
+						<strong>{{ @item.name }}</strong>
+					</div>
+				</repeat>
+			</check>
+			<check if="{{ !count(@active_cosmetics ?: []) }}">
+				<div class="text-muted">{{ @lang.noActiveCosmetics ?: 'No active cosmetic yet.' }}</div>
+			</check>
+		</div>
+	</div>
+
+	<div class="inv-card">
+		<div class="inv-card-head">{{ @lang.inventoryItems ?: 'Your Items' }}</div>
+		<div class="inv-card-body">
+			<check if="{{ count(@inventory_items ?: []) }}">
+				<div class="inv-grid">
+					<repeat group="{{ @inventory_items }}" value="{{ @it }}">
+						<div class="inv-item">
+							<div class="inv-row">
+								<strong>{{ @it.name }}</strong>
+								<span class="inv-badge inv-badge-slot">{{ @it.slot }}</span>
+							</div>
+							<div class="text-muted">{{ @it.description }}</div>
+							<div class="inv-row">
+								<check if="{{ @it.is_active }}">
+									<span class="inv-badge inv-badge-active">{{ @lang.active ?: 'Active' }}</span>
+								</check>
+								<form action="/premium/inventory/activate" method="post">
+									<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+									<input type="hidden" name="product_id" value="{{ @it.product_id }}">
+									<check if="{{ @it.is_active }}">
+										<true><button type="submit" class="inv-btn" disabled>{{ @lang.activate ?: 'Activate' }}</button></true>
+										<false><button type="submit" class="inv-btn">{{ @lang.activate ?: 'Activate' }}</button></false>
+									</check>
+								</form>
+							</div>
+						</div>
+					</repeat>
+				</div>
+			</check>
+			<check if="{{ !count(@inventory_items ?: []) }}">
+				<div class="text-muted">{{ @lang.inventoryEmpty ?: 'Your inventory is empty.' }}</div>
+			</check>
+		</div>
+	</div>
+
+	<div>
+		<a class="q_link" href="/premium/store">{{ @lang.backToStore ?: 'Back to Store' }}</a>
+	</div>
+</div>

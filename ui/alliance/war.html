@@ -1,0 +1,107 @@
+<style>
+.war-page { max-width: 760px; margin: 0 auto; }
+.war-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.war-card { background:rgba(22,14,10,0.7); border:1px solid rgba(136,103,65,0.4); border-radius:10px; padding:18px; margin-bottom:18px; }
+.war-info-row { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:14px; }
+.war-info-item { background:rgba(0,0,0,0.2); border-radius:6px; padding:8px 14px; min-width:140px; }
+.war-info-label { font-size:0.75em; color:#a8bdcc; }
+.war-info-value { font-size:1em; color:#e8c97e; font-weight:600; }
+.war-score-bar { display:flex; align-items:center; gap:10px; margin:12px 0; }
+.war-score-total { flex:1; background:rgba(0,0,0,0.3); border-radius:4px; height:18px; overflow:hidden; position:relative; }
+.war-score-fill-left { height:100%; background:linear-gradient(90deg,#4a7fa5,#6fa8c9); border-radius:4px 0 0 4px; }
+.war-score-fill-right { height:100%; background:linear-gradient(270deg,#a54a4a,#c96f6f); border-radius:0 4px 4px 0; float:right; }
+.war-score-label { font-size:0.88em; color:#e8c97e; font-weight:700; width:60px; text-align:center; }
+.war-score-name { font-size:0.85em; color:#ddd; width:120px; }
+.war-score-name.right { text-align:right; }
+.score-table { width:100%; border-collapse:collapse; }
+.score-table th { text-align:left; padding:7px 10px; font-size:0.8em; color:#a8bdcc; border-bottom:1px solid rgba(136,103,65,0.3); }
+.score-table td { padding:8px 10px; font-size:0.88em; border-bottom:1px solid rgba(255,255,255,0.05); }
+.declare-form { margin-top:20px; }
+.declare-form h3 { color:#e8c97e; margin-bottom:14px; }
+.form-group { margin-bottom:12px; }
+.form-label { display:block; color:#a8bdcc; font-size:0.85em; margin-bottom:5px; }
+.form-input { background:rgba(0,0,0,0.3); border:1px solid rgba(136,103,65,0.4); color:#ddd; padding:7px 12px; border-radius:6px; width:200px; }
+.btn-war { background:linear-gradient(135deg,#a54a4a,#c96f6f); border:none; color:#fff; padding:9px 22px; border-radius:6px; cursor:pointer; font-weight:600; margin-top:8px; }
+.no-war { text-align:center; padding:30px; color:#a8bdcc; }
+</style>
+
+<div class="war-page">
+  <div class="war-header">
+    <h2>{{ @lang.allianceWar ?: 'Alliance War' }}</h2>
+    <a href="/alliance/{{ @alliance_id }}" style="color:#c8a96e;font-size:0.9em;">&larr; {{ @lang.back ?: 'Back' }}</a>
+  </div>
+
+  <check if="{{ @war }}">
+    <true>
+      <div class="war-card">
+        <div class="war-info-row">
+          <div class="war-info-item">
+            <div class="war-info-label">{{ @lang.status ?: 'Status' }}</div>
+            <div class="war-info-value" style="color:#e87c5a;">&#9876; {{ @lang.active ?: 'Active' }}</div>
+          </div>
+          <div class="war-info-item">
+            <div class="war-info-label">{{ @lang.warEnds ?: 'War Ends' }}</div>
+            <div class="war-info-value">{{ @war.end_time }}</div>
+          </div>
+        </div>
+
+        <div class="war-score-bar">
+          <span class="war-score-name">{{ @lang.challenger ?: 'Challenger' }}</span>
+          <span class="war-score-label">{{ @war.challenger_score }}</span>
+          <div class="war-score-total">
+            <div class="war-score-fill-left" style="width:{{ (@war.challenger_score + @war.defender_score) > 0 ? round(100 * @war.challenger_score / (@war.challenger_score + @war.defender_score)) : 50 }}%"></div>
+          </div>
+          <span class="war-score-label">{{ @war.defender_score }}</span>
+          <span class="war-score-name right">{{ @lang.defender ?: 'Defender' }}</span>
+        </div>
+
+        <check if="{{ count(@war_scores) }}">
+          <true>
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th>{{ @lang.player ?: 'Player' }}</th>
+                  <th>{{ @lang.alliance ?: 'Alliance' }}</th>
+                  <th>{{ @lang.warScore ?: 'Score' }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <repeat group="{{ @war_scores }}" value="{{ @ws }}">
+                  <tr>
+                    <td><a href="/profile/{{ @ws.user_id }}">{{ @ws.username }}</a></td>
+                    <td>{{ @ws.alliance_id }}</td>
+                    <td>{{ @ws.score }}</td>
+                  </tr>
+                </repeat>
+              </tbody>
+            </table>
+          </true>
+          <false>
+            <div style="color:#a8bdcc;font-size:0.88em;margin-top:10px;">{{ @lang.noData ?: 'No scoring yet.' }}</div>
+          </false>
+        </check>
+      </div>
+    </true>
+    <false>
+      <div class="war-card no-war">{{ @lang.noActiveWar ?: 'No active war.' }}</div>
+
+      <check if="{{ @is_founder }}">
+        <div class="war-card declare-form">
+          <h3>{{ @lang.declareWar ?: 'Declare War' }}</h3>
+          <form method="POST" action="/alliance/{{ @alliance_id }}/war/declare">
+            <input type="hidden" name="csrf" value="{{ @csrf }}">
+            <div class="form-group">
+              <label class="form-label">{{ @lang.targetAlliance ?: 'Target Alliance ID' }}</label>
+              <input type="number" name="defender_id" class="form-input" min="1" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ @lang.warDuration ?: 'Duration (days)' }}</label>
+              <input type="number" name="duration_days" class="form-input" value="7" min="1" max="30">
+            </div>
+            <button type="submit" class="btn-war">&#9876; {{ @lang.declareWar ?: 'Declare War' }}</button>
+          </form>
+        </div>
+      </check>
+    </false>
+  </check>
+</div>

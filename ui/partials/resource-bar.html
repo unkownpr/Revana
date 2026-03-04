@@ -1,0 +1,17 @@
+<div class="resource-bar">
+	<span class="resource-item" data-tooltip="{{ @lang.crop ?: 'Crop' }}">
+		<img src="{{ @imgs }}{{ @fimgs }}00.gif" alt=""> {{ floor(@resources.crop) }}/{{ @limits.crop }}
+	</span>
+	<span class="resource-item" data-tooltip="{{ @lang.lumber ?: 'Lumber' }}">
+		<img src="{{ @imgs }}{{ @fimgs }}01.gif" alt=""> {{ floor(@resources.lumber) }}/{{ @limits.resources }}
+	</span>
+	<span class="resource-item" data-tooltip="{{ @lang.stone ?: 'Stone' }}">
+		<img src="{{ @imgs }}{{ @fimgs }}02.gif" alt=""> {{ floor(@resources.stone) }}/{{ @limits.resources }}
+	</span>
+	<span class="resource-item" data-tooltip="{{ @lang.iron ?: 'Iron' }}">
+		<img src="{{ @imgs }}{{ @fimgs }}03.gif" alt=""> {{ floor(@resources.iron) }}/{{ @limits.resources }}
+	</span>
+	<span class="resource-item" data-tooltip="{{ @lang.gold ?: 'Gold' }}">
+		<img src="{{ @imgs }}{{ @fimgs }}04.gif" alt=""> {{ floor(@resources.gold) }}/{{ @limits.gold }}
+	</span>
+</div>

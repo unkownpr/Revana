@@ -1,0 +1,223 @@
+<style>
+.dispatch-shell { text-align: left; }
+
+.dispatch-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--space-md);
+	flex-wrap: wrap;
+	margin-bottom: var(--space-md);
+	padding: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72));
+}
+
+.dispatch-title { margin: 0; color: var(--color-text-heading); font-size: var(--font-size-xl); }
+.dispatch-sub { margin: 4px 0 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+
+.dispatch-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-md);
+}
+
+.dispatch-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+
+.dispatch-card h3 {
+	margin: 0;
+	padding: 10px 12px;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-heading);
+	background: rgba(0,0,0,0.22);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+}
+
+.dispatch-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.dispatch-table th,
+.dispatch-table td {
+	padding: 9px 12px;
+	border-bottom: 1px solid rgba(199,154,57,0.14);
+	text-align: left;
+}
+
+.dispatch-table th {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.val { text-align: right; color: var(--color-accent); font-weight: 700; }
+.full { grid-column: 1 / -1; }
+
+.dispatch-shell .textbox,
+.dispatch-shell .dropdown {
+	width: 100%;
+	max-width: 220px;
+	padding: 8px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(20,13,9,0.8);
+	color: var(--color-text);
+	font-family: var(--font-family);
+}
+
+.coord-row {
+	display: flex;
+	gap: var(--space-sm);
+	flex-wrap: wrap;
+}
+
+.coord-row .textbox {
+	max-width: 120px;
+}
+
+.hint {
+	color: var(--color-text-muted);
+	font-size: var(--font-size-xs);
+	margin-top: 6px;
+}
+
+.actions-row {
+	display: flex;
+	gap: var(--space-sm);
+	flex-wrap: wrap;
+	margin-top: var(--space-md);
+}
+
+.dispatch-shell .button,
+.dispatch-shell button.button,
+.dispatch-shell a.button {
+	display: inline-block;
+	text-decoration: none;
+	padding: 8px 14px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.dispatch-shell .button:hover,
+.dispatch-shell button.button:hover,
+.dispatch-shell a.button:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: linear-gradient(180deg, rgba(199,154,57,0.15), rgba(0,0,0,0.18));
+}
+
+.dispatch-btn {
+	min-width: 180px;
+}
+
+@media (max-width: 900px) {
+	.dispatch-grid { grid-template-columns: 1fr; }
+	.dispatch-shell .textbox,
+	.dispatch-shell .dropdown { max-width: 100%; }
+}
+</style>
+
+<div class="dispatch-shell">
+	<div class="dispatch-header">
+		<div>
+			<h2 class="dispatch-title">{{ @lang.dispatch ?: 'Dispatch Army' }}</h2>
+			<p class="dispatch-sub">{{ @town.name }}</p>
+		</div>
+	</div>
+
+	<check if="{{ @target_camp_prefill }}">
+	<div style="background:rgba(140,20,20,0.2);border:1px solid rgba(180,60,60,0.5);border-radius:8px;padding:10px 16px;margin-bottom:14px;font-size:0.88em;color:#e07070;">
+		&#9760; {{ @lang.barbarianCamps ?: 'Barbarian Camp' }} Lv.{{ @target_camp_prefill.level }}
+		— ({{ @target_camp_prefill.x }}, {{ @target_camp_prefill.y }})
+	</div>
+	</check>
+
+	<form action="/town/{{ @town.id }}/dispatch" method="post">
+		<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+		<check if="{{ @target_camp_prefill }}">
+		<input type="hidden" name="target_camp_id" value="{{ @target_camp_prefill.id }}">
+		</check>
+
+		<div class="dispatch-grid">
+			<div class="dispatch-card">
+				<h3>{{ @lang.selectUnits ?: 'Select Units' }}</h3>
+				<table class="dispatch-table">
+					<tr>
+						<th>{{ @lang.unitType ?: 'Unit' }}</th>
+						<th class="val">{{ @lang.available ?: 'Available' }}</th>
+						<th class="val">{{ @lang.send ?: 'Send' }}</th>
+					</tr>
+					<repeat group="{{ @army }}" value="{{ @unit }}">
+					<check if="{{ @unit.count > 0 }}">
+					<tr>
+						<td>{{ @unit.name }}</td>
+						<td class="val">{{ @unit.count }}</td>
+						<td class="val"><input class="textbox" type="text" name="units[{{ @unit.id }}]" value="0"></td>
+					</tr>
+					</check>
+					</repeat>
+				</table>
+			</div>
+
+			<div class="dispatch-card">
+				<h3>{{ @lang.sendResources ?: 'Send Resources' }}</h3>
+				<table class="dispatch-table">
+					<tr><td>{{ @lang.crop ?: 'Crop' }}</td><td class="val">{{ floor(@resources.crop) }}</td><td class="val"><input class="textbox" type="text" name="res_crop" value="0"></td></tr>
+					<tr><td>{{ @lang.lumber ?: 'Lumber' }}</td><td class="val">{{ floor(@resources.lumber) }}</td><td class="val"><input class="textbox" type="text" name="res_lumber" value="0"></td></tr>
+					<tr><td>{{ @lang.stone ?: 'Stone' }}</td><td class="val">{{ floor(@resources.stone) }}</td><td class="val"><input class="textbox" type="text" name="res_stone" value="0"></td></tr>
+					<tr><td>{{ @lang.iron ?: 'Iron' }}</td><td class="val">{{ floor(@resources.iron) }}</td><td class="val"><input class="textbox" type="text" name="res_iron" value="0"></td></tr>
+				</table>
+				<div class="hint">{{ @lang.gold ?: 'Gold' }} {{ @lang.notAvailable ?: 'cannot be sent.' }}</div>
+			</div>
+
+			<div class="dispatch-card full">
+				<h3>{{ @lang.target ?: 'Target' }}</h3>
+				<table class="dispatch-table">
+					<tr>
+						<td>{{ @lang.targetTown ?: 'Target town name' }}</td>
+						<td><input class="textbox" type="text" name="target" value="{{ @target_name_prefill }}"></td>
+					</tr>
+					<tr>
+						<td>{{ @lang.orCoords ?: 'Or coordinates (x, y)' }}</td>
+						<td>
+							<div class="coord-row">
+								<input class="textbox" type="text" name="target_x" value="{{ @target_x_prefill > 0 ? @target_x_prefill : '' }}" placeholder="X">
+								<input class="textbox" type="text" name="target_y" value="{{ @target_y_prefill > 0 ? @target_y_prefill : '' }}" placeholder="Y">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>{{ @lang.actionType ?: 'Action' }}</td>
+						<td>
+							<select class="dropdown" name="action">
+								<option value="reinforce">{{ @lang.reinforce ?: 'Reinforce' }}</option>
+								<option value="attack">{{ @lang.attack ?: 'Attack' }}</option>
+								<option value="raid">{{ @lang.raid ?: 'Raid' }}</option>
+								<option value="spy">{{ @lang.spy ?: 'Spy' }}</option>
+							</select>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<div class="actions-row">
+			<button class="button dispatch-btn" type="submit" name="dispatch">{{ @lang.dispatch ?: 'Dispatch' }}</button>
+			<a class="button" href="/town/{{ @town.id }}">{{ @lang.back ?: 'Back' }}</a>
+		</div>
+	</form>
+</div>

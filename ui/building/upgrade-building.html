@@ -1,0 +1,326 @@
+<style>
+.bshell { text-align: left; }
+.bshell-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-md); padding: 14px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72)); }
+.bshell-header-left { display: flex; align-items: center; gap: 14px; }
+.bshell-header-img  { width: 52px; height: 66px; object-fit: contain; flex-shrink: 0; }
+.bshell-title { margin: 0; color: var(--color-text-heading); font-size: var(--font-size-xl); }
+.bshell-sub   { margin: 3px 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.bshell-level { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--color-border-light); background: rgba(0,0,0,0.22); color: var(--color-accent); font-weight: 700; white-space: nowrap; }
+.bshell-top { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+.bpanel { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: rgba(0,0,0,0.18); overflow: hidden; }
+.bpanel-title { margin: 0; padding: 10px 14px; font-size: var(--font-size-sm); color: var(--color-text-heading); background: rgba(0,0,0,0.22); border-bottom: 1px solid rgba(199,154,57,0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+.bpanel-body  { padding: 14px; }
+
+.cost-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.cost-chip { display: flex; flex-direction: column; align-items: center; gap: 2px; background: rgba(0,0,0,0.2); border: 1px solid rgba(199,154,57,0.12); border-radius: var(--radius-sm); padding: 6px 4px; font-size: 11px; }
+.cost-chip img { width: 18px; height: 18px; }
+.cost-chip-label { color: var(--color-text-muted); font-size: 9px; text-transform: uppercase; }
+.cost-chip-val   { font-weight: 700; color: var(--color-accent); }
+.cost-chip.zero  { opacity: 0.35; }
+
+.btn-upgrade { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(61,184,106,0.55); border-radius: var(--radius-sm); background: linear-gradient(180deg, rgba(50,140,75,0.75), rgba(30,90,50,0.85)); color: #d4fce2; font-family: var(--font-family); font-size: var(--font-size-sm); font-weight: 700; cursor: pointer; text-align: center; }
+.btn-upgrade:hover { background: linear-gradient(180deg, rgba(60,165,90,0.9), rgba(38,110,60,0.95)); }
+.btn-disabled { display: block; width: 100%; padding: 9px 0; border: 1px solid rgba(120,120,120,0.2); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); color: var(--color-text-muted); font-size: 11px; font-weight: 700; text-align: center; cursor: not-allowed; }
+.btn-max { display: block; width: 100%; padding: 9px 0; border: 1px solid rgba(199,154,57,0.3); border-radius: var(--radius-sm); background: rgba(199,154,57,0.1); color: var(--color-accent); font-size: 11px; font-weight: 700; text-align: center; }
+.btn-back { display: inline-block; text-decoration: none; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt)); color: var(--color-text-heading); font-size: var(--font-size-sm); font-weight: 700; }
+.btn-back:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+/* ── Section Heading ───────────────────────────────────────── */
+.section-heading { display: flex; align-items: center; gap: 10px; margin: var(--space-md) 0 var(--space-sm); }
+.section-heading h3 { margin: 0; font-size: var(--font-size-md); color: var(--color-text-heading); }
+.section-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(199,154,57,0.35), transparent); }
+
+/* ── Not Built Banner ──────────────────────────────────────── */
+.not-built-banner { padding: 20px; text-align: center; border: 1px solid rgba(199,154,57,0.2); border-radius: var(--radius-md); background: rgba(0,0,0,0.2); color: var(--color-text-muted); margin-bottom: var(--space-md); }
+
+/* ── Unit Research Cards ───────────────────────────────────── */
+.research-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-md); }
+
+.research-card { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(160deg, rgba(45,30,15,0.75), rgba(25,16,8,0.85)); overflow: hidden; }
+.research-card-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(199,154,57,0.1); }
+.research-card-img  { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+.research-card-name { margin: 0; font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-heading); }
+.research-card-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+/* Stat row: label + bar + value */
+.stat-row { display: flex; align-items: center; gap: 8px; }
+.stat-row-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-muted); width: 28px; flex-shrink: 0; }
+.stat-bar-wrap  { flex: 1; height: 6px; background: rgba(0,0,0,0.3); border-radius: 999px; overflow: hidden; }
+.stat-bar       { height: 100%; border-radius: 999px; }
+.bar-hp  { background: linear-gradient(90deg, #3db86a, #62d48a); }
+.bar-atk { background: linear-gradient(90deg, #c84040, #f07070); }
+.bar-def { background: linear-gradient(90deg, #3060c8, #6090f0); }
+.stat-row-val { font-size: 11px; font-weight: 700; color: var(--color-accent); width: 30px; text-align: right; }
+.stat-row-level { font-size: 9px; color: var(--color-text-muted); margin-left: 2px; }
+
+.upgrade-actions { display: flex; flex-direction: column; gap: 5px; padding: 8px 12px; border-top: 1px solid rgba(199,154,57,0.08); }
+.upg-btn { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border: 1px solid rgba(199,154,57,0.3); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); cursor: pointer; font-family: var(--font-family); font-size: 11px; color: var(--color-text-heading); transition: background 0.15s; }
+.upg-btn:hover { background: rgba(199,154,57,0.1); border-color: var(--color-accent); }
+.upg-btn-label { font-weight: 700; }
+.upg-btn-cost  { color: var(--color-text-muted); font-size: 10px; }
+.upg-btn.hp    { border-left: 3px solid #3db86a; }
+.upg-btn.atk   { border-left: 3px solid #c84040; }
+.upg-btn.def   { border-left: 3px solid #3060c8; }
+.upg-btn.maxed { opacity: 0.4; cursor: default; }
+.upg-btn-detail { display: block; text-align: left; padding: 8px 10px; }
+.upg-btn-detail .upg-btn-label { display: block; margin-bottom: 2px; }
+.upg-btn-detail .upg-btn-cost { display: block; white-space: normal; line-height: 1.35; }
+.upgrading-badge { display: inline-block; font-size: 10px; padding: 3px 8px; background: rgba(199,154,57,0.15); color: #e8bc60; border: 1px solid rgba(199,154,57,0.3); border-radius: 999px; }
+
+/* ── Queue ─────────────────────────────────────────────────── */
+.queue-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-md); }
+.queue-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(0,0,0,0.2); border: 1px solid rgba(199,154,57,0.15); border-radius: var(--radius-sm); }
+.queue-item-name { font-weight: 700; color: var(--color-text-heading); font-size: var(--font-size-sm); flex: 1; }
+.queue-tree-badge { font-size: 10px; padding: 2px 7px; border-radius: 999px; }
+.tree-hp  { background: rgba(61,184,106,0.2); color: #62d48a; border: 1px solid rgba(61,184,106,0.3); }
+.tree-atk { background: rgba(200,64,64,0.2); color: #f07070; border: 1px solid rgba(200,64,64,0.3); }
+.tree-def { background: rgba(48,96,200,0.2); color: #6090f0; border: 1px solid rgba(48,96,200,0.3); }
+.queue-item-time { font-size: var(--font-size-xs); color: var(--color-accent); }
+.queue-cancel-btn { font-size: 11px; color: #d59f67; background: none; border: 1px solid rgba(201,96,73,0.3); border-radius: 4px; padding: 2px 7px; cursor: pointer; font-family: var(--font-family); }
+.queue-cancel-btn:hover { border-color: rgba(201,96,73,0.6); color: #f3c9b8; }
+
+@media (max-width: 720px) { .bshell-top { grid-template-columns: 1fr; } .research-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="bshell">
+
+	<div class="bshell-header">
+		<div class="bshell-header-left">
+			<img class="bshell-header-img" src="{{ @imgs }}{{ @fimgs }}b{{ @building.slot }}.png" alt="{{ @building.name }}">
+			<div>
+				<h2 class="bshell-title">{{ @building.name }}</h2>
+				<p class="bshell-sub">{{ @building.description }}</p>
+			</div>
+		</div>
+		<div class="bshell-level">{{ @lang.level ?: 'Level' }} {{ @building.level }} / {{ @building.max_level }}</div>
+	</div>
+
+	<!-- Üst Satır -->
+	<div class="bshell-top">
+		<div class="bpanel">
+			<p class="bpanel-title">📊 {{ @lang.statistics ?: 'Info' }}</p>
+			<div class="bpanel-body" style="display:flex;flex-direction:column;gap:8px;">
+				<div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);">
+					<span style="color:var(--color-text-muted);">{{ @lang.level ?: 'Level' }}</span>
+					<strong style="color:var(--color-accent);">{{ @building.level }} / {{ @building.max_level }}</strong>
+				</div>
+				<check if="{{ @building.slot == 16 }}">
+					<div style="font-size:11px;color:var(--color-text-muted);line-height:1.5;">{{ @lang.hpResearchHint ?: 'Runs HP research and increases unit hit points.' }}</div>
+				</check>
+				<check if="{{ @building.slot == 17 }}">
+					<div style="font-size:11px;color:var(--color-text-muted);line-height:1.5;">{{ @lang.atkDefResearchHint ?: 'Runs ATK and DEF research and increases attack and defense.' }}</div>
+				</check>
+			</div>
+		</div>
+
+		<div class="bpanel">
+			<p class="bpanel-title">⬆️ {{ @lang.upgrade ?: 'Upgrade' }}</p>
+			<div class="bpanel-body">
+				<check if="{{ @building.level < @building.max_level }}">
+					<div class="cost-chips">
+						<div class="cost-chip{{ @upgrade_cost.crop == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+							<span class="cost-chip-label">{{ @lang.crop ?: 'Crop' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.crop }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.lumber == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/1.png" alt="{{ @lang.lumber ?: 'Lumber' }}">
+							<span class="cost-chip-label">{{ @lang.lumber ?: 'Lumber' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.lumber }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.stone == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/2.png" alt="{{ @lang.stone ?: 'Stone' }}">
+							<span class="cost-chip-label">{{ @lang.stone ?: 'Stone' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.stone }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.iron == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+							<span class="cost-chip-label">{{ @lang.iron ?: 'Iron' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.iron }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.gold == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/4.png" alt="{{ @lang.gold ?: 'Gold' }}">
+							<span class="cost-chip-label">{{ @lang.gold ?: 'Gold' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.gold }}</span>
+						</div>
+						<div class="cost-chip">
+							<span style="font-size:18px">⏱</span>
+							<span class="cost-chip-label">{{ @lang.time ?: 'Time' }}</span>
+							<span class="cost-chip-val" style="font-size:10px">{{ @upgrade_cost.time }}</span>
+						</div>
+					</div>
+					<check if="{{ @can_upgrade }}">
+						<form id="upgradeForm" action="/town/{{ @town.id }}/building/{{ @building.slot }}" method="post">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="action" value="upgrade">
+							<button class="btn-upgrade" type="submit" id="upgradeSubmitBtn">⬆️ {{ @lang.toLevel ?: 'To Level' }} {{ @building.level + 1 }}</button>
+						</form>
+					</check>
+					<check if="{{ !@can_upgrade }}"><div class="btn-disabled">❌ {{ @lang.notEnoughRes ?: 'Not enough resources' }}</div></check>
+				</check>
+				<check if="{{ @building.level >= @building.max_level }}">
+					<div class="btn-max">✅ {{ @lang.maxLevel ?: 'Max level' }}</div>
+				</check>
+			</div>
+		</div>
+	</div>
+
+	<!-- ── Bina İnşa Edilmemiş ────────────────────────────── -->
+	<check if="{{ @building.level == 0 }}">
+		<div class="not-built-banner">
+			🔒 {{ @lang.constrBuilding ?: 'You need to build this structure first.' }}
+			<br><a class="btn-back" style="margin-top:10px;display:inline-block;" href="/town/{{ @town.id }}/building/7">🏛 {{ @lang.goToHall ?: 'Go to Hall' }}</a>
+		</div>
+	</check>
+
+	<!-- ── Araştırma Kartları ─────────────────────────────── -->
+	<check if="{{ @building.level > 0 && count(@upgrade_units) }}">
+
+		<check if="{{ @building.slot == 16 }}">
+			<div class="section-heading">
+				<h3>💚 {{ @lang.hitPoints ?: 'Hit Points (HP) Research' }}</h3>
+				<div class="section-line"></div>
+			</div>
+		</check>
+		<check if="{{ @building.slot == 17 }}">
+			<div class="section-heading">
+				<h3>⚔️ {{ @lang.weapon ?: 'Attack & Defense Research' }}</h3>
+				<div class="section-line"></div>
+			</div>
+		</check>
+
+		<div class="research-grid">
+			<repeat group="{{ @upgrade_units }}" value="{{ @uu }}">
+				<div class="research-card">
+					<div class="research-card-head">
+						<img class="research-card-img" src="{{ @imgs }}{{ @fimgs }}2{{ @uu.type }}.gif" alt="{{ @uu.name }}">
+						<p class="research-card-name">{{ @uu.name }}</p>
+					</div>
+					<div class="research-card-body">
+						<!-- HP Bar -->
+						<div class="stat-row">
+							<span class="stat-row-label" style="color:#62d48a;">HP</span>
+							<div class="stat-bar-wrap"><div class="stat-bar bar-hp" style="width:{{ min(100, @uu.u_level * 10) }}%"></div></div>
+							<span class="stat-row-val">{{ @uu.current_hp }}</span>
+							<span class="stat-row-level">Lv{{ @uu.u_level }}</span>
+						</div>
+						<!-- ATK Bar -->
+						<div class="stat-row">
+							<span class="stat-row-label" style="color:#f07070;">ATK</span>
+							<div class="stat-bar-wrap"><div class="stat-bar bar-atk" style="width:{{ min(100, @uu.w_level * 10) }}%"></div></div>
+							<span class="stat-row-val">{{ @uu.current_atk }}</span>
+							<span class="stat-row-level">Lv{{ @uu.w_level }}</span>
+						</div>
+						<!-- DEF Bar -->
+						<div class="stat-row">
+							<span class="stat-row-label" style="color:#6090f0;">DEF</span>
+							<div class="stat-bar-wrap"><div class="stat-bar bar-def" style="width:{{ min(100, @uu.a_level * 10) }}%"></div></div>
+							<span class="stat-row-val">{{ @uu.current_def }}</span>
+							<span class="stat-row-level">Lv{{ @uu.a_level }}</span>
+						</div>
+					</div>
+
+					<div class="upgrade-actions">
+						<check if="{{ @uu.is_upgrading }}">
+							<span class="upgrading-badge">⏳ {{ @lang.upgrading ?: 'Researching...' }}</span>
+						</check>
+						<check if="{{ !@uu.is_upgrading }}">
+							<!-- HP (tree 17, only Academy=16) -->
+							<check if="{{ @building.slot == 16 }}">
+								<check if="{{ @uu.u_level < 10 }}">
+									<form action="/town/{{ @town.id }}/upgrade-unit" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="unit" value="{{ @uu.type }}">
+										<input type="hidden" name="tree" value="17">
+										<button class="upg-btn hp upg-btn-detail" type="submit">
+											<span class="upg-btn-label">⬆️ {{ @lang.levelUp ?: 'Level Up' }} (Lv{{ @uu.u_level + 1 }})</span>
+											<span class="upg-btn-cost">{{ @lang.newLevelGainHp ?: 'New level HP' }}: {{ @uu.current_hp }} → {{ @uu.next_hp }} (+1) • {{ @uu.upgrade_cost }}</span>
+										</button>
+									</form>
+								</check>
+								<check if="{{ @uu.u_level >= 10 }}">
+									<div class="upg-btn hp maxed">💚 HP — {{ @lang.maxLevel ?: 'MAX' }}</div>
+								</check>
+							</check>
+							<!-- ATK (tree 18, only Blacksmith=17) -->
+							<check if="{{ @building.slot == 17 }}">
+								<check if="{{ @uu.w_level < 10 }}">
+									<form action="/town/{{ @town.id }}/upgrade-unit" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="unit" value="{{ @uu.type }}">
+										<input type="hidden" name="tree" value="18">
+										<button class="upg-btn atk" type="submit">
+											<span class="upg-btn-label">⚔️ ATK → Lv{{ @uu.w_level + 1 }}</span>
+											<span class="upg-btn-cost">{{ @uu.w_upgrade_cost }}</span>
+										</button>
+									</form>
+								</check>
+								<check if="{{ @uu.w_level >= 10 }}">
+									<div class="upg-btn atk maxed">⚔️ ATK — {{ @lang.maxLevel ?: 'MAX' }}</div>
+								</check>
+								<check if="{{ @uu.a_level < 10 }}">
+									<form action="/town/{{ @town.id }}/upgrade-unit" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="unit" value="{{ @uu.type }}">
+										<input type="hidden" name="tree" value="19">
+										<button class="upg-btn def" type="submit">
+											<span class="upg-btn-label">🛡️ DEF → Lv{{ @uu.a_level + 1 }}</span>
+											<span class="upg-btn-cost">{{ @uu.a_upgrade_cost }}</span>
+										</button>
+									</form>
+								</check>
+								<check if="{{ @uu.a_level >= 10 }}">
+									<div class="upg-btn def maxed">🛡️ DEF — {{ @lang.maxLevel ?: 'MAX' }}</div>
+								</check>
+							</check>
+						</check>
+					</div>
+				</div>
+			</repeat>
+		</div>
+	</check>
+
+	<!-- ── Araştırma Kuyruğu ──────────────────────────────── -->
+	<check if="{{ count(@upgrade_queue) }}">
+		<div class="section-heading">
+			<h3>⏳ {{ @lang.unitUpgQueue ?: 'Research Queue' }}</h3>
+			<div class="section-line"></div>
+		</div>
+		<div class="queue-list">
+			<repeat group="{{ @upgrade_queue }}" key="{{ @i }}" value="{{ @uq }}">
+				<div class="queue-item">
+					<span class="queue-item-name">{{ @uq.name }}</span>
+					<check if="{{ @uq.tree_name == 'HP' }}">
+						<span class="queue-tree-badge tree-hp">💚 HP</span>
+					</check>
+					<check if="{{ @uq.tree_name == 'ATK' }}">
+						<span class="queue-tree-badge tree-atk">⚔️ ATK</span>
+					</check>
+					<check if="{{ @uq.tree_name == 'DEF' }}">
+						<span class="queue-tree-badge tree-def">🛡️ DEF</span>
+					</check>
+					<span class="queue-item-time" id="upq{{ @i }}">{{ @uq.timeLeft }}</span>
+					<script>timer('upq{{ @i }}', '/town/{{ @town.id }}/building/{{ @building.slot }}');</script>
+					<form action="/town/{{ @town.id }}/cancel/upgrade" method="post" style="display:inline;">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input type="hidden" name="unit" value="{{ @uq.unit }}">
+						<input type="hidden" name="tree" value="{{ @uq.tree }}">
+						<button class="queue-cancel-btn" type="submit">✕</button>
+					</form>
+				</div>
+			</repeat>
+		</div>
+	</check>
+
+	<div style="margin-top:var(--space-md);">
+		<a class="btn-back" href="/town/{{ @town.id }}">← {{ @lang.back ?: 'Back to Town' }}</a>
+	</div>
+</div>
+
+<script>
+(function() {
+	var uf = document.getElementById('upgradeForm');
+	var ub = document.getElementById('upgradeSubmitBtn');
+	if (uf && ub) { uf.addEventListener('submit', function() { if (ub.disabled) return false; ub.disabled = true; ub.textContent = '⏳ {{ @lang.upgrading ?: "Upgrading..." }}'; }); }
+})();
+</script>

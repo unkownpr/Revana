@@ -1,0 +1,1620 @@
+<div class="admin" x-data="{
+	tab: 'dashboard',
+	validTabs: ['dashboard','announcements','config','missions','premium','factions','users','camps','bots','achievements','seasons','wars','maintenance'],
+	syncHash: function () {
+		var h = (location.hash || '').replace('#', '');
+		this.tab = this.validTabs.includes(h) ? h : 'dashboard';
+	},
+	init: function () {
+		var self = this;
+		self.syncHash();
+		window.addEventListener('hashchange', function () { self.syncHash(); });
+	}
+}" x-init="init()">
+
+	<!-- Stats Bar -->
+	<div class="admin-stats">
+		<div class="admin-stat">
+			<span class="admin-stat-val">{{ @server_info.total_players }}</span>
+			<span class="admin-stat-lbl">{{ @lang.totalPlayers ?: 'Oyuncular' }}</span>
+		</div>
+		<div class="admin-stat">
+			<span class="admin-stat-val">{{ @server_info.total_towns }}</span>
+			<span class="admin-stat-lbl">{{ @lang.totalTowns ?: 'Şehirler' }}</span>
+		</div>
+		<div class="admin-stat">
+			<span class="admin-stat-val">{{ @server_info.total_alliances }}</span>
+			<span class="admin-stat-lbl">{{ @lang.totalAlliances ?: 'İttifaklar' }}</span>
+		</div>
+		<div class="admin-stat">
+			<span class="admin-stat-val" style="font-size:var(--font-size-sm);">{{ @server_info.server_time }}</span>
+			<span class="admin-stat-lbl">{{ @lang.serverTime ?: 'Sunucu Saati' }}</span>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Dashboard
+	     ================================================================ -->
+	<div x-show="tab === 'dashboard'" x-cloak>
+		<!-- Feature Grid: quick-access cards -->
+		<div class="admin-feature-grid">
+			<a class="admin-feature-card" href="/admin/maps">
+				<svg viewBox="0 0 16 16" width="28" height="28"><path d="M1 3l5-2 4 2 5-2v12l-5 2-4-2-5 2V3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+				<strong>{{ @lang.adminMaps ?: 'Haritalar' }}</strong>
+				<p>{{ @lang.mapsDesc ?: 'Harita oluştur ve düzenle' }}</p>
+			</a>
+			<a class="admin-feature-card" href="/admin/assets">
+				<svg viewBox="0 0 16 16" width="28" height="28"><path d="M2 2h12v12H2zM5 6h6M5 9h4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+				<strong>{{ @lang.adminAssets ?: 'Görseller' }}</strong>
+				<p>{{ @lang.assetsDesc ?: 'Bina, birim ve silah görselleri' }}</p>
+			</a>
+			<a class="admin-feature-card" href="/stats/users">
+				<svg viewBox="0 0 16 16" width="28" height="28"><path d="M1 14V9h3v5H1zm4 0V5h3v9H5zm5 0V2h3v12h-3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+				<strong>{{ @lang.statistics ?: 'İstatistikler' }}</strong>
+				<p>{{ @lang.statsDesc ?: 'Oyuncu ve sıralama istatistikleri' }}</p>
+			</a>
+			<a class="admin-feature-card" href="/forum">
+				<svg viewBox="0 0 16 16" width="28" height="28"><path d="M2 1h12v3H2V1zm0 5h12v3H2V6zm0 5h12v3H2v-3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+				<strong>{{ @lang.forum ?: 'Forum' }}</strong>
+				<p>{{ @lang.forumDesc ?: 'Forum konu ve mesajları' }}</p>
+			</a>
+		</div>
+
+		<!-- Recent Announcements Preview -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.announcements ?: 'Son Duyurular' }}</div>
+			<div class="admin-card-body">
+				<check if="{{ count(@admin_announcements) }}">
+					<repeat group="{{ @admin_announcements }}" value="{{ @aann }}">
+						<div class="admin-ann-preview">
+							<strong>{{ @aann.title }}</strong>
+							<span class="text-muted" style="font-size:var(--font-size-xs);">{{ @aann.created_at }}</span>
+						</div>
+					</repeat>
+				</check>
+				<check if="{{ !count(@admin_announcements) }}">
+					<p class="text-muted" style="margin:0; font-style:italic;">{{ @lang.noAnnouncements ?: 'Henüz duyuru yok.' }}</p>
+				</check>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Announcements
+	     ================================================================ -->
+	<div x-show="tab === 'announcements'" x-cloak>
+		<!-- Existing announcements -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.announcements ?: 'Duyurular' }}</div>
+			<div class="admin-card-body">
+				<check if="{{ count(@admin_announcements) }}">
+					<div class="admin-table-wrap">
+						<table class="admin-table">
+							<thead>
+								<tr>
+									<th>{{ @lang.announcementTitle ?: 'Başlık' }}</th>
+									<th>{{ @lang.author ?: 'Yazar' }}</th>
+									<th>{{ @lang.date ?: 'Tarih' }}</th>
+									<th style="width:80px;"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<repeat group="{{ @admin_announcements }}" value="{{ @aann }}">
+								<tr>
+									<td>{{ @aann.title }}</td>
+									<td>{{ @aann.author_name }}</td>
+									<td>{{ @aann.created_at }}</td>
+									<td>
+										<form action="/admin/announcement/delete" method="post">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="announcement_id" value="{{ @aann.id }}">
+											<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmDelete ?: 'Emin misiniz?' }}');">{{ @lang.delete ?: 'Sil' }}</button>
+										</form>
+									</td>
+								</tr>
+								</repeat>
+							</tbody>
+						</table>
+					</div>
+				</check>
+				<check if="{{ !count(@admin_announcements) }}">
+					<p class="text-muted" style="margin:0 0 var(--space-lg) 0; font-style:italic;">{{ @lang.noAnnouncements ?: 'Henüz duyuru yok.' }}</p>
+				</check>
+			</div>
+		</div>
+
+		<!-- Create new -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.createAnnouncement ?: 'Duyuru Oluştur' }}</div>
+			<div class="admin-card-body">
+				<form id="announcement-form" action="/admin/announcement/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input type="hidden" name="content" id="announcement-content">
+					<div class="admin-form-group">
+						<label>{{ @lang.announcementTitle ?: 'Başlık' }}</label>
+						<input class="textbox" type="text" name="title" required>
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.announcementContent ?: 'İçerik' }}</label>
+						<div id="quill-editor" style="min-height:150px;background:#fff;color:#222;border-radius:0 0 6px 6px;"></div>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.createAnnouncement ?: 'Duyuru Oluştur' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Configuration
+	     ================================================================ -->
+	<div x-show="tab === 'config'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.gameConfig ?: 'Oyun Ayarları' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/config" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-group">
+						<label>{{ @lang.gameName ?: 'Oyun Adı' }}</label>
+						<input class="textbox" type="text" name="game_name" value="{{ @config.game_name }}">
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.gameSpeed ?: 'Oyun Hızı' }}</label>
+							<input class="textbox" type="text" name="game_speed" value="{{ @config.game_speed }}">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.mapSize ?: 'Harita Boyutu' }}</label>
+							<input class="textbox" type="text" name="map_size" value="{{ @config.map_size }}">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.maxTowns ?: 'Maks. Şehir (Oyuncu Başına)' }}</label>
+							<input class="textbox" type="text" name="max_towns" value="{{ @config.max_towns }}">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.beginnerProtection ?: 'Acemi Koruması (saat)' }}</label>
+							<input class="textbox" type="text" name="beginner_protection" value="{{ @config.beginner_protection }}">
+						</div>
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.regOpen ?: 'Kayıt Açık' }}</label>
+						<select class="dropdown" name="registration_open">
+							<option value="1" <check if="{{ @config.registration_open }}">selected</check>>{{ @lang.yes ?: 'Evet' }}</option>
+							<option value="0" <check if="{{ !@config.registration_open }}">selected</check>>{{ @lang.no ?: 'Hayır' }}</option>
+						</select>
+					</div>
+					<div class="admin-form-group">
+						<label>reCAPTCHA Aktif</label>
+						<select class="dropdown" name="recaptcha_enabled">
+							<option value="1" <check if="{{ (int) (@config.recaptcha_enabled ?? 0) === 1 }}">selected</check>>{{ @lang.yes ?: 'Evet' }}</option>
+							<option value="0" <check if="{{ (int) (@config.recaptcha_enabled ?? 0) !== 1 }}">selected</check>>{{ @lang.no ?: 'Hayır' }}</option>
+						</select>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>reCAPTCHA Site Key</label>
+							<input class="textbox" type="text" name="recaptcha_site_key" value="{{ @config.recaptcha_site_key ?? '' }}" placeholder="6Lc...">
+						</div>
+						<div class="admin-form-group">
+							<label>reCAPTCHA Secret Key</label>
+							<input class="textbox" type="text" name="recaptcha_secret_key" value="{{ @config.recaptcha_secret_key ?? '' }}" placeholder="6Lc...">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>Meta Author</label>
+							<input class="textbox" type="text" name="meta_author" value="{{ @config.meta_author ?? '' }}" placeholder="Site Owner">
+						</div>
+						<div class="admin-form-group">
+							<label>Meta Keywords</label>
+							<input class="textbox" type="text" name="meta_keywords" value="{{ @config.meta_keywords ?? '' }}" placeholder="strategy,game,devana">
+						</div>
+					</div>
+					<div class="admin-form-group">
+						<label>Meta Description</label>
+						<textarea class="textbox" name="meta_description" rows="2">{{ @config.meta_description ?? '' }}</textarea>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>Varsayılan Dil</label>
+							<select class="dropdown" name="default_lang">
+								<option value="en.php" <check if="{{ (@config.default_lang ?? 'en.php') === 'en.php' }}">selected</check>>English</option>
+								<option value="tr.php" <check if="{{ (@config.default_lang ?? '') === 'tr.php' }}">selected</check>>Turkce</option>
+								<option value="de.php" <check if="{{ (@config.default_lang ?? '') === 'de.php' }}">selected</check>>Deutsch</option>
+								<option value="fr.php" <check if="{{ (@config.default_lang ?? '') === 'fr.php' }}">selected</check>>Francais</option>
+								<option value="it.php" <check if="{{ (@config.default_lang ?? '') === 'it.php' }}">selected</check>>Italiano</option>
+								<option value="nl.php" <check if="{{ (@config.default_lang ?? '') === 'nl.php' }}">selected</check>>Nederlands</option>
+								<option value="ro.php" <check if="{{ (@config.default_lang ?? '') === 'ro.php' }}">selected</check>>Romana</option>
+							</select>
+						</div>
+						<div class="admin-form-group">
+							<label>Mail Sistemi Aktif</label>
+							<select class="dropdown" name="mail_enabled">
+								<option value="1" <check if="{{ (int) (@config.mail_enabled ?? 0) === 1 }}">selected</check>>{{ @lang.yes ?: 'Evet' }}</option>
+								<option value="0" <check if="{{ (int) (@config.mail_enabled ?? 0) !== 1 }}">selected</check>>{{ @lang.no ?: 'Hayır' }}</option>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-group">
+						<label>PHPMailer Durumu</label>
+						<div class="text-muted" style="font-size:var(--font-size-xs);padding:6px 10px;border:1px solid var(--admin-border);border-radius:8px;">
+							<check if="{{ @phpmailer_available }}">Yuklu</check>
+							<check if="{{ !@phpmailer_available }}">Yuklu degil (composer require phpmailer/phpmailer)</check>
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>SMTP Host</label>
+							<input class="textbox" type="text" name="smtp_host" value="{{ @config.smtp_host ?? '' }}" placeholder="smtp.gmail.com">
+						</div>
+						<div class="admin-form-group">
+							<label>SMTP Port</label>
+							<input class="textbox" type="number" name="smtp_port" min="1" value="{{ @config.smtp_port ?? 587 }}">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>SMTP Auth</label>
+							<select class="dropdown" name="smtp_auth">
+								<option value="1" <check if="{{ (int) (@config.smtp_auth ?? 1) === 1 }}">selected</check>>{{ @lang.yes ?: 'Evet' }}</option>
+								<option value="0" <check if="{{ (int) (@config.smtp_auth ?? 1) !== 1 }}">selected</check>>{{ @lang.no ?: 'Hayır' }}</option>
+							</select>
+						</div>
+						<div class="admin-form-group">
+							<label>SMTP Security</label>
+							<select class="dropdown" name="smtp_secure">
+								<option value="tls" <check if="{{ (@config.smtp_secure ?? 'tls') === 'tls' }}">selected</check>>TLS</option>
+								<option value="ssl" <check if="{{ (@config.smtp_secure ?? '') === 'ssl' }}">selected</check>>SSL</option>
+								<option value="none" <check if="{{ (@config.smtp_secure ?? '') === 'none' }}">selected</check>>None</option>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>SMTP Username</label>
+							<input class="textbox" type="text" name="smtp_username" value="{{ @config.smtp_username ?? '' }}">
+						</div>
+						<div class="admin-form-group">
+							<label>SMTP Password</label>
+							<input class="textbox" type="password" name="smtp_password" value="" placeholder="Degistirmek icin doldur">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>From Email</label>
+							<input class="textbox" type="email" name="smtp_from_email" value="{{ @config.smtp_from_email ?? '' }}" placeholder="noreply@example.com">
+						</div>
+						<div class="admin-form-group">
+							<label>From Name</label>
+							<input class="textbox" type="text" name="smtp_from_name" value="{{ @config.smtp_from_name ?? 'Devana' }}">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>Login Max Deneme</label>
+							<input class="textbox" type="number" name="login_max_attempts" min="1" value="{{ @config.login_max_attempts ?? 5 }}">
+						</div>
+						<div class="admin-form-group">
+							<label>Login Kilit Dakika</label>
+							<input class="textbox" type="number" name="login_lock_minutes" min="1" value="{{ @config.login_lock_minutes ?? 15 }}">
+						</div>
+					</div>
+					<div class="admin-form-group">
+						<label>Timezone</label>
+						<input class="textbox" type="text" name="timezone" value="{{ @config.timezone ?? 'UTC' }}" placeholder="Europe/Istanbul">
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.saveConfig ?: 'Ayarları Kaydet' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">Branding</div>
+			<div class="admin-card-body">
+				<div class="admin-form-row">
+					<div class="admin-form-group">
+						<label>Current Logo</label>
+						<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+							<img src="{{ @config.site_logo_path ?? '/default/1/logo.jpg' }}" alt="logo" style="max-height:54px;border:1px solid var(--admin-border);border-radius:8px;background:rgba(0,0,0,0.2);padding:4px;">
+							<span class="text-muted" style="font-size:var(--font-size-xs);">{{ @config.site_logo_path ?? '/default/1/logo.jpg' }}</span>
+						</div>
+						<form action="/admin/branding/logo" method="post" enctype="multipart/form-data" style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="file" name="site_logo" accept="image/png,image/jpeg,image/webp,image/gif" class="textbox">
+							<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">Upload Logo</button>
+						</form>
+					</div>
+					<div class="admin-form-group">
+						<label>Current Favicon</label>
+						<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+							<img src="{{ @config.site_favicon_path ?? '/default/1/logo.jpg' }}" alt="favicon" style="width:32px;height:32px;border:1px solid var(--admin-border);border-radius:6px;background:rgba(0,0,0,0.2);padding:2px;">
+							<span class="text-muted" style="font-size:var(--font-size-xs);">{{ @config.site_favicon_path ?? '/default/1/logo.jpg' }}</span>
+						</div>
+						<form action="/admin/branding/favicon" method="post" enctype="multipart/form-data" style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="file" name="site_favicon" accept=".ico,image/x-icon,image/png,image/jpeg,image/webp,image/gif" class="textbox">
+							<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">Upload Favicon</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Factions
+	     ================================================================ -->
+	<div x-show="tab === 'missions'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.missions ?: 'Görevler' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<check if="{{ @mission_templates_enabled }}">
+					<check if="{{ count(@admin_mission_templates) }}">
+						<div class="admin-table-wrap">
+							<table class="admin-table">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>{{ @lang.type ?: 'Tür' }}</th>
+										<th>TR</th>
+										<th>EN</th>
+										<th>Hedef</th>
+										<th>Ödül</th>
+										<th>{{ @lang.status ?: 'Durum' }}</th>
+										<th style="width:80px;"></th>
+									</tr>
+								</thead>
+								<tbody>
+									<repeat group="{{ @admin_mission_templates }}" value="{{ @mt }}">
+										<tr>
+											<td>{{ @mt.id }}</td>
+											<td>{{ @mt.type_label }}</td>
+											<td>{{ @mt.title_tr }}</td>
+											<td>{{ @mt.title_en }}</td>
+											<td>{{ @mt.target_min }} - {{ @mt.target_max }}</td>
+											<td>{{ @mt.reward_xp }} XP + {{ @mt.reward_resource_amount }} (R{{ @mt.reward_resource_index }})</td>
+											<td>
+												<check if="{{ @mt.is_active }}">
+													<span style="color:var(--c-success);">&#9679; {{ @lang.active ?: 'Aktif' }}</span>
+												</check>
+												<check if="{{ !@mt.is_active }}">
+													<span style="color:var(--c-danger);">&#9679; {{ @lang.inactive ?: 'Pasif' }}</span>
+												</check>
+											</td>
+											<td>
+												<form action="/admin/missions/delete" method="post">
+													<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+													<input type="hidden" name="template_id" value="{{ @mt.id }}">
+													<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmDelete ?: 'Emin misiniz?' }}');">{{ @lang.delete ?: 'Sil' }}</button>
+												</form>
+											</td>
+										</tr>
+									</repeat>
+								</tbody>
+							</table>
+						</div>
+					</check>
+					<check if="{{ !count(@admin_mission_templates) }}">
+						<p class="text-muted" style="padding:var(--space-md);margin:0;font-style:italic;">Görev şablonu yok.</p>
+					</check>
+				</check>
+				<check if="{{ !@mission_templates_enabled }}">
+					<p class="text-muted" style="padding:var(--space-md);margin:0;font-style:italic;">Mission templates tablosu bulunamadı. Migration çalıştırın.</p>
+				</check>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">Yeni Görev Şablonu</div>
+			<div class="admin-card-body">
+				<form action="/admin/missions/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.type ?: 'Tür' }}</label>
+							<select class="dropdown" name="type">
+								<repeat group="{{ @admin_mission_type_options }}" key="{{ @mtType }}" value="{{ @mtLabel }}">
+									<option value="{{ @mtType }}">{{ @mtLabel }}</option>
+								</repeat>
+							</select>
+						</div>
+						<div class="admin-form-group">
+							<label>Aktif</label>
+							<select class="dropdown" name="is_active">
+								<option value="1">{{ @lang.yes ?: 'Evet' }}</option>
+								<option value="0">{{ @lang.no ?: 'Hayır' }}</option>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>TR Başlık ({n})</label>
+							<input class="textbox" type="text" name="title_tr" placeholder="Tamamla {n} insaat">
+						</div>
+						<div class="admin-form-group">
+							<label>EN Title ({n})</label>
+							<input class="textbox" type="text" name="title_en" placeholder="Complete {n} constructions">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>Hedef Min</label>
+							<input class="textbox" type="number" name="target_min" min="1" value="1">
+						</div>
+						<div class="admin-form-group">
+							<label>Hedef Max</label>
+							<input class="textbox" type="number" name="target_max" min="1" value="3">
+						</div>
+						<div class="admin-form-group">
+							<label>XP</label>
+							<input class="textbox" type="number" name="reward_xp" min="0" value="100">
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>Kaynak İndeksi (0-4)</label>
+							<select class="dropdown" name="reward_resource_index">
+								<option value="0">0 Crop</option>
+								<option value="1">1 Lumber</option>
+								<option value="2">2 Stone</option>
+								<option value="3">3 Iron</option>
+								<option value="4">4 Gold</option>
+							</select>
+						</div>
+						<div class="admin-form-group">
+							<label>Kaynak Ödülü</label>
+							<input class="textbox" type="number" name="reward_resource_amount" min="0" value="200">
+						</div>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">Görev Ekle</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Premium
+	     ================================================================ -->
+	<div x-show="tab === 'premium'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.premiumPackagesAdmin ?: 'Premium Packages' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>{{ @lang.code ?: 'Code' }}</th>
+								<th>{{ @lang.name ?: 'Name' }}</th>
+								<th>{{ @lang.gems ?: 'Gems' }}</th>
+								<th>{{ @lang.priceCents ?: 'Price (cents)' }}</th>
+								<th>{{ @lang.sortOrder ?: 'Order' }}</th>
+								<th>{{ @lang.active ?: 'Active' }}</th>
+								<th style="width:170px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_premium_packages }}" value="{{ @pkg }}">
+							<tr>
+								<td>{{ @pkg.id }}</td>
+								<td><input class="textbox" type="text" name="code" value="{{ @pkg.code }}" form="pkg-up-{{ @pkg.id }}"></td>
+								<td><input class="textbox" type="text" name="name" value="{{ @pkg.name }}" form="pkg-up-{{ @pkg.id }}"></td>
+								<td><input class="textbox" type="number" name="credits" min="1" value="{{ @pkg.credits }}" style="width:90px;" form="pkg-up-{{ @pkg.id }}"></td>
+								<td><input class="textbox" type="number" name="price_usd_cents" min="0" value="{{ @pkg.price_usd_cents }}" style="width:100px;" form="pkg-up-{{ @pkg.id }}"></td>
+								<td><input class="textbox" type="number" name="sort_order" min="0" value="{{ @pkg.sort_order }}" style="width:80px;" form="pkg-up-{{ @pkg.id }}"></td>
+								<td>
+									<select class="dropdown" name="is_active" form="pkg-up-{{ @pkg.id }}" style="width:90px;">
+										<option value="1" <check if="{{ (int) @pkg.is_active === 1 }}">selected</check>>{{ @lang.active ?: 'Active' }}</option>
+										<option value="0" <check if="{{ (int) @pkg.is_active !== 1 }}">selected</check>>{{ @lang.inactive ?: 'Inactive' }}</option>
+									</select>
+								</td>
+								<td>
+									<div style="display:flex;gap:var(--space-xs);">
+										<form id="pkg-up-{{ @pkg.id }}" action="/admin/premium/package/update" method="post" class="admin-form-inline">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="id" value="{{ @pkg.id }}">
+										</form>
+										<button type="submit" form="pkg-up-{{ @pkg.id }}" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.update ?: 'Update' }}</button>
+										<form action="/admin/premium/package/delete" method="post">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="id" value="{{ @pkg.id }}">
+											<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.deletePackageConfirm ?: 'Delete package?' }}');">{{ @lang.delete ?: 'Delete' }}</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.addPremiumPackage ?: 'Add New Package' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/premium/package/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.code ?: 'Code' }}</label>
+							<input class="textbox" type="text" name="code" placeholder="starter_pack">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.name ?: 'Name' }}</label>
+							<input class="textbox" type="text" name="name" placeholder="Starter Pack" required>
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.gems ?: 'Gems' }}</label>
+							<input class="textbox" type="number" name="credits" min="1" value="250" required>
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.priceCents ?: 'Price (cents)' }}</label>
+							<input class="textbox" type="number" name="price_usd_cents" min="0" value="499">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.sortOrder ?: 'Order' }}</label>
+							<input class="textbox" type="number" name="sort_order" min="0" value="100">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.active ?: 'Active' }}</label>
+							<select class="dropdown" name="is_active">
+								<option value="1">{{ @lang.active ?: 'Active' }}</option>
+								<option value="0">{{ @lang.inactive ?: 'Inactive' }}</option>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.addPackage ?: 'Add Package' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.premiumProductsAdmin ?: 'Premium Products' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>{{ @lang.code ?: 'Code' }}</th>
+								<th>{{ @lang.name ?: 'Name' }}</th>
+								<th>{{ @lang.slot ?: 'Slot' }}</th>
+								<th>{{ @lang.rarity ?: 'Rarity' }}</th>
+								<th>{{ @lang.gemPrice ?: 'Gem Price' }}</th>
+								<th>{{ @lang.icon ?: 'Icon' }}</th>
+								<th>{{ @lang.sortOrder ?: 'Order' }}</th>
+								<th>{{ @lang.ownerCount ?: 'Owners' }}</th>
+								<th>{{ @lang.active ?: 'Active' }}</th>
+								<th style="width:170px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_premium_products }}" value="{{ @prd }}">
+							<tr>
+								<td>{{ @prd.id }}</td>
+								<td><input class="textbox" type="text" name="code" value="{{ @prd.code }}" form="prd-up-{{ @prd.id }}"></td>
+								<td>
+									<input class="textbox" type="text" name="name" value="{{ @prd.name }}" form="prd-up-{{ @prd.id }}">
+									<input class="textbox" type="text" name="description" value="{{ @prd.description }}" form="prd-up-{{ @prd.id }}" style="margin-top:4px;">
+								</td>
+								<td>
+									<select class="dropdown" name="slot" form="prd-up-{{ @prd.id }}">
+										<option value="profile_badge" <check if="{{ @prd.slot === 'profile_badge' }}">selected</check>>profile_badge</option>
+										<option value="profile_frame" <check if="{{ @prd.slot === 'profile_frame' }}">selected</check>>profile_frame</option>
+										<option value="profile_title" <check if="{{ @prd.slot === 'profile_title' }}">selected</check>>profile_title</option>
+									</select>
+								</td>
+								<td><input class="textbox" type="text" name="rarity" value="{{ @prd.rarity }}" style="width:90px;" form="prd-up-{{ @prd.id }}"></td>
+								<td><input class="textbox" type="number" name="price_credits" min="0" value="{{ @prd.price_credits }}" style="width:90px;" form="prd-up-{{ @prd.id }}"></td>
+								<td><input class="textbox" type="text" name="icon" value="{{ @prd.icon }}" style="width:90px;" form="prd-up-{{ @prd.id }}"></td>
+								<td><input class="textbox" type="number" name="sort_order" min="0" value="{{ @prd.sort_order }}" style="width:80px;" form="prd-up-{{ @prd.id }}"></td>
+								<td>{{ @prd.owned_count }}</td>
+								<td>
+									<select class="dropdown" name="is_active" form="prd-up-{{ @prd.id }}" style="width:90px;">
+										<option value="1" <check if="{{ (int) @prd.is_active === 1 }}">selected</check>>{{ @lang.active ?: 'Active' }}</option>
+										<option value="0" <check if="{{ (int) @prd.is_active !== 1 }}">selected</check>>{{ @lang.inactive ?: 'Inactive' }}</option>
+									</select>
+								</td>
+								<td>
+									<div style="display:flex;gap:var(--space-xs);">
+										<form id="prd-up-{{ @prd.id }}" action="/admin/premium/product/update" method="post" class="admin-form-inline">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="id" value="{{ @prd.id }}">
+										</form>
+										<button type="submit" form="prd-up-{{ @prd.id }}" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.update ?: 'Update' }}</button>
+										<form action="/admin/premium/product/delete" method="post">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="id" value="{{ @prd.id }}">
+											<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.deleteProductConfirm ?: 'Delete product? Related inventory records will also be removed.' }}');">{{ @lang.delete ?: 'Delete' }}</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.addPremiumProduct ?: 'Add New Product' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/premium/product/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.code ?: 'Code' }}</label>
+							<input class="textbox" type="text" name="code" placeholder="badge_founder">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.name ?: 'Name' }}</label>
+							<input class="textbox" type="text" name="name" placeholder="Founder Badge" required>
+						</div>
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.description ?: 'Description' }}</label>
+						<input class="textbox" type="text" name="description" placeholder="Displayed near your profile name.">
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.slot ?: 'Slot' }}</label>
+							<select class="dropdown" name="slot">
+								<option value="profile_badge">profile_badge</option>
+								<option value="profile_frame">profile_frame</option>
+								<option value="profile_title">profile_title</option>
+							</select>
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.rarity ?: 'Rarity' }}</label>
+							<input class="textbox" type="text" name="rarity" value="common">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.gemPrice ?: 'Gem Price' }}</label>
+							<input class="textbox" type="number" name="price_credits" min="0" value="100">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.icon ?: 'Icon' }}</label>
+							<input class="textbox" type="text" name="icon" value="badge">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.sortOrder ?: 'Order' }}</label>
+							<input class="textbox" type="number" name="sort_order" min="0" value="100">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.active ?: 'Active' }}</label>
+							<select class="dropdown" name="is_active">
+								<option value="1">{{ @lang.active ?: 'Active' }}</option>
+								<option value="0">{{ @lang.inactive ?: 'Inactive' }}</option>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.addProduct ?: 'Add Product' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.inventoryBalanceManagement ?: 'Inventory / Balance Management' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-form-row">
+					<div class="admin-form-group">
+						<form action="/admin/premium/inventory/grant" method="post" class="admin-form">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<label>{{ @lang.grantProductToUser ?: 'Grant Product to User' }}</label>
+							<div class="admin-form-row">
+								<select class="dropdown" name="user_id">
+									<repeat group="{{ @admin_premium_users }}" value="{{ @pu }}">
+										<option value="{{ @pu.id }}">{{ @pu.id }} - {{ @pu.name }}</option>
+									</repeat>
+								</select>
+								<select class="dropdown" name="product_id">
+									<repeat group="{{ @admin_premium_products }}" value="{{ @pp }}">
+										<option value="{{ @pp.id }}">{{ @pp.id }} - {{ @pp.name }}</option>
+									</repeat>
+								</select>
+								<select class="dropdown" name="activate_now">
+									<option value="0">{{ @lang.addInventoryOnly ?: 'Add to inventory only' }}</option>
+									<option value="1">{{ @lang.activateNow ?: 'Activate now' }}</option>
+								</select>
+								<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.grant ?: 'Grant' }}</button>
+							</div>
+						</form>
+					</div>
+					<div class="admin-form-group">
+						<form action="/admin/premium/balance/update" method="post" class="admin-form">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<label>{{ @lang.userGemBalance ?: 'User Gem Balance' }}</label>
+							<div class="admin-form-row">
+								<select class="dropdown" name="user_id">
+									<repeat group="{{ @admin_premium_users }}" value="{{ @pu }}">
+										<option value="{{ @pu.id }}">{{ @pu.id }} - {{ @pu.name }} ({{ @pu.premium_balance }})</option>
+									</repeat>
+								</select>
+								<input class="textbox" type="number" name="premium_balance" min="0" value="0" placeholder="0">
+								<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.update ?: 'Update' }}</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.recentInventoryRecords ?: 'Recent Inventory Records' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>{{ @lang.user ?: 'User' }}</th>
+								<th>{{ @lang.product ?: 'Product' }}</th>
+								<th>{{ @lang.slot ?: 'Slot' }}</th>
+								<th>{{ @lang.rarity ?: 'Rarity' }}</th>
+								<th>{{ @lang.type ?: 'Type' }}</th>
+								<th>{{ @lang.active ?: 'Active' }}</th>
+								<th>{{ @lang.date ?: 'Date' }}</th>
+								<th style="width:80px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_premium_inventory }}" value="{{ @inv }}">
+							<tr>
+								<td>{{ @inv.id }}</td>
+								<td>{{ @inv.user_id }} - {{ @inv.user_name ?: '-' }}</td>
+								<td>{{ @inv.product_id }} - {{ @inv.product_name ?: '-' }}</td>
+								<td>{{ @inv.slot ?: '-' }}</td>
+								<td>{{ @inv.rarity ?: '-' }}</td>
+								<td>{{ @inv.acquire_type }}</td>
+								<td>
+									<check if="{{ (int) @inv.is_active === 1 }}"><span style="color:var(--c-success);">{{ @lang.active ?: 'Active' }}</span></check>
+									<check if="{{ (int) @inv.is_active !== 1 }}"><span class="text-muted">{{ @lang.inactive ?: 'Inactive' }}</span></check>
+								</td>
+								<td>{{ @inv.acquired_at }}</td>
+								<td>
+									<form action="/admin/premium/inventory/revoke" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="inventory_id" value="{{ @inv.id }}">
+										<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.deleteInventoryRecordConfirm ?: 'Delete inventory record?' }}');">{{ @lang.delete ?: 'Delete' }}</button>
+									</form>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Factions
+	     ================================================================ -->
+	<div x-show="tab === 'factions'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.factionManagement ?: 'Fraksiyon Yönetimi' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<check if="{{ count(@admin_factions) }}">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.graphicsPath ?: 'Görsel Yolu' }}</th>
+								<th>{{ @lang.factionRatio ?: 'Oran' }}</th>
+								<th>{{ @lang.users ?: 'Kullanıcılar' }}</th>
+								<th>{{ @lang.dataRows ?: 'Veri Satırı' }}</th>
+								<th style="width:170px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_factions }}" value="{{ @af }}">
+							<tr>
+								<td>{{ @af.id }}</td>
+								<td>
+									<input class="textbox" type="text" name="name" value="{{ @af.name }}" style="min-width:150px;" form="fup{{ @af.id }}">
+								</td>
+								<td><input class="textbox" type="text" name="gr_path" value="{{ @af.grPath }}" style="width:90px;" form="fup{{ @af.id }}"></td>
+								<td><input class="textbox" type="text" name="ratio" value="{{ @af.ratio }}" style="width:70px;" form="fup{{ @af.id }}"></td>
+								<td>{{ @af.users_count }}</td>
+								<td>B{{ @af.buildings_count }} / U{{ @af.units_count }} / W{{ @af.weapons_count }}</td>
+								<td>
+									<div style="display:flex; gap:var(--space-xs);">
+										<form id="fup{{ @af.id }}" action="/admin/factions/update" method="post" class="admin-form-inline">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="faction_id" value="{{ @af.id }}">
+										</form>
+										<button type="submit" form="fup{{ @af.id }}" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.update ?: 'Güncelle' }}</button>
+										<check if="{{ @af.id > 3 && @af.users_count == 0 }}">
+											<form action="/admin/factions/delete" method="post"
+											      onsubmit="return confirmFactionDelete(this, {{ @af.id }}, '{{ addslashes((string) @af.name) }}', {{ @af.users_count }}, {{ @af.buildings_count }}, {{ @af.units_count }}, {{ @af.weapons_count }});">
+												<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+												<input type="hidden" name="faction_id" value="{{ @af.id }}">
+												<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm">{{ @lang.delete ?: 'Sil' }}</button>
+											</form>
+										</check>
+										<check if="{{ @af.id <= 3 || @af.users_count > 0 }}">
+											<button type="button" class="admin-btn admin-btn--sm" disabled>{{ @lang.delete ?: 'Sil' }}</button>
+										</check>
+									</div>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+				</check>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.createFaction ?: 'Yeni Fraksiyon Oluştur' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/factions/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.factionName ?: 'Fraksiyon Adı' }}</label>
+							<input class="textbox" type="text" name="name" required placeholder="Desert Nomads">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.templateFaction ?: 'Şablon Fraksiyon' }}</label>
+							<select class="dropdown" name="template_faction">
+								<repeat group="{{ @admin_factions }}" value="{{ @af }}">
+									<option value="{{ @af.id }}">{{ @af.id }} - {{ @af.name }}</option>
+								</repeat>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.graphicsPath ?: 'Görsel Yolu' }}</label>
+							<input class="textbox" type="text" name="gr_path" value="1/" required>
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.factionRatio ?: 'Oran' }}</label>
+							<input class="textbox" type="text" name="ratio" value="1.5" required>
+						</div>
+					</div>
+					<p class="text-muted" style="margin:0 0 var(--space-sm) 0;font-size:var(--font-size-xs);">
+						{{ @lang.factionCloneHint ?: 'Template faction data (buildings/units/weapons) will be cloned automatically.' }}
+					</p>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.createFaction ?: 'Fraksiyon Oluştur' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+<script>
+function confirmFactionDelete(form, factionId, factionName, usersCount, buildingsCount, unitsCount, weaponsCount) {
+	var msg = [
+		'Delete faction #' + factionId + ' (' + factionName + ')?',
+		'',
+		'This will remove faction meta and cloned data:',
+		'- Active users: ' + usersCount,
+		'- Buildings: ' + buildingsCount,
+		'- Units: ' + unitsCount,
+		'- Weapons: ' + weaponsCount,
+		'',
+		'This action cannot be undone.'
+	].join('\n');
+	return window.confirm(msg);
+}
+</script>
+
+	<!-- ================================================================
+	     TAB: Users
+	     ================================================================ -->
+	<div x-show="tab === 'users'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">
+				{{ @lang.userManagement ?: 'Kullanıcı Yönetimi' }}
+				<form action="/admin" method="get" class="admin-search">
+					<input class="textbox" type="text" name="q" value="{{ @admin_search }}" placeholder="{{ @lang.search ?: 'Ara' }}...">
+					<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.search ?: 'Ara' }}</button>
+				</form>
+			</div>
+			<div class="admin-card-body" style="padding:0;">
+				<check if="{{ count(@admin_users) }}">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.level ?: 'Seviye' }}</th>
+								<th>{{ @lang.points ?: 'Puan' }}</th>
+								<th>{{ @lang.registered ?: 'Kayıt' }}</th>
+								<th style="width:160px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_users }}" value="{{ @au }}">
+							<tr>
+								<td>{{ @au.id }}</td>
+								<td><a class="q_link" href="/profile/{{ @au.id }}">{{ @au.name }}</a></td>
+								<td>
+									<form action="/admin/set-level" method="post" class="admin-form-inline">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="user_id" value="{{ @au.id }}">
+										<input class="textbox" type="text" name="level" value="{{ @au.level }}" style="width:40px; text-align:center;">
+										<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.set ?: 'Ayarla' }}</button>
+									</form>
+								</td>
+								<td>
+									<form action="/admin/set-points" method="post" class="admin-form-inline">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="user_id" value="{{ @au.id }}">
+										<input class="textbox" type="text" name="points" value="{{ @au.points }}" style="width:70px; text-align:center;">
+										<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.set ?: 'Ayarla' }}</button>
+									</form>
+								</td>
+								<td>{{ @au.registered_date }}</td>
+								<td>
+									<div style="display:flex; gap:var(--space-xs);">
+										<a href="/admin/user/{{ @au.id }}" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.detail ?: 'Detay' }}</a>
+										<form action="/admin/delete-user" method="post">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="user_id" value="{{ @au.id }}">
+											<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmDeleteUser ?: 'Bu kullanıcı silinsin mi?' }}');">{{ @lang.delete ?: 'Sil' }}</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+				</check>
+			</div>
+		</div>
+
+		<!-- Send Message to All -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.sendAll ?: 'Tüm Oyunculara Mesaj Gönder' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/send-all" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-group">
+						<label>{{ @lang.subject ?: 'Konu' }}</label>
+						<input class="textbox" type="text" name="subject">
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.message ?: 'Mesaj' }}</label>
+						<textarea class="textbox" name="contents" rows="4"></textarea>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.sendToAll ?: 'Tümüne Gönder' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Barbarian Camps
+	     ================================================================ -->
+	<div x-show="tab === 'camps'" x-cloak>
+		<!-- Camp List -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.barbarianCamps ?: 'Barbar Kampları' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<check if="{{ count(@admin_camps) }}">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>X</th>
+								<th>Y</th>
+								<th>{{ @lang.level ?: 'Seviye' }}</th>
+								<th>{{ @lang.status ?: 'Durum' }}</th>
+								<th>Respawn</th>
+								<th style="width:160px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_camps }}" value="{{ @ac }}">
+							<tr>
+								<td>{{ @ac.id }}</td>
+								<td>{{ @ac.x }}</td>
+								<td>{{ @ac.y }}</td>
+								<td>Lv.{{ @ac.level }}</td>
+								<td>
+									<check if="{{ @ac.active }}">
+										<span style="color:var(--c-success);">&#9679; {{ @lang.active ?: 'Aktif' }}</span>
+									</check>
+									<check if="{{ !@ac.active }}">
+										<span style="color:var(--c-danger);">&#9679; {{ @lang.inactive ?: 'Pasif' }}</span>
+									</check>
+								</td>
+								<td style="font-size:var(--font-size-xs);">{{ @ac.respawn_at ?: '-' }}</td>
+								<td>
+									<div style="display:flex;gap:var(--space-xs);">
+										<a href="/admin/camps/{{ @ac.id }}/edit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.edit ?: 'Düzenle' }}</a>
+										<form action="/admin/camps/{{ @ac.id }}/delete" method="post">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="camp_id" value="{{ @ac.id }}">
+											<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmDelete ?: 'Bu kamp silinsin mi?' }}');">{{ @lang.delete ?: 'Sil' }}</button>
+										</form>
+									</div>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+				</check>
+				<check if="{{ !count(@admin_camps) }}">
+					<p class="text-muted" style="margin:var(--space-md);font-style:italic;">{{ @lang.noCamps ?: 'Henüz barbar kampı yok.' }}</p>
+				</check>
+			</div>
+		</div>
+
+		<!-- Create New Camp -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.createCamp ?: 'Yeni Kamp Oluştur' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/camps/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>X</label>
+							<input class="textbox" type="number" name="x" value="1" min="0" required>
+						</div>
+						<div class="admin-form-group">
+							<label>Y</label>
+							<input class="textbox" type="number" name="y" value="1" min="0" required>
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.level ?: 'Seviye' }} (1-5)</label>
+							<select class="dropdown" name="level">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+						</div>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.createCamp ?: 'Kamp Oluştur' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Spawn Random Camps -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.spawnCamps ?: 'Rastgele Kamp Oluştur' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/camps/spawn" method="post" class="admin-form-inline">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input class="textbox" type="number" name="count" value="5" min="1" max="50" style="width:70px;text-align:center;">
+					<span class="text-muted">{{ @lang.camps ?: 'kamp' }}</span>
+					<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.spawnCamps ?: 'Oluştur' }}</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Bots
+	     ================================================================ -->
+	<div x-show="tab === 'bots'" x-cloak>
+
+		<!-- Bot Settings -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.botSettings ?: 'Bot Ayarları' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/bots/config" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group">
+							<label>{{ @lang.botSystem ?: 'Bot Sistemi' }}</label>
+							<select class="dropdown" name="bot_active">
+								<option value="1" <check if="{{ @bot_config.bot_active }}">selected</check>>{{ @lang.active ?: 'Aktif' }}</option>
+								<option value="0" <check if="{{ !@bot_config.bot_active }}">selected</check>>{{ @lang.inactive ?: 'Pasif' }}</option>
+							</select>
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.botCount ?: 'Hedef Bot Sayısı' }}</label>
+							<input class="textbox" type="number" name="bot_count" value="{{ @bot_config.bot_count }}" min="0" max="200" style="width:80px;">
+						</div>
+						<div class="admin-form-group">
+							<label>{{ @lang.botAggression ?: 'Saldırganlık (1-5)' }}</label>
+							<input class="textbox" type="number" name="bot_aggression" value="{{ @bot_config.bot_aggression }}" min="1" max="5" style="width:60px;">
+						</div>
+					</div>
+					<div class="admin-form-actions">
+						<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.saveConfig ?: 'Kaydet' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- Spawn Bots -->
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.spawnBots ?: 'Bot Oluştur' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-tool">
+					<div class="admin-tool-info">
+						<strong>{{ @lang.spawnMissingBots ?: 'Eksik botları şimdi oluştur' }}</strong>
+						<p class="text-muted" style="margin:4px 0 0;font-size:var(--font-size-xs);">{{ @lang.spawnBotsDesc ?: 'Hedef sayıya ulaşana kadar yeni bot hesapları oluşturur.' }}</p>
+					</div>
+					<form action="/admin/bots/spawn" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.spawnBots ?: 'Oluştur' }}</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+			<!-- Cron Info -->
+			<div class="admin-card">
+				<div class="admin-card-header">{{ @lang.botCronWorker ?: 'Cron Worker' }}</div>
+				<div class="admin-card-body">
+					<div style="padding:0 0 12px;">
+						<p style="margin:0 0 6px;"><strong>Script:</strong> <code>{{ @bot_cron_script_path }}</code></p>
+						<p style="margin:0 0 10px;"><strong>Log:</strong> <code>{{ @bot_cron_log_path }}</code></p>
+						<p class="text-muted" style="margin:0 0 6px;font-size:var(--font-size-xs);">{{ @lang.botCronDesc ?: 'Tek cron worker tüm görevleri (tick + bot + günlük cleanup) çalıştırır.' }}</p>
+						<textarea class="textbox" readonly rows="2" style="width:100%;font-family:monospace;">* * * * * {{ @bot_cron_command }}</textarea>
+					</div>
+				</div>
+			</div>
+
+		<!-- Bot List -->
+		<div class="admin-card">
+			<div class="admin-card-header">
+				{{ @lang.activeBots ?: 'Aktif Botlar' }}
+				<span class="text-muted" style="font-size:var(--font-size-xs);margin-left:8px;">{{ count(@admin_bots) }}</span>
+			</div>
+			<div class="admin-card-body" style="padding:0;">
+				<check if="{{ count(@admin_bots) }}">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.botProfile ?: 'Profil' }}</th>
+								<th>{{ @lang.points ?: 'Puan' }}</th>
+								<th>{{ @lang.totalTowns ?: 'Şehir' }}</th>
+								<th>{{ @lang.lastVisit ?: 'Son Görünüm' }}</th>
+								<th style="width:80px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @admin_bots }}" value="{{ @ab }}">
+							<tr>
+								<td>{{ @ab.id }}</td>
+								<td><a class="q_link" href="/profile/{{ @ab.id }}">{{ @ab.name }}</a></td>
+								<td>
+									<span class="admin-bot-profile admin-bot-profile--{{ @ab.bot_profile }}">{{ @ab.bot_profile }}</span>
+								</td>
+								<td>{{ @ab.points }}</td>
+								<td>{{ @ab.town_count }}</td>
+								<td style="font-size:var(--font-size-xs);">{{ @ab.lastVisit }}</td>
+								<td>
+									<form action="/admin/bots/delete" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="bot_id" value="{{ @ab.id }}">
+										<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('Bot silinsin mi?');">{{ @lang.delete ?: 'Sil' }}</button>
+									</form>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+				</check>
+				<check if="{{ !count(@admin_bots) }}">
+					<p class="text-muted" style="padding:var(--space-md);margin:0;font-style:italic;">{{ @lang.noBots ?: 'Henüz aktif bot yok.' }}</p>
+				</check>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- ================================================================
+	     TAB: Achievements
+	     ================================================================ -->
+	<div x-show="tab === 'achievements'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.achievements ?: 'Başarılar' }}</div>
+			<div class="admin-card-body">
+				<check if="{{ count(@admin_achievements) }}">
+					<div class="admin-table-wrap">
+						<table class="admin-table">
+							<thead><tr>
+								<th>ID</th><th>{{ @lang.code ?: 'Kod' }}</th>
+								<th>TR</th><th>EN</th>
+								<th>{{ @lang.category ?: 'Kategori' }}</th>
+								<th>{{ @lang.threshold ?: 'Eşik' }}</th>
+								<th>XP</th><th>{{ @lang.active ?: 'Aktif' }}</th>
+								<th></th>
+							</tr></thead>
+							<tbody>
+								<repeat group="{{ @admin_achievements }}" value="{{ @ach }}">
+								<tr>
+									<td>{{ @ach.id }}</td>
+									<td><code>{{ @ach.code }}</code></td>
+									<td>{{ @ach.title_tr }}</td>
+									<td>{{ @ach.title_en }}</td>
+									<td>{{ @ach.category }}</td>
+									<td>{{ @ach.threshold }}</td>
+									<td>{{ @ach.reward_xp }}</td>
+									<td>{{ @ach.is_active ? '✓' : '–' }}</td>
+									<td>
+										<form action="/admin/achievements/delete" method="post" style="display:inline;">
+											<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+											<input type="hidden" name="id" value="{{ @ach.id }}">
+											<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('Delete?');">{{ @lang.delete ?: 'Sil' }}</button>
+										</form>
+									</td>
+								</tr>
+								</repeat>
+							</tbody>
+						</table>
+					</div>
+				</check>
+				<check if="{{ !count(@admin_achievements) }}">
+					<p class="text-muted">{{ @lang.noAchievements ?: 'Başarı yok.' }}</p>
+				</check>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.create ?: 'Oluştur' }} — {{ @lang.achievement ?: 'Başarı' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/achievements/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group"><label>Code</label><input class="textbox" name="code" required></div>
+						<div class="admin-form-group"><label>Title TR</label><input class="textbox" name="title_tr"></div>
+						<div class="admin-form-group"><label>Title EN</label><input class="textbox" name="title_en" required></div>
+					</div>
+					<div class="admin-form-row">
+						<div class="admin-form-group"><label>Category (0=Build 1=Military 2=Trade 3=Social)</label><input class="textbox" name="category" type="number" value="0"></div>
+						<div class="admin-form-group"><label>Threshold</label><input class="textbox" name="threshold" type="number" value="1" min="1"></div>
+						<div class="admin-form-group"><label>Reward XP</label><input class="textbox" name="reward_xp" type="number" value="100"></div>
+						<div class="admin-form-group"><label>Sort</label><input class="textbox" name="sort_order" type="number" value="0"></div>
+					</div>
+					<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.create ?: 'Oluştur' }}</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Seasons
+	     ================================================================ -->
+	<div x-show="tab === 'seasons'" x-cloak>
+		<check if="{{ @admin_active_season }}">
+			<div class="admin-card">
+				<div class="admin-card-header" style="color:#e8c97e;">&#9733; {{ @lang.activeSeason ?: 'Aktif Sezon' }}: {{ @admin_active_season.name }}</div>
+				<div class="admin-card-body">
+					<p>{{ @lang.seasonStart ?: 'Başlangıç' }}: {{ @admin_active_season.start_time }} | {{ @lang.seasonEnd ?: 'Bitiş' }}: {{ @admin_active_season.end_time }}</p>
+					<div style="display:flex;gap:10px;flex-wrap:wrap;">
+						<form action="/admin/seasons/end" method="post">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="season_id" value="{{ @admin_active_season.id }}">
+							<button type="submit" class="admin-btn admin-btn--danger" onclick="return confirm('Force end season?');">{{ @lang.seasonForceEnd ?: 'Zorla Bitir' }}</button>
+						</form>
+						<form action="/admin/seasons/reset" method="post">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="text" name="confirm" placeholder="Type RESET" class="textbox" style="width:120px;">
+							<button type="submit" class="admin-btn admin-btn--danger" onclick="return confirm('RESET ALL TOWN DATA?');">{{ @lang.seasonReset ?: 'Kasaba Resetle' }}</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</check>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.allSeasons ?: 'Tüm Sezonlar' }}</div>
+			<div class="admin-card-body">
+				<check if="{{ count(@admin_seasons) }}">
+					<div class="admin-table-wrap">
+						<table class="admin-table">
+							<thead><tr><th>ID</th><th>{{ @lang.seasonName ?: 'Ad' }}</th><th>{{ @lang.seasonStart ?: 'Başlangıç' }}</th><th>{{ @lang.seasonEnd ?: 'Bitiş' }}</th><th>{{ @lang.active ?: 'Aktif' }}</th><th></th></tr></thead>
+							<tbody>
+								<repeat group="{{ @admin_seasons }}" value="{{ @s }}">
+								<tr>
+									<td>{{ @s.id }}</td>
+									<td>{{ @s.name }}</td>
+									<td>{{ @s.start_time }}</td>
+									<td>{{ @s.end_time }}</td>
+									<td>{{ @s.active ? '✓' : '–' }}</td>
+									<td>
+										<check if="{{ !@s.active }}">
+											<form action="/admin/seasons/activate" method="post" style="display:inline;">
+												<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+												<input type="hidden" name="season_id" value="{{ @s.id }}">
+												<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.activate ?: 'Aktifleştir' }}</button>
+											</form>
+										</check>
+									</td>
+								</tr>
+								</repeat>
+							</tbody>
+						</table>
+					</div>
+				</check>
+				<check if="{{ !count(@admin_seasons) }}">
+					<p class="text-muted">{{ @lang.noData ?: 'Sezon yok.' }}</p>
+				</check>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.createSeason ?: 'Yeni Sezon' }}</div>
+			<div class="admin-card-body">
+				<form action="/admin/seasons/create" method="post" class="admin-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="admin-form-row">
+						<div class="admin-form-group"><label>{{ @lang.seasonName ?: 'Ad' }}</label><input class="textbox" name="name" required></div>
+						<div class="admin-form-group"><label>{{ @lang.seasonStart ?: 'Başlangıç' }}</label><input class="textbox" name="start_time" type="datetime-local" required></div>
+						<div class="admin-form-group"><label>{{ @lang.seasonEnd ?: 'Bitiş' }}</label><input class="textbox" name="end_time" type="datetime-local" required></div>
+					</div>
+					<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.create ?: 'Oluştur' }}</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Wars
+	     ================================================================ -->
+	<div x-show="tab === 'wars'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.allianceWars ?: 'İttifak Savaşları' }}</div>
+			<div class="admin-card-body">
+				<check if="{{ count(@admin_wars) }}">
+					<div class="admin-table-wrap">
+						<table class="admin-table">
+							<thead><tr>
+								<th>ID</th><th>{{ @lang.challenger ?: 'Meydan Okuyan' }}</th>
+								<th>{{ @lang.defender ?: 'Savunan' }}</th>
+								<th>{{ @lang.warScore ?: 'Skor' }}</th>
+								<th>{{ @lang.status ?: 'Durum' }}</th>
+								<th>{{ @lang.warEnds ?: 'Bitiş' }}</th>
+								<th></th>
+							</tr></thead>
+							<tbody>
+								<repeat group="{{ @admin_wars }}" value="{{ @w }}">
+								<tr>
+									<td>{{ @w.id }}</td>
+									<td>{{ @w.challenger_name }}</td>
+									<td>{{ @w.defender_name }}</td>
+									<td>{{ @w.challenger_score }} – {{ @w.defender_score }}</td>
+									<td>{{ @w.status == 0 ? 'Beklemede' : (@w.status == 1 ? 'Aktif' : 'Bitti') }}</td>
+									<td>{{ @w.end_time }}</td>
+									<td>
+										<check if="{{ @w.status == 1 }}">
+											<form action="/admin/wars/end" method="post" style="display:inline;">
+												<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+												<input type="hidden" name="war_id" value="{{ @w.id }}">
+												<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('Force end war?');">{{ @lang.end ?: 'Bitir' }}</button>
+											</form>
+										</check>
+									</td>
+								</tr>
+								</repeat>
+							</tbody>
+						</table>
+					</div>
+				</check>
+				<check if="{{ !count(@admin_wars) }}">
+					<p class="text-muted">{{ @lang.noData ?: 'Savaş yok.' }}</p>
+				</check>
+			</div>
+		</div>
+	</div>
+
+	<!-- ================================================================
+	     TAB: Maintenance
+	     ================================================================ -->
+	<div x-show="tab === 'maintenance'" x-cloak>
+		<!-- Town Backgrounds -->
+		<div class="admin-card" style="margin-bottom: var(--space-md);">
+			<div class="admin-card-header">{{ @lang.townBackgrounds ?: 'Şehir Arka Planları' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-bg-grid">
+					<repeat group="{{ @backgrounds }}" value="{{ @bg }}">
+					<div class="admin-bg-item">
+						<img src="/default/1/{{ @bg }}" alt="{{ @bg }}">
+						<span class="admin-bg-name">{{ @bg }}</span>
+						<form action="/admin/background/premium" method="post" style="margin:6px 0 2px;display:flex;gap:4px;align-items:center;flex-wrap:wrap;">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="filename" value="{{ @bg }}">
+							<label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--admin-muted);">
+								<input type="checkbox" name="is_premium" value="1" <check if="{{ isset(@background_premium_map[@bg]) && (int) @background_premium_map[@bg].is_active === 1 }}">checked</check>>
+								Premium
+							</label>
+							<input class="textbox" type="number" min="1" name="price_credits" value="{{ isset(@background_premium_map[@bg]) ? @background_premium_map[@bg].price_credits : 100 }}" style="width:72px;" title="Gems">
+							<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.save ?: 'Kaydet' }}</button>
+						</form>
+						<div style="display:flex; gap:4px; margin-top:4px;">
+							<a class="admin-btn admin-btn--sm" href="/admin/background/{{ @bg }}/mask">Mask</a>
+							<form action="/admin/background/delete" method="post" style="margin:0;">
+								<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+								<input type="hidden" name="filename" value="{{ @bg }}">
+								<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmDelete ?: 'Bu arka planı silmek istediğinizden emin misiniz?' }}');">{{ @lang.delete ?: 'Sil' }}</button>
+							</form>
+						</div>
+					</div>
+					</repeat>
+				</div>
+				<div class="admin-bg-upload">
+					<strong>{{ @lang.uploadBackground ?: 'Yeni Arka Plan Yükle' }}</strong>
+					<form action="/admin/background/upload" method="post" enctype="multipart/form-data" style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input type="file" name="background" accept="image/png,image/jpeg,image/gif,image/webp" class="textbox" style="flex:1; min-width:200px;">
+						<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.upload ?: 'Yükle' }}</button>
+					</form>
+					<p class="text-muted" style="margin-top:6px; font-size:0.85em;">{{ @lang.bgFilenameHint ?: 'Dosyalar otomatik olarak back.png, back2.png, ... şeklinde adlandırılır.' }}</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.maintenance ?: 'Bakım Araçları' }}</div>
+			<div class="admin-card-body" style="padding:0;">
+				<!-- Cleanup -->
+				<div class="admin-tool">
+					<div class="admin-tool-info">
+						<strong>{{ @lang.cleanup ?: 'Temizlik' }}</strong>
+						<p>{{ @lang.cleanupDesc ?: 'Silinmeyi bekleyen hesapları kaldır.' }}</p>
+					</div>
+					<form action="/admin/clean" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm" onclick="return confirm('{{ @lang.confirmCleanup ?: 'Emin misiniz?' }}');">{{ @lang.cleanup ?: 'Temizle' }}</button>
+					</form>
+				</div>
+
+				<!-- Recalculate Points -->
+				<div class="admin-tool">
+					<div class="admin-tool-info">
+						<strong>{{ @lang.recalculate ?: 'Yeniden Hesapla' }}</strong>
+						<p>{{ @lang.recalcPoints ?: 'Tüm oyuncu puanlarını yeniden hesapla.' }}</p>
+					</div>
+					<form action="/admin/recalc-points" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.recalculate ?: 'Hesapla' }}</button>
+					</form>
+				</div>
+
+				<!-- Clean Forums -->
+				<div class="admin-tool">
+					<div class="admin-tool-info">
+						<strong>{{ @lang.cleanForums ?: 'Forum Temizle' }}</strong>
+						<p>{{ @lang.cleanForumsDesc ?: 'Boş forum konularını kaldır.' }}</p>
+					</div>
+					<form action="/admin/clean-forums" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm" onclick="return confirm('{{ @lang.confirmCleanForums ?: 'Boş konular silinsin mi?' }}');">{{ @lang.cleanForums ?: 'Temizle' }}</button>
+					</form>
+				</div>
+
+				<!-- Disable Inactive -->
+				<div class="admin-tool">
+					<div class="admin-tool-info">
+						<strong>{{ @lang.disableInactive ?: 'Pasif Oyuncular' }}</strong>
+						<p>{{ @lang.cleanInactive ?: 'Pasif oyuncuları devre dışı bırak ve şehirlerini sahipsiz yap.' }}</p>
+					</div>
+					<form action="/admin/clean-inactive" method="post" class="admin-form-inline">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input class="textbox" type="text" name="inactive_days" value="30" style="width:50px; text-align:center;">
+						<span class="text-muted">{{ @lang.days ?: 'gün' }}</span>
+						<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmCleanup ?: 'Emin misiniz?' }}');">{{ @lang.disableInactive ?: 'Devre Dışı Bırak' }}</button>
+					</form>
+				</div>
+
+				<!-- Purge Reports -->
+				<div class="admin-tool">
+					<div class="admin-tool-info">
+						<strong>{{ @lang.purge ?: 'Raporları Temizle' }}</strong>
+						<p>{{ @lang.purgeReports ?: 'Eski raporları toplu olarak sil.' }}</p>
+					</div>
+					<form action="/admin/purge-reports" method="post" class="admin-form-inline">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input class="textbox" type="text" name="report_days" value="7" style="width:50px; text-align:center;">
+						<span class="text-muted">{{ @lang.days ?: 'gün' }}</span>
+						<button type="submit" class="admin-btn admin-btn--danger admin-btn--sm" onclick="return confirm('{{ @lang.confirmPurge ?: 'Eski raporlar silinsin mi?' }}');">{{ @lang.purge ?: 'Temizle' }}</button>
+					</form>
+				</div>
+
+				<!-- Cron Worker Setup -->
+				<div class="admin-tool" style="display:block;">
+					<div class="admin-tool-info" style="margin-bottom:10px;">
+						<strong>{{ @lang.cronWorker ?: 'Cron Worker' }} ({{ @lang.everyMinute ?: 'Dakikada 1' }})</strong>
+						<p>{{ @lang.cronDesc ?: 'Kaynaklar ve kuyrukların akması için cron gereklidir.' }}</p>
+					</div>
+					<div style="padding:0 14px 14px;">
+						<p style="margin:0 0 6px;"><strong>Script:</strong> <code>{{ @cron_script_path }}</code></p>
+						<p style="margin:0 0 10px;"><strong>Log:</strong> <code>{{ @cron_log_path }}</code></p>
+						<p style="margin:0 0 6px;"><strong>cPanel Cron Jobs</strong></p>
+						<p class="text-muted" style="margin:0 0 6px;">Minute: <code>*</code>, Hour: <code>*</code>, Day: <code>*</code>, Month: <code>*</code>, Weekday: <code>*</code></p>
+						<p class="text-muted" style="margin:0 0 8px;">{{ @lang.cronCommand ?: 'Command alanına şunu girin:' }}</p>
+						<textarea class="textbox" readonly rows="2" style="width:100%; font-family:monospace;">{{ @cron_command }}</textarea>
+						<p style="margin:12px 0 6px;"><strong>SSH crontab</strong></p>
+						<textarea class="textbox" readonly rows="2" style="width:100%; font-family:monospace;">* * * * * {{ @cron_command }}</textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<style>
+.admin-bot-profile {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: var(--font-size-xs);
+	font-weight: 600;
+	text-transform: capitalize;
+}
+.admin-bot-profile--builder  { background: rgba(60,120,60,0.25);  color: #88cc88; border: 1px solid rgba(80,140,80,0.4); }
+.admin-bot-profile--warrior  { background: rgba(160,80,30,0.25);  color: #e09050; border: 1px solid rgba(180,100,40,0.4); }
+.admin-bot-profile--raider   { background: rgba(150,30,30,0.25);  color: #e07070; border: 1px solid rgba(170,50,50,0.4); }
+.admin-bot-profile--trader   { background: rgba(160,130,30,0.25); color: #e0b840; border: 1px solid rgba(180,150,40,0.4); }
+.admin-bot-profile--diplomat { background: rgba(30,100,160,0.25); color: #70a8e0; border: 1px solid rgba(50,120,180,0.4); }
+.admin-bot-profile--balanced { background: rgba(80,60,120,0.25);  color: #b090e0; border: 1px solid rgba(100,80,140,0.4); }
+</style>
+
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+(function() {
+	var editorEl = document.getElementById('quill-editor');
+	if (!editorEl) return;
+
+	var quill = new Quill('#quill-editor', {
+		theme: 'snow',
+		modules: {
+			toolbar: [
+				[{ header: [1, 2, 3, false] }],
+				['bold', 'italic', 'underline', 'strike'],
+				[{ color: [] }, { background: [] }],
+				[{ list: 'ordered' }, { list: 'bullet' }],
+				['blockquote', 'code-block'],
+				['link', 'image'],
+				['clean']
+			]
+		},
+		placeholder: '{{ @lang.announcementPlaceholder ?: 'Duyuru içeriğini yazın...' }}'
+	});
+
+	var form = document.getElementById('announcement-form');
+	form.addEventListener('submit', function(e) {
+		var html = quill.root.innerHTML;
+		if (quill.getText().trim().length === 0) {
+			e.preventDefault();
+			alert('{{ @lang.contentRequired ?: 'İçerik zorunludur.' }}');
+			return;
+		}
+		document.getElementById('announcement-content').value = html;
+	});
+})();
+</script>

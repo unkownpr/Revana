@@ -1,0 +1,63 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="4">{{ @lang.forums ?: 'Forums' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">{{ @lang.forum ?: 'Forum' }}</td>
+		<td class="head_table">{{ @lang.threads ?: 'Threads' }}</td>
+		<td class="head_table">{{ @lang.posts ?: 'Posts' }}</td>
+		<td class="head_table">{{ @lang.lastPost ?: 'Last Post' }}</td>
+	</tr>
+	<check if="{{ count(@forums) }}">
+	<repeat group="{{ @forums }}" value="{{ @forum }}">
+	<tr>
+		<td class="q_text">
+			<a class="q_link" href="/forum/{{ @forum.id }}">{{ @forum.name }}</a>
+			<check if="{{ @forum.description }}"><br><small>{{ @forum.description }}</small></check>
+		</td>
+		<td class="q_text">{{ @forum.thread_count }}</td>
+		<td class="q_text">{{ @forum.post_count }}</td>
+		<td class="q_text">
+			<check if="{{ @forum.last_post_date }}">
+				{{ @forum.last_post_date }}<br>
+				<small>{{ @lang.by ?: 'by' }} <a class="q_link" href="/profile/{{ @forum.last_post_user_id }}">{{ @forum.last_post_user }}</a></small>
+			</check>
+			<check if="{{ !@forum.last_post_date }}">-</check>
+		</td>
+	</tr>
+	</repeat>
+	</check>
+	<check if="{{ !count(@forums) }}">
+	<tr>
+		<td class="q_text" colspan="4">{{ @lang.noForums ?: 'No forums available.' }}</td>
+	</tr>
+	</check>
+</table>
+
+<check if="{{ isset(@SESSION.user) && @SESSION.user.level > 3 }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.createForum ?: 'Create Forum' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/forum" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.forumName ?: 'Forum Name' }}
+						<input class="textbox" type="text" name="name">
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.description ?: 'Description' }}
+						<input class="textbox" type="text" name="description" size="40">
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" name="create" value="{{ @lang.create ?: 'Create' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>

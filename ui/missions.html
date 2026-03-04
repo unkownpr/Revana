@@ -1,0 +1,278 @@
+<style>
+.ms-page { max-width: 720px; margin: 0 auto; }
+.ms-tabs {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+.ms-tab {
+	padding: 7px 14px;
+	border-radius: 6px;
+	background: rgba(22, 14, 10, 0.7);
+	border: 1px solid rgba(136, 103, 65, 0.4);
+	color: #c8a96e;
+	text-decoration: none;
+	font-size: 0.9em;
+}
+.ms-tab:hover, .ms-tab.active {
+	background: rgba(136, 103, 65, 0.3);
+	color: #e8c97e;
+}
+.ms-week-badge {
+	background: rgba(136, 103, 65, 0.2);
+	border: 1px solid rgba(136, 103, 65, 0.5);
+	border-radius: 8px;
+	padding: 10px 16px;
+	margin-bottom: 20px;
+	font-size: 0.9em;
+	color: #a8bdcc;
+}
+
+.ms-xp-bar-wrap {
+	background: rgba(22, 14, 10, 0.7);
+	border: 1px solid rgba(136, 103, 65, 0.5);
+	border-radius: 10px;
+	padding: 16px 20px;
+	margin-bottom: 20px;
+}
+
+.ms-xp-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	margin-bottom: 8px;
+}
+
+.ms-xp-level {
+	font-size: 1.15em;
+	font-weight: 700;
+	color: var(--color-accent);
+}
+
+.ms-xp-count {
+	font-size: 0.85em;
+	color: #a8bdcc;
+}
+
+.ms-xp-bar {
+	height: 8px;
+	background: rgba(40, 28, 18, 0.9);
+	border-radius: 4px;
+	overflow: hidden;
+	border: 1px solid rgba(100, 75, 45, 0.4);
+}
+
+.ms-xp-fill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--color-accent-dark), var(--color-accent));
+	border-radius: 4px;
+	transition: width 0.4s ease;
+}
+
+.ms-mission-list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.ms-mission {
+	background: linear-gradient(180deg, rgba(37, 24, 15, 0.84), rgba(19, 13, 9, 0.9));
+	border: 1px solid rgba(136, 103, 65, 0.5);
+	border-radius: 10px;
+	padding: 16px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ms-mission.is-claimed {
+	opacity: 0.55;
+	border-color: rgba(80, 65, 45, 0.3);
+}
+
+.ms-mission-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.ms-mission-label {
+	font-weight: 600;
+	color: var(--color-text-heading);
+	flex: 1;
+}
+
+.ms-badge-claimed {
+	font-size: 0.78em;
+	background: rgba(100, 85, 55, 0.5);
+	color: #a8bdcc;
+	border: 1px solid rgba(120, 95, 60, 0.4);
+	border-radius: 4px;
+	padding: 2px 8px;
+	white-space: nowrap;
+}
+
+.ms-badge-complete {
+	font-size: 0.78em;
+	background: rgba(50, 100, 50, 0.5);
+	color: #88cc88;
+	border: 1px solid rgba(60, 120, 60, 0.5);
+	border-radius: 4px;
+	padding: 2px 8px;
+	white-space: nowrap;
+}
+
+.ms-reward {
+	font-size: 0.82em;
+	color: var(--color-accent);
+}
+
+.ms-progress-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ms-progress-bar {
+	flex: 1;
+	height: 6px;
+	background: rgba(40, 28, 18, 0.9);
+	border-radius: 3px;
+	overflow: hidden;
+	border: 1px solid rgba(100, 75, 45, 0.4);
+}
+
+.ms-progress-fill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--color-accent-dark), var(--color-accent));
+	border-radius: 3px;
+	transition: width 0.3s ease;
+}
+
+.ms-progress-fill.is-full {
+	background: linear-gradient(90deg, #4a9a4a, #6ac86a);
+}
+
+.ms-progress-count {
+	font-size: 0.82em;
+	color: #a8bdcc;
+	white-space: nowrap;
+	min-width: 48px;
+	text-align: right;
+}
+
+.ms-claim-form {
+	margin-top: 2px;
+}
+
+.ms-claim-btn {
+	padding: 6px 18px;
+	font-size: 0.88em;
+}
+</style>
+
+<div class="ms-page">
+	<h2 style="margin-bottom:10px;color:var(--color-accent)">
+		{{ @active_tab == 'weekly' ? (@lang.weeklyMissions ?: 'Weekly Missions') : (@lang.dailyMissions ?: 'Daily Missions') }}
+	</h2>
+
+	<div class="ms-tabs">
+		<a href="/missions" class="ms-tab{{ @active_tab == 'daily' ? ' active' : '' }}">{{ @lang.dailyMissions ?: 'Daily' }}</a>
+		<a href="/missions?tab=weekly" class="ms-tab{{ @active_tab == 'weekly' ? ' active' : '' }}">{{ @lang.weeklyMissions ?: 'Weekly' }}</a>
+	</div>
+
+	<check if="{{ @active_tab == 'daily' }}">
+		<div class="ms-xp-bar-wrap">
+			<div class="ms-xp-header">
+				<span class="ms-xp-level">{{ @lang.xpLevel ?: 'Level' }} {{ @user_xp_level ?: '0' }}</span>
+				<span class="ms-xp-count">{{ @user_xp ?: '0' }} / {{ @next_level_xp ?: '100' }} XP</span>
+			</div>
+			<div class="ms-xp-bar">
+				<div class="ms-xp-fill" style="width:{{ @xp_pct ?: '0' }}%"></div>
+			</div>
+		</div>
+	</check>
+
+	<check if="{{ @active_tab == 'weekly' }}">
+		<div class="ms-week-badge">
+			{{ @lang.weekStart ?: 'Week Start' }}: {{ @week_start }} &nbsp;|&nbsp; {{ @lang.weekEnd ?: 'Week End' }}: {{ @week_end }}
+		</div>
+	</check>
+
+	<div class="ms-mission-list">
+		<check if="{{ @active_tab == 'daily' }}">
+			<check if="{{ count(@missions) }}">
+				<repeat group="{{ @missions }}" value="{{ @m }}">
+					<div class="ms-mission{{ @m.claimed ? ' is-claimed' : '' }}">
+						<div class="ms-mission-header">
+							<span class="ms-mission-label">{{ @m.label }}</span>
+							<check if="{{ @m.claimed }}">
+								<span class="ms-badge-claimed">{{ @lang.claimed ?: 'Claimed' }}</span>
+							</check>
+							<check if="{{ !@m.claimed && @m.complete }}">
+								<span class="ms-badge-complete">&#10003; {{ @lang.missionReady ?: 'Ready' }}</span>
+							</check>
+						</div>
+
+						<div class="ms-reward">{{ @m.reward }}</div>
+
+						<div class="ms-progress-wrap">
+							<div class="ms-progress-bar">
+								<div class="ms-progress-fill{{ @m.pct >= 100 ? ' is-full' : '' }}" style="width:{{ @m.pct ?: '0' }}%"></div>
+							</div>
+							<span class="ms-progress-count">{{ @m.progress }}&thinsp;/&thinsp;{{ @m.target }}</span>
+						</div>
+
+						<check if="{{ !@m.claimed && @m.complete }}">
+							<form class="ms-claim-form" method="post" action="/missions/claim/{{ @m.id }}">
+								<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+								<button type="submit" class="btn btn-primary ms-claim-btn">{{ @lang.claimReward ?: 'Claim Reward' }}</button>
+							</form>
+						</check>
+					</div>
+				</repeat>
+			</check>
+			<check if="{{ !count(@missions) }}">
+				<p class="text-muted">{{ @lang.noMissions ?: 'No missions available. Check back tomorrow!' }}</p>
+			</check>
+		</check>
+
+		<check if="{{ @active_tab == 'weekly' }}">
+			<check if="{{ count(@weekly_missions) }}">
+				<repeat group="{{ @weekly_missions }}" value="{{ @m }}">
+					<div class="ms-mission{{ @m.claimed ? ' is-claimed' : '' }}">
+						<div class="ms-mission-header">
+							<span class="ms-mission-label">{{ @m.label }}</span>
+							<check if="{{ @m.claimed }}">
+								<span class="ms-badge-claimed">{{ @lang.claimed ?: 'Claimed' }}</span>
+							</check>
+							<check if="{{ !@m.claimed && @m.complete }}">
+								<span class="ms-badge-complete">&#10003; {{ @lang.missionReady ?: 'Ready' }}</span>
+							</check>
+						</div>
+
+						<div class="ms-reward">{{ @m.reward }}</div>
+
+						<div class="ms-progress-wrap">
+							<div class="ms-progress-bar">
+								<div class="ms-progress-fill{{ @m.pct >= 100 ? ' is-full' : '' }}" style="width:{{ @m.pct ?: '0' }}%"></div>
+							</div>
+							<span class="ms-progress-count">{{ @m.progress }}&thinsp;/&thinsp;{{ @m.target }}</span>
+						</div>
+
+						<check if="{{ !@m.claimed && @m.complete }}">
+							<form class="ms-claim-form" method="post" action="/missions/weekly/claim/{{ @m.id }}">
+								<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+								<button type="submit" class="btn btn-primary ms-claim-btn">{{ @lang.claimReward ?: 'Claim Reward' }}</button>
+							</form>
+						</check>
+					</div>
+				</repeat>
+			</check>
+			<check if="{{ !count(@weekly_missions) }}">
+				<p class="text-muted">{{ @lang.noMissions ?: 'No missions available. Check back tomorrow!' }}</p>
+			</check>
+		</check>
+	</div>
+</div>

@@ -1,0 +1,660 @@
+<div class="map-editor">
+
+	<!-- ============================================
+	     Toolbar
+	     ============================================ -->
+	<div class="map-toolbar">
+		<div class="map-toolbar-title">
+			<span class="map-name">{{ @editor_map.name }}</span>
+			<span class="map-size">({{ @editor_map.width }}&times;{{ @editor_map.height }})</span>
+		</div>
+
+		<span class="map-toolbar-sep"></span>
+
+		<div class="map-toolbar-nav">
+			<label>{{ @lang.jumpTo ?? 'Jump to' }}:</label>
+			<input class="textbox" type="text" id="ed_x" size="2" value="{{ @center_x }}">
+			<input class="textbox" type="text" id="ed_y" size="2" value="{{ @center_y }}">
+			<input class="btn-go" type="button" onclick="editorJump()" value="{{ @lang.go ?? 'Go' }}">
+		</div>
+
+		<div class="toolbar-brush-badge" id="currentBrushBadge" title="Currently selected paint brush">
+			<span class="brush-label">Painting:</span>
+			<span id="currentBrushName">Land</span>
+		</div>
+
+		<form action="/admin/maps/{{ @map_id }}/generate" method="post" style="display:inline;margin:0;">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<input class="btn-generate" type="submit" value="{{ @lang.generateRandom ?? 'Generate Random' }}" onclick="return confirm('{{ @lang.generateRandomHint ?? 'DANGER: Overwrites ALL existing tiles with random terrain. This action cannot be undone.' }}');" title="{{ @lang.generateRandomHint ?? 'DANGER: Overwrites ALL existing tiles with random terrain. This action cannot be undone.' }}">
+		</form>
+
+		<a class="back-link" href="/admin/maps">
+			<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2L4 8l6 6"/></svg>
+			{{ @lang.backToList ?? 'Back to List' }}
+		</a>
+	</div>
+
+	<!-- ============================================
+	     Quick Guide
+	     ============================================ -->
+	<div class="editor-guide-panel" id="editorGuidePanel">
+		<div class="editor-guide-header" onclick="toggleGuidePanel()">
+			<span class="guide-title">&#9432; How to use the Map Editor</span>
+			<button type="button" class="guide-toggle-btn" id="editorGuideToggleBtn">Hide</button>
+		</div>
+		<div class="editor-guide-body" id="editorGuideBody">
+			<div class="guide-grid">
+				<div class="guide-card">
+					<div class="guide-card-title">Painting Tiles</div>
+					<p>Select a terrain brush from the <strong>Palette</strong> below. Then click any tile on the map to paint it with that terrain. The currently selected brush is shown in the toolbar.</p>
+				</div>
+				<div class="guide-card">
+					<div class="guide-card-title">Navigation</div>
+					<p>
+						Use <span class="guide-kbd">W</span><span class="guide-kbd">A</span><span class="guide-kbd">S</span><span class="guide-kbd">D</span> or <span class="guide-kbd">&#8592;</span><span class="guide-kbd">&#8593;</span><span class="guide-kbd">&#8594;</span><span class="guide-kbd">&#8595;</span> to move the view.
+						Or type coordinates into the <em>Jump to</em> fields and click <strong>Go</strong>.
+						You can also click the direction arrows on the map image edges.
+					</p>
+				</div>
+				<div class="guide-card">
+					<div class="guide-card-title">Tile Types</div>
+					<p>
+						<strong>Type 1</strong> = Land (plains, resource fields — walkable, farmable)<br>
+						<strong>Type 2</strong> = Water (rivers, lakes — impassable, decorative)<br>
+						<strong>Type 3</strong> = Town slot (where players can found towns)<br>
+						The <em>subtype</em> distinguishes different visuals within the same type.
+					</p>
+				</div>
+				<div class="guide-card">
+					<div class="guide-card-title">Generate Random <span class="guide-badge-danger">Destructive</span></div>
+					<p>Fills the <strong>entire map</strong> with randomly generated terrain. Existing tiles are overwritten. Use this to create a starter map quickly, then paint over specific areas.</p>
+				</div>
+				<div class="guide-card">
+					<div class="guide-card-title">Custom Brushes</div>
+					<p>Click <strong>"+"</strong> in the palette to upload your own terrain image. It will automatically be normalized to an 80&times;80 isometric tile. Custom brushes can be deleted (except built-in ones).</p>
+				</div>
+				<div class="guide-card">
+					<div class="guide-card-title">Biome Rules</div>
+					<p>The <strong>Biome Rules</strong> section controls how towns look in-game based on their surrounding terrain. Set which background image and map icon to use per terrain type or faction.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ============================================
+	     Palette (Brush Picker)
+	     ============================================ -->
+	<div class="editor-palette-section">
+		<div class="editor-palette-header">
+			<span class="palette-label">{{ @lang.paintBrush ?? 'Paint Brush' }}</span>
+			<span class="palette-hint">Select a terrain type, then click tiles on the map to paint them. Use "+" to upload a custom tile image.</span>
+		</div>
+		<div class="editor-palette">
+			<repeat group="{{ @brushes }}" value="{{ @br }}">
+			<div class="palette-btn{{ @br.type == '1' && @br.subtype == '0' ? ' active' : '' }}" data-type="{{ @br.type }}" data-subtype="{{ @br.subtype }}" onclick="selectBrush(this)">
+				<img src="{{ @imgs }}map/{{ @br.img_file }}" alt="{{ @br.translated_name ?: @br.name }}">
+				<span>{{ @br.translated_name ?: @br.name }}</span>
+				<check if="{{ @br.is_default == '0' }}">
+				<form method="post" action="/admin/maps/tile-brush/{{ @br.id }}/delete" style="margin:0;padding:0;">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input type="hidden" name="map_id" value="{{ @map_id }}">
+					<button type="submit" onclick="return confirm('{{ @lang.deleteBrush ?? 'Delete brush' }}?')" class="brush-delete-btn" title="{{ @lang.deleteBrush ?? 'Delete brush' }}">&times;</button>
+				</form>
+				</check>
+			</div>
+			</repeat>
+			<div class="palette-btn-add" onclick="toggleUploadForm()" title="{{ @lang.addCustomTile ?? 'Add custom tile' }}">
+				<span>+</span>
+				<span class="add-label">{{ @lang.addTile ?? 'Add' }}</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- ============================================
+	     Upload Form Panel (hidden by default)
+	     ============================================ -->
+	<div id="upload-form-panel" class="upload-form-panel" style="display:none;">
+		<div class="upload-form-header">{{ @lang.uploadNewTile ?? 'Upload New Tile' }}</div>
+		<div class="upload-form-body">
+			<form method="post" action="/admin/maps/tile-brush/upload" enctype="multipart/form-data">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="map_id" value="{{ @map_id }}">
+				<div class="upload-grid-main">
+					<div class="upload-field">
+						<label>{{ @lang.tileName ?? 'Name (EN)' }}</label>
+						<input type="text" name="name" required class="textbox" placeholder="{{ @lang.tileNameHint ?? 'Tile name' }}">
+					</div>
+					<div class="upload-field">
+						<label>{{ @lang.tileType ?? 'Type' }}</label>
+						<select name="type" class="textbox">
+							<option value="0">0 - {{ @lang.water ?? 'Water' }} (impassable)</option>
+							<option value="1" selected>1 - {{ @lang.land ?? 'Land' }} (walkable, farmable)</option>
+							<option value="2">2 - {{ @lang.mountain ?? 'Mountain' }} (impassable)</option>
+							<option value="3">3 - {{ @lang.town ?? 'Town' }} (town slot on map)</option>
+						</select>
+						<div class="upload-field-hint">Determines game behavior: water and mountains block movement.</div>
+					</div>
+					<div class="upload-field">
+						<label>{{ @lang.subtype ?? 'Subtype' }}</label>
+						<input type="number" name="subtype" class="textbox" placeholder="{{ @lang.subtypeAuto ?? 'auto' }}" min="0">
+						<div class="upload-field-hint">Variant number within the type. Leave empty to assign automatically.</div>
+					</div>
+					<div class="upload-field">
+						<label>{{ @lang.tileImage ?? 'Image' }} (GIF/PNG/JPG/WEBP)</label>
+						<input type="file" name="tile_image" accept="image/gif,image/png,image/jpeg,image/webp" required>
+					</div>
+					<div class="upload-field" style="justify-content:flex-end;">
+						<input type="submit" class="button" value="{{ @lang.upload ?? 'Upload' }}">
+					</div>
+				</div>
+				<div class="upload-translations">
+					<span class="trans-heading">{{ @lang.translations ?? 'Translations' }}:</span>
+					<div class="upload-trans-field">
+						<label>TR</label>
+						<input type="text" name="name_tr" class="textbox" placeholder="T&uuml;rk&ccedil;e">
+					</div>
+					<div class="upload-trans-field">
+						<label>DE</label>
+						<input type="text" name="name_de" class="textbox" placeholder="Deutsch">
+					</div>
+					<div class="upload-trans-field">
+						<label>FR</label>
+						<input type="text" name="name_fr" class="textbox" placeholder="Fran&ccedil;ais">
+					</div>
+					<div class="upload-trans-field">
+						<label>IT</label>
+						<input type="text" name="name_it" class="textbox" placeholder="Italiano">
+					</div>
+					<div class="upload-trans-field">
+						<label>NL</label>
+						<input type="text" name="name_nl" class="textbox" placeholder="Nederlands">
+					</div>
+					<div class="upload-trans-field">
+						<label>RO</label>
+						<input type="text" name="name_ro" class="textbox" placeholder="Rom&acirc;n&#259;">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- ============================================
+	     Biome Rules Panel
+	     ============================================ -->
+	<div class="biome-bg-panel" id="biomeRulesPanel">
+		<div class="biome-panel-head">
+			<div class="biome-bg-title">{{ @lang.biomeRules ?? 'Town Background Rules (Biome)' }}</div>
+			<button type="button" class="biome-panel-toggle" id="biomePanelToggle" aria-expanded="false">Open</button>
+		</div>
+		<div class="biome-panel-desc">
+			These rules control how towns appear in-game. The <strong>background</strong> is the scenery image shown behind a player's town view. The <strong>town tile visual</strong> is the icon shown on the world map. Both can be set per terrain type (biome) and per faction.
+		</div>
+		<div class="biome-panel-body" id="biomePanelBody" hidden>
+
+			<!-- Upload sub-section -->
+			<div class="biome-upload-grid">
+				<div class="biome-upload-box">
+					<h4>{{ @lang.uploadBackground ?? 'Upload Background' }}</h4>
+					<form method="post" action="/admin/background/upload" enctype="multipart/form-data">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input type="file" name="background" accept="image/png,image/gif,image/jpeg,image/webp" required>
+						<input type="submit" class="button" value="{{ @lang.upload ?? 'Upload' }}" style="margin-top:6px;">
+					</form>
+				</div>
+				<div class="biome-upload-box">
+					<h4>{{ @lang.uploadTownVisual ?? 'Upload Biome Town Visual' }}</h4>
+					<form method="post" action="/admin/maps/tile-brush/upload" enctype="multipart/form-data">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input type="hidden" name="map_id" value="{{ @map_id }}">
+						<input type="hidden" name="type" value="3">
+						<div class="biome-upload-inner">
+							<input type="text" name="name" class="textbox" placeholder="{{ @lang.townVisualName ?? 'Name (e.g. Forest Town)' }}" required>
+							<input type="number" name="subtype" class="textbox" placeholder="{{ @lang.subtypeAutoHint ?? 'Subtype (leave empty for auto)' }}">
+							<input type="file" name="tile_image" accept="image/gif,image/png,image/jpeg,image/webp" required>
+							<input type="submit" class="button" value="{{ @lang.upload ?? 'Upload' }}">
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<form method="post" action="/admin/maps/{{ @map_id }}/background-settings">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+
+			<!-- Sub-section 1: Default Background -->
+			<div class="biome-subsection-title">{{ @lang.defaultBackground ?? 'Default Background' }}</div>
+			<p class="biome-subsection-desc">Choose which background image is shown behind the player's town screen. "Default" applies everywhere; per-biome overrides apply when a town is surrounded by that terrain type.</p>
+			<div class="biome-grid">
+				<div class="biome-field">
+					<label>{{ @lang.default ?? 'Default' }}</label>
+					<div class="biome-select-wrap">
+						<select class="biome-select js-preview-select" name="default_background" data-preview-type="bg" data-preview-target="pv_bg_default" data-fallback="{{ @bg_default_setting }}">
+							<repeat group="{{ @backgrounds }}" value="{{ @bgopt }}">
+								<option value="{{ @bgopt }}" <check if="{{ @bg_default_setting == @bgopt }}">selected</check>>{{ @bgopt }}</option>
+							</repeat>
+						</select>
+					</div>
+					<div class="biome-preview" id="pv_bg_default">
+						<img src="/default/1/{{ @bg_default_setting }}" alt="{{ @bg_default_setting }}">
+						<div class="biome-preview-name">{{ @bg_default_setting }}</div>
+					</div>
+				</div>
+				<repeat group="{{ @biome_options }}" value="{{ @bo }}">
+					<div class="biome-field">
+						<label>{{ @bo.key }} {{ @bo.label }}</label>
+						<div class="biome-select-wrap">
+							<select class="biome-select js-preview-select" name="biome_map[{{ @bo.key }}]" data-preview-type="bg" data-preview-target="pv_bg_{{ @bo.key }}" data-fallback="{{ @bg_default_setting }}">
+								<option value="">({{ @lang.default ?? 'Default' }})</option>
+								<repeat group="{{ @backgrounds }}" value="{{ @bgopt }}">
+									<option value="{{ @bgopt }}" <check if="{{ @bo.selected == @bgopt }}">selected</check>>{{ @bgopt }}</option>
+								</repeat>
+							</select>
+						</div>
+						<div class="biome-preview" id="pv_bg_{{ @bo.key }}">
+							<img src="/default/1/{{ @bo.selected ?: @bg_default_setting }}" alt="{{ @bo.selected ?: @bg_default_setting }}">
+							<div class="biome-preview-name">{{ @bo.selected ?: @bg_default_setting }}</div>
+						</div>
+					</div>
+				</repeat>
+				<div class="biome-save-wrap">
+					<input type="submit" class="button biome-save-btn" value="{{ @lang.saveBiomeRules ?? 'Save Biome Rules' }}">
+				</div>
+			</div>
+
+			<!-- Sub-section 2: Town Tile Visual Rules -->
+			<div class="biome-subsection-title">{{ @lang.townVisualRules ?? 'Town Visual Rules (Map, Biome)' }}</div>
+			<p class="biome-subsection-desc">Choose which icon represents towns on the world map. Different icons can be shown based on the surrounding terrain (biome). For example, a town surrounded by forest tiles could show a forest-town icon.</p>
+			<div class="biome-grid">
+				<div class="biome-field">
+					<label>{{ @lang.townDefaultVisual ?? 'Town Default Visual' }}</label>
+					<div class="biome-select-wrap">
+						<select class="biome-select js-preview-select" name="town_tile_default" data-preview-type="tile" data-preview-target="pv_town_default" data-fallback="{{ @town_tile_default_setting }}">
+							<repeat group="{{ @town_tile_options }}" value="{{ @opt }}">
+								<option value="{{ @opt }}" <check if="{{ @town_tile_default_setting == @opt }}">selected</check>>{{ @opt }}</option>
+							</repeat>
+						</select>
+					</div>
+					<div class="biome-preview" id="pv_town_default">
+						<img src="{{ @imgs }}map/{{ @town_tile_default_setting }}" alt="{{ @town_tile_default_setting }}">
+						<div class="biome-preview-name">{{ @town_tile_default_setting }}</div>
+					</div>
+				</div>
+				<repeat group="{{ @biome_options }}" value="{{ @bo }}">
+					<div class="biome-field">
+						<label>{{ @bo.key }} {{ @bo.label }}</label>
+						<div class="biome-select-wrap">
+							<select class="biome-select js-preview-select" name="town_tile_map[{{ @bo.key }}]" data-preview-type="tile" data-preview-target="pv_town_biome_{{ @bo.key }}" data-fallback="{{ @town_tile_default_setting }}">
+								<option value="">({{ @lang.default ?? 'Default' }})</option>
+								<repeat group="{{ @town_tile_options }}" value="{{ @opt }}">
+									<option value="{{ @opt }}" <check if="{{ @bo.town_selected == @opt }}">selected</check>>{{ @opt }}</option>
+								</repeat>
+							</select>
+						</div>
+						<div class="biome-preview" id="pv_town_biome_{{ @bo.key }}">
+							<img src="{{ @imgs }}map/{{ @bo.town_selected ?: @town_tile_default_setting }}" alt="{{ @bo.town_selected ?: @town_tile_default_setting }}">
+							<div class="biome-preview-name">{{ @bo.town_selected ?: @town_tile_default_setting }}</div>
+						</div>
+					</div>
+				</repeat>
+				<div class="biome-save-wrap">
+					<input type="submit" class="button biome-save-btn" value="{{ @lang.saveTownVisualRules ?? 'Save Town Visual Rules' }}">
+				</div>
+			</div>
+
+			<!-- Sub-section 3: Faction + Biome -->
+			<div class="biome-subsection-title">{{ @lang.factionBiomeRules ?? 'Town Visual Rules (Faction + Biome)' }}</div>
+			<p class="biome-subsection-desc">Per-faction overrides: each faction (race/civilization) can have its own town icon, overriding the biome default. This lets elven towns look different from human towns even in the same biome. Leave a field empty to fall back to the faction default or biome default.</p>
+			<repeat group="{{ @faction_tile_rules }}" value="{{ @fr }}">
+				<div class="biome-grid biome-faction-group">
+					<div class="biome-field">
+						<label>Faction {{ @fr.id }}: {{ @fr.name }}</label>
+						<div class="biome-select-wrap">
+							<select class="biome-select js-preview-select" name="town_tile_faction_default[{{ @fr.id }}]" data-preview-type="tile" data-preview-target="pv_faction_default_{{ @fr.id }}" data-fallback="{{ @town_tile_default_setting }}">
+								<option value="">({{ @lang.doNotUse ?? 'Do not use' }})</option>
+								<repeat group="{{ @town_tile_options }}" value="{{ @opt }}">
+									<option value="{{ @opt }}" <check if="{{ @fr.default_selected == @opt }}">selected</check>>{{ @opt }}</option>
+								</repeat>
+							</select>
+						</div>
+						<div class="biome-preview" id="pv_faction_default_{{ @fr.id }}">
+							<img src="{{ @imgs }}map/{{ @fr.default_selected ?: @town_tile_default_setting }}" alt="{{ @fr.default_selected ?: @town_tile_default_setting }}">
+							<div class="biome-preview-name">{{ @fr.default_selected ?: @town_tile_default_setting }}</div>
+						</div>
+					</div>
+					<repeat group="{{ @fr.biomes }}" value="{{ @fb }}">
+						<div class="biome-field">
+							<label>{{ @fb.key }} {{ @fb.label }}</label>
+							<div class="biome-select-wrap">
+								<select class="biome-select js-preview-select" name="town_tile_faction_map[{{ @fr.id }}][{{ @fb.key }}]" data-preview-type="tile" data-preview-target="pv_faction_biome_{{ @fr.id }}_{{ @fb.key }}" data-fallback="{{ @fr.default_selected ?: @town_tile_default_setting }}">
+									<option value="">({{ @lang.factionDefault ?? 'Faction default' }})</option>
+									<repeat group="{{ @town_tile_options }}" value="{{ @opt }}">
+										<option value="{{ @opt }}" <check if="{{ @fb.selected == @opt }}">selected</check>>{{ @opt }}</option>
+									</repeat>
+								</select>
+							</div>
+							<div class="biome-preview" id="pv_faction_biome_{{ @fr.id }}_{{ @fb.key }}">
+								<img src="{{ @imgs }}map/{{ @fb.selected ?: (@fr.default_selected ?: @town_tile_default_setting) }}" alt="{{ @fb.selected ?: (@fr.default_selected ?: @town_tile_default_setting) }}">
+								<div class="biome-preview-name">{{ @fb.selected ?: (@fr.default_selected ?: @town_tile_default_setting) }}</div>
+							</div>
+						</div>
+					</repeat>
+				</div>
+			</repeat>
+			<div class="biome-save-wrap" style="margin-top:var(--space-md, 12px);">
+				<input type="submit" class="button biome-save-btn" value="{{ @lang.saveFactionBiomeRules ?? 'Save Faction + Biome Rules' }}">
+			</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- ============================================
+	     Map Area
+	     ============================================ -->
+	<div class="map-area" id="map-dynamic">
+		<repeat group="{{ @yLabels }}" value="{{ @yl }}">
+		<div class="map-axis-label" style='left:{{ @yl.st_x }}px;top:{{ @yl.st_y }}px;'>{{ @yl.label }}</div>
+		</repeat>
+		<repeat group="{{ @xLabels }}" value="{{ @xl }}">
+		<div class="map-axis-label" style='left:{{ @xl.st_x }}px;top:{{ @xl.st_y }}px;'>{{ @xl.label }}</div>
+		</repeat>
+
+		<div class="map-tiles-inner">
+			<repeat group="{{ @mapTiles }}" value="{{ @t }}">
+			<img class="map-tile-img" id="tile_{{ @t.tile_x }}_{{ @t.tile_y }}" style='left:{{ @t.st_x }}px;top:{{ @t.st_y }}px;' src='{{ @t.img }}'>
+			</repeat>
+
+			<img src="{{ @imgs }}map/map_back.gif" class="map-grid-overlay" usemap="#EdMap">
+			<map name="EdMap" id="EdMap">
+				<repeat group="{{ @mapTiles }}" value="{{ @t }}">
+				<area shape="poly" coords='{{ @t.coords }}'
+					href="javascript:void(0)"
+					onclick="paintAt({{ @t.tile_x }},{{ @t.tile_y }})"
+					onmouseover="showTileInfo({{ @t.tile_x }},{{ @t.tile_y }},'{{ @t.desc_name }}',{{ @t.tile_type }},{{ @t.tile_subtype }})"
+					onmouseout="clearTileInfo()">
+				</repeat>
+
+				<area shape="circle" coords='482,38,15' href="javascript:void(0)" onclick="editorNav({{ @nav.north_x }},{{ @nav.north_y }})" title="North">
+				<area shape="circle" coords='77,241,15' href="javascript:void(0)" onclick="editorNav({{ @nav.south_x }},{{ @nav.south_y }})" title="South">
+				<area shape="circle" coords='482,241,15' href="javascript:void(0)" onclick="editorNav({{ @nav.east_x }},{{ @nav.east_y }})" title="East">
+				<area shape="circle" coords='77,38,15' href="javascript:void(0)" onclick="editorNav({{ @nav.west_x }},{{ @nav.west_y }})" title="West">
+			</map>
+		</div>
+	</div>
+
+	<!-- ============================================
+	     Tile Info Footer
+	     ============================================ -->
+	<div class="tile-info-panel" id="tile-info">
+		<span id="info-coords">-</span>
+		<span id="info-type">-</span>
+		<span style="color:var(--color-text-muted,#9a8568);font-size:11px;font-style:italic;margin-left:auto;">
+			Navigate: <strong>W A S D</strong> or arrow keys &nbsp;|&nbsp; Hover a tile to see its info here
+		</span>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var _mapId = {{ @map_id }};
+var _mapW = {{ @map_width }};
+var _mapH = {{ @map_height }};
+var _brushType = 1;
+var _brushSubtype = 0;
+var _imgs = '{{ @imgs }}';
+var _edN = 0;
+var _townTileDefault = '{{ @town_tile_default_setting ?: "env_31.gif" }}';
+var _csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+
+var _tileImgMap = {{ json_encode(@brushImageMap) }};
+var _typeNames = {{ json_encode(@brushNameMap) }};
+
+function selectBrush(el) {
+	document.querySelectorAll('.palette-btn').forEach(function(b) { b.classList.remove('active'); });
+	el.classList.add('active');
+	_brushType = parseInt(el.getAttribute('data-type'));
+	_brushSubtype = parseInt(el.getAttribute('data-subtype'));
+
+	// Update current brush indicator in toolbar
+	var nameEl = el.querySelector('span');
+	var brushName = nameEl ? nameEl.textContent : ('Type ' + _brushType + '.' + _brushSubtype);
+	var badge = document.getElementById('currentBrushName');
+	if (badge) badge.textContent = brushName;
+}
+
+function toggleUploadForm() {
+	var panel = document.getElementById('upload-form-panel');
+	panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function paintAt(x, y) {
+	if (x < 0 || y < 0 || x >= _mapW || y >= _mapH) return;
+
+	fetch('/admin/maps/' + _mapId + '/tile', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': _csrfToken,
+			'X-Requested-With': 'XMLHttpRequest'
+		},
+		body: JSON.stringify({x: x, y: y, type: _brushType, subtype: _brushSubtype})
+	}).then(function(r) {
+		if (!r.ok) {
+			return r.text().then(function(t) {
+				throw new Error('Paint request failed (' + r.status + '). ' + (t ? t.substring(0, 120) : ''));
+			});
+		}
+		return r.json();
+	}).then(function(data) {
+		if (data.ok) {
+			var imgKey = _brushType + '_' + _brushSubtype;
+			var imgFile = _tileImgMap[imgKey] || 'env_11.gif';
+			var tileImg = document.getElementById('tile_' + x + '_' + y);
+			if (tileImg) {
+				tileImg.onerror = function() {
+					this.onerror = null;
+					this.src = _imgs + 'map/env_11.gif';
+				};
+				tileImg.src = _imgs + 'map/' + imgFile;
+			}
+		}
+	}).catch(function(err) {
+		console.error(err);
+	});
+}
+
+function showTileInfo(x, y, name, type, subtype) {
+	document.getElementById('info-coords').textContent = '(' + x + ', ' + y + ')';
+	document.getElementById('info-type').textContent = name + ' [type=' + type + ' sub=' + subtype + ']';
+}
+
+function clearTileInfo() {
+	document.getElementById('info-coords').textContent = '-';
+	document.getElementById('info-type').textContent = '-';
+}
+
+function editorNav(x, y) {
+	fetch('/admin/maps/' + _mapId + '/ajax?x=' + x + '&y=' + y)
+		.then(function(r) {
+			if (!r.ok) {
+				return r.text().then(function(t) {
+					throw new Error('Map ajax failed (' + r.status + '). ' + (t ? t.substring(0, 120) : ''));
+				});
+			}
+			return r.json();
+		})
+		.then(function(data) {
+			renderEditorMap(data);
+			document.getElementById('ed_x').value = data.center_x;
+			document.getElementById('ed_y').value = data.center_y;
+		})
+		.catch(function(err) {
+			console.error(err);
+		});
+}
+
+function editorJump() {
+	var x = parseInt(document.getElementById('ed_x').value) || 0;
+	var y = parseInt(document.getElementById('ed_y').value) || 0;
+	x = Math.max(0, Math.min(_mapW - 1, x));
+	y = Math.max(0, Math.min(_mapH - 1, y));
+	editorNav(x, y);
+}
+
+function renderEditorMap(data) {
+	if (data.brushImageMap) _tileImgMap = data.brushImageMap;
+	if (data.brushNameMap) _typeNames = data.brushNameMap;
+	_edN++;
+	var area = document.getElementById('map-dynamic');
+	var html = '';
+	var i, t;
+	var mapName = 'EdMap' + _edN;
+
+	for (i = 0; i < data.yLabels.length; i++) {
+		var yl = data.yLabels[i];
+		html += '<div class="map-axis-label" style="left:' + yl.st_x + 'px;top:' + yl.st_y + 'px;">' + yl.label + '</div>';
+	}
+	for (i = 0; i < data.xLabels.length; i++) {
+		var xl = data.xLabels[i];
+		html += '<div class="map-axis-label" style="left:' + xl.st_x + 'px;top:' + xl.st_y + 'px;">' + xl.label + '</div>';
+	}
+
+	html += '<div class="map-tiles-inner">';
+
+	for (i = 0; i < data.mapTiles.length; i++) {
+		t = data.mapTiles[i];
+		html += '<img class="map-tile-img" id="tile_' + t.tile_x + '_' + t.tile_y + '" style="left:' + t.st_x + 'px;top:' + t.st_y + 'px;" src="' + t.img + '">';
+	}
+
+	html += '<img src="' + data.imgs + 'map/map_back.gif" class="map-grid-overlay" usemap="#' + mapName + '">';
+	html += '<map name="' + mapName + '" id="' + mapName + '">';
+
+	for (i = 0; i < data.mapTiles.length; i++) {
+		t = data.mapTiles[i];
+		html += '<area shape="poly" coords="' + t.coords + '" href="javascript:void(0)"';
+		html += ' onclick="paintAt(' + t.tile_x + ',' + t.tile_y + ')"';
+		html += ' onmouseover="showTileInfo(' + t.tile_x + ',' + t.tile_y + ',\'' + t.desc_name + '\',' + t.tile_type + ',' + t.tile_subtype + ')"';
+		html += ' onmouseout="clearTileInfo()">';
+	}
+
+	var nav = data.nav;
+	html += '<area shape="circle" coords="482,38,15" href="javascript:void(0)" onclick="editorNav(' + nav.north_x + ',' + nav.north_y + ')" title="North">';
+	html += '<area shape="circle" coords="77,241,15" href="javascript:void(0)" onclick="editorNav(' + nav.south_x + ',' + nav.south_y + ')" title="South">';
+	html += '<area shape="circle" coords="482,241,15" href="javascript:void(0)" onclick="editorNav(' + nav.east_x + ',' + nav.east_y + ')" title="East">';
+	html += '<area shape="circle" coords="77,38,15" href="javascript:void(0)" onclick="editorNav(' + nav.west_x + ',' + nav.west_y + ')" title="West">';
+
+	html += '</map></div>';
+	area.innerHTML = html;
+}
+
+document.addEventListener('keydown', function(e) {
+	var cx = parseInt(document.getElementById('ed_x').value) || 0;
+	var cy = parseInt(document.getElementById('ed_y').value) || 0;
+
+	if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+	if (e.key === 'ArrowUp' || e.key === 'w') {
+		e.preventDefault();
+		editorNav(cx, Math.min(_mapH - 1, cy + 1));
+	} else if (e.key === 'ArrowDown' || e.key === 's') {
+		e.preventDefault();
+		editorNav(cx, Math.max(0, cy - 1));
+	} else if (e.key === 'ArrowRight' || e.key === 'd') {
+		e.preventDefault();
+		editorNav(Math.min(_mapW - 1, cx + 1), cy);
+	} else if (e.key === 'ArrowLeft' || e.key === 'a') {
+		e.preventDefault();
+		editorNav(Math.max(0, cx - 1), cy);
+	}
+});
+
+function initBiomePreviews() {
+	var selects = document.querySelectorAll('.js-preview-select');
+	selects.forEach(function(sel) {
+		var targetId = sel.getAttribute('data-preview-target');
+		var target = targetId ? document.getElementById(targetId) : null;
+		if (!target) return;
+		var img = target.querySelector('img');
+		var name = target.querySelector('.biome-preview-name');
+		if (!img || !name) return;
+
+		var type = sel.getAttribute('data-preview-type') || 'bg';
+		var fallback = sel.getAttribute('data-fallback') || '';
+		var base = type === 'tile' ? (_imgs + 'map/') : '/default/1/';
+
+		var refresh = function() {
+			var val = sel.value || fallback || '';
+			if (!val) return;
+			img.src = base + val;
+			img.alt = val;
+			name.textContent = val;
+		};
+
+		sel.addEventListener('change', refresh);
+		refresh();
+	});
+}
+
+function initBiomePanelToggle() {
+	var btn = document.getElementById('biomePanelToggle');
+	var body = document.getElementById('biomePanelBody');
+	if (!btn || !body) return;
+
+	var storageKey = 'map_editor_biome_panel_open_{{ @map_id }}';
+	var saved = localStorage.getItem(storageKey);
+	var isOpen = saved === '1';
+
+	function render() {
+		body.hidden = !isOpen;
+		btn.textContent = isOpen ? 'Close' : 'Open';
+		btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+	}
+
+	btn.addEventListener('click', function() {
+		isOpen = !isOpen;
+		localStorage.setItem(storageKey, isOpen ? '1' : '0');
+		render();
+	});
+
+	render();
+}
+
+initBiomePanelToggle();
+initBiomePreviews();
+
+// Quick Guide panel toggle
+function toggleGuidePanel() {
+	var body = document.getElementById('editorGuideBody');
+	var btn = document.getElementById('editorGuideToggleBtn');
+	if (!body || !btn) return;
+	var isHidden = body.hasAttribute('hidden');
+	if (isHidden) {
+		body.removeAttribute('hidden');
+		btn.textContent = 'Hide';
+		localStorage.setItem('map_editor_guide_open', '1');
+	} else {
+		body.setAttribute('hidden', '');
+		btn.textContent = 'Show';
+		localStorage.setItem('map_editor_guide_open', '0');
+	}
+}
+
+// Restore guide panel state
+(function() {
+	var saved = localStorage.getItem('map_editor_guide_open');
+	if (saved === '0') {
+		var body = document.getElementById('editorGuideBody');
+		var btn = document.getElementById('editorGuideToggleBtn');
+		if (body) body.setAttribute('hidden', '');
+		if (btn) btn.textContent = 'Show';
+	}
+})();
+
+// Initialize current brush badge from the active palette button
+(function() {
+	var active = document.querySelector('.palette-btn.active');
+	if (active) {
+		var nameEl = active.querySelector('span');
+		var badge = document.getElementById('currentBrushName');
+		if (nameEl && badge) badge.textContent = nameEl.textContent;
+	}
+})();
+</script>

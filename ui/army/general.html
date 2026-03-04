@@ -1,0 +1,99 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="2">{{ @lang.general ?: 'General' }} - {{ @town.name }}</td>
+	</tr>
+</table>
+
+<check if="{{ @has_general }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="2">{{ @lang.generalStats ?: 'General Statistics' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.unitType ?: 'Unit Type' }}</td>
+		<td class="q_text">{{ @general.unit_name }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.level ?: 'Level' }}</td>
+		<td class="q_text">{{ @general.level }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.experience ?: 'Experience' }}</td>
+		<td class="q_text">{{ @general.xp }} / {{ @general.next_level_xp }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.attackBonus ?: 'Attack Bonus' }}</td>
+		<td class="q_text">+{{ @general.level }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.defenseBonus ?: 'Defense Bonus' }}</td>
+		<td class="q_text">+{{ @general.level }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">{{ @lang.formation ?: 'Formation' }}</td>
+		<td class="q_text">{{ @general.formation_name }}</td>
+	</tr>
+</table>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.changeFormation ?: 'Change Formation' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/town/{{ @town.id }}/general" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="action" value="formation">
+				<select class="dropdown" name="formation">
+					<option value="0" <check if="{{ @general.formation == 0 }}">selected</check>>{{ @lang.standard ?: 'Standard' }}</option>
+					<option value="1" <check if="{{ @general.formation == 1 }}">selected</check>>{{ @lang.offensive ?: 'Offensive' }} (+25% ATK, -25% DEF)</option>
+					<option value="2" <check if="{{ @general.formation == 2 }}">selected</check>>{{ @lang.defensive ?: 'Defensive' }} (-25% ATK, +25% DEF)</option>
+				</select>
+				<input class="button" type="submit" value="{{ @lang.set ?: 'Set' }}">
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+
+<check if="{{ !@has_general }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.noGeneral ?: 'No General' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<p>{{ @lang.noGeneralDesc ?: 'This town does not have a general yet. Promote a unit from your army.' }}</p>
+		</td>
+	</tr>
+</table>
+</check>
+
+<check if="{{ count(@available_units) }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.promoteGeneral ?: 'Promote Unit to General' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/town/{{ @town.id }}/general" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="action" value="promote">
+				<p>{{ @lang.promoteDesc ?: 'Select a unit to promote to general. This will remove 1 unit from your army.' }}</p>
+				<p>
+					<select class="dropdown" name="unit_type">
+						<repeat group="{{ @available_units }}" value="{{ @aunit }}">
+						<option value="{{ @aunit.id }}">{{ @aunit.name }} ({{ @lang.available ?: 'available' }}: {{ @aunit.count }})</option>
+						</repeat>
+					</select>
+				</p>
+				<p>
+					<input class="button" type="submit" value="{{ @lang.promote ?: 'Promote' }}" onclick="return confirm('{{ @lang.confirmPromote ?: 'Are you sure? This will replace the current general.' }}');">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+
+<a class="q_link" href="/town/{{ @town.id }}">{{ @lang.back ?: 'Back' }}</a>

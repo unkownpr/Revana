@@ -1,0 +1,52 @@
+<include href="shared/stats-rankings-style.html" />
+
+<div class="stats-shell">
+	<div class="stats-header">
+		<div>
+			<h2 class="stats-title">{{ @lang.allianceRankings ?: 'Alliance Rankings' }}</h2>
+			<p class="stats-sub">{{ @lang.viewStatsFor ?: 'View statistics for' }}: {{ @lang.alliances ?: 'Alliances' }}</p>
+		</div>
+		<div class="stats-count">{{ @lang.alliances ?: 'Alliances' }}: {{ @total_alliances }}</div>
+	</div>
+
+	<div class="nav-tabs">
+		<a href="/stats/users">{{ @lang.players ?: 'Players' }}</a>
+		<a href="/stats/towns">{{ @lang.towns ?: 'Towns' }}</a>
+		<a href="/stats/alliances" class="active">{{ @lang.alliances ?: 'Alliances' }}</a>
+	</div>
+
+	<div class="rank-wrap">
+		<table class="rank-table">
+			<tr>
+				<th class="col-rank">#</th>
+				<th class="col-tag">{{ @lang.tag ?: 'Tag' }}</th>
+				<th>{{ @lang.name ?: 'Name' }}</th>
+				<th class="col-members">{{ @lang.members ?: 'Members' }}</th>
+				<th class="col-points">{{ @lang.totalPoints ?: 'Total Points' }}</th>
+				<th class="col-avg mobile-hide">{{ @lang.avgPoints ?: 'Avg' }}</th>
+			</tr>
+			<check if="{{ @ranked_alliances }}">
+				<repeat group="{{ @ranked_alliances }}" key="{{ @i }}" value="{{ @ra }}">
+				<tr>
+					<td class="col-rank">
+						<check if="{{ @offset + @i + 1 <= 3 }}"><span class="rank-medal">{{ @offset + @i + 1 }}</span></check>
+						<check if="{{ @offset + @i + 1 > 3 }}"><span class="rank-number">{{ @offset + @i + 1 }}</span></check>
+					</td>
+					<td class="col-tag">[{{ @ra.tag }}]</td>
+					<td><a class="q_link" href="/alliance/{{ @ra.id }}">{{ @ra.name }}</a></td>
+					<td class="col-members">{{ @ra.member_count }}</td>
+					<td class="col-points">{{ @ra.total_points }}</td>
+					<td class="col-avg mobile-hide">{{ @ra.avg_points }}</td>
+				</tr>
+				</repeat>
+			</check>
+		</table>
+		<check if="{{ !@ranked_alliances }}"><div class="empty-state">{{ @lang.noResults ?: 'No results found.' }}</div></check>
+	</div>
+
+	<div class="pagination-bar">
+		<div><check if="{{ @page > 1 }}"><a class="q_link" href="/stats/alliances?page={{ @page - 1 }}">{{ @lang.prev ?: '<< Prev' }}</a></check></div>
+		<div>{{ @lang.page ?: 'Page' }} {{ @page }} / {{ @total_pages }}</div>
+		<div><check if="{{ @page < @total_pages }}"><a class="q_link" href="/stats/alliances?page={{ @page + 1 }}">{{ @lang.next ?: 'Next >>' }}</a></check></div>
+	</div>
+</div>

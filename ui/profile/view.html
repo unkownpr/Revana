@@ -1,0 +1,477 @@
+<style>
+.profile-avatar-wrap {
+	position: relative;
+	display: inline-flex;
+	border-radius: 12px;
+	padding: 3px;
+}
+
+.profile-frame {
+	border: 1px solid rgba(199,154,57,0.4);
+	background: rgba(0,0,0,0.2);
+}
+
+.profile-frame--frame_amber {
+	border: 1px solid rgba(199,154,57,0.72);
+	box-shadow: 0 0 14px rgba(199,154,57,0.28);
+	background: linear-gradient(180deg, rgba(116,86,33,0.35), rgba(44,32,12,0.35));
+}
+
+.profile-frame--frame_obsidian {
+	border: 1px solid rgba(120,125,152,0.72);
+	box-shadow: 0 0 14px rgba(80,90,130,0.32);
+	background: linear-gradient(180deg, rgba(48,52,76,0.34), rgba(16,20,34,0.34));
+}
+
+.profile-cosmetic-badge {
+	display: inline-flex;
+	padding: 2px 8px;
+	margin-left: 8px;
+	border-radius: 999px;
+	border: 1px solid rgba(199,154,57,0.55);
+	background: rgba(199,154,57,0.16);
+	color: var(--color-accent);
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	vertical-align: middle;
+}
+
+.profile-cosmetic-title {
+	display: inline-flex;
+	padding: 2px 8px;
+	margin-left: 8px;
+	border-radius: 999px;
+	border: 1px solid rgba(108,132,190,0.55);
+	background: rgba(74,92,148,0.18);
+	color: #d5e0ff;
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	vertical-align: middle;
+}
+
+.profile-view-shell {
+	display: grid;
+	gap: var(--space-md);
+}
+
+.profile-view-tabs {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 8px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.2);
+}
+
+.profile-view-tab {
+	display: inline-flex;
+	align-items: center;
+	padding: 8px 12px;
+	border-radius: var(--radius-sm);
+	border: 1px solid rgba(199,154,57,0.18);
+	text-decoration: none;
+	color: var(--color-text-muted);
+	font-weight: 700;
+}
+
+.profile-view-tab:hover {
+	color: var(--color-text-heading);
+	border-color: rgba(199,154,57,0.4);
+	background: rgba(199,154,57,0.08);
+}
+
+.profile-view-tab.active {
+	color: var(--color-accent);
+	border-color: rgba(199,154,57,0.5);
+	background: rgba(199,154,57,0.16);
+}
+
+.profile-view-panel {
+	display: block;
+}
+
+.profile-inv-shell {
+	display: grid;
+	gap: 14px;
+}
+
+.profile-inv-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	padding: 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.18);
+}
+
+.profile-inv-title {
+	margin: 0;
+	font-size: var(--font-size-lg);
+	color: var(--color-text-heading);
+}
+
+.profile-inv-balance {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	border: 1px solid rgba(199,154,57,0.48);
+	border-radius: 999px;
+	background: rgba(199,154,57,0.12);
+	color: var(--color-accent);
+	font-weight: 700;
+}
+
+.profile-inv-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+
+.profile-inv-card-head {
+	padding: 10px 12px;
+	font-weight: 700;
+	color: var(--color-text-heading);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	background: rgba(0,0,0,0.2);
+}
+
+.profile-inv-card-body {
+	padding: 12px;
+}
+
+.profile-inv-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 12px;
+}
+
+.profile-inv-item {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.14);
+	padding: 10px;
+	display: grid;
+	gap: 8px;
+}
+
+.profile-inv-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.profile-inv-badge {
+	display: inline-flex;
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: var(--font-size-xs);
+}
+
+.profile-inv-badge-active {
+	border: 1px solid rgba(84,166,101,0.48);
+	background: rgba(84,166,101,0.16);
+	color: #caefcf;
+}
+
+.profile-inv-badge-slot {
+	border: 1px solid rgba(199,154,57,0.38);
+	background: rgba(199,154,57,0.12);
+	color: var(--color-accent);
+}
+
+.profile-inv-btn {
+	padding: 6px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, rgba(78,54,32,0.95), rgba(52,35,22,0.95));
+	color: var(--color-text);
+	cursor: pointer;
+}
+
+.profile-inv-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+</style>
+
+<div class="profile-view-shell">
+	<check if="{{ @is_own_profile }}">
+		<div class="profile-view-tabs">
+			<a class="profile-view-tab{{ @profile_active_tab == 'overview' ? ' active' : '' }}" href="/profile/{{ @player.id }}?tab=overview">{{ @lang.profileTabOverview ?: 'Overview' }}</a>
+			<a class="profile-view-tab{{ @profile_active_tab == 'inventory' ? ' active' : '' }}" href="/profile/{{ @player.id }}?tab=inventory">{{ @lang.inventory ?: 'Inventory' }}</a>
+		</div>
+	</check>
+
+	<check if="{{ !@is_own_profile || @profile_active_tab == 'overview' }}">
+		<div class="profile-view-panel">
+			<div class="profile-card">
+				<div class="profile-header">
+					<check if="{{ @player.active_frame_code }}">
+						<true>
+							<div class="profile-avatar-wrap profile-frame profile-frame--{{ @player.active_frame_code }}">
+								<img class="avatar avatar-xl" src="{{ @player.avatar_url }}" alt="{{ @player.name }}">
+							</div>
+						</true>
+						<false>
+							<div class="profile-avatar-wrap">
+								<img class="avatar avatar-xl" src="{{ @player.avatar_url }}" alt="{{ @player.name }}">
+							</div>
+						</false>
+					</check>
+					<div class="profile-info">
+						<h2>
+							{{ @player.name }}
+							<check if="{{ @player.active_title }}">
+								<span class="profile-cosmetic-title">{{ @player.active_title }}</span>
+							</check>
+							<check if="{{ @player.active_badge }}">
+								<span class="profile-cosmetic-badge">{{ @player.active_badge }}</span>
+							</check>
+						</h2>
+						<div class="profile-meta">
+							{{ @player.faction_name }}
+							<check if="{{ @player.alliance_id }}">
+								&middot; <a href="/alliance/{{ @player.alliance_id }}">[{{ @player.alliance_tag }}]</a>
+							</check>
+						</div>
+						<div class="profile-actions">
+							<check if="{{ isset(@SESSION.user) && @SESSION.user.id != @player.id }}">
+								<a class="btn-profile btn-primary" href="/message/compose?to={{ @player.name }}">{{ @lang.sendMessage ?: 'Send Message' }}</a>
+							</check>
+							<check if="{{ isset(@SESSION.user) && @SESSION.user.id == @player.id }}">
+								<a class="btn-profile btn-primary" href="/profile/edit">{{ @lang.editProfile ?: 'Edit Profile' }}</a>
+							</check>
+						</div>
+					</div>
+				</div>
+
+				<div class="profile-body">
+					<div class="profile-stats">
+						<div class="stat-item">
+							<span class="stat-value">{{ @player.points }}</span>
+							<span class="stat-label">{{ @lang.points ?: 'Points' }}</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">#{{ @player.rank }}</span>
+							<span class="stat-label">{{ @lang.rank ?: 'Rank' }}</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">{{ @player.town_count }}</span>
+							<span class="stat-label">{{ @lang.towns ?: 'Towns' }}</span>
+						</div>
+						<div class="stat-item">
+							<span class="stat-value">{{ @player.registered_date }}</span>
+							<span class="stat-label">{{ @lang.registered ?: 'Registered' }}</span>
+						</div>
+					</div>
+
+					<check if="{{ @player.description }}">
+					<div class="profile-description">
+						<div class="desc-label">{{ @lang.description ?: 'Description' }}</div>
+						{{ @player.description }}
+					</div>
+					</check>
+
+					<check if="{{ @player.last_visit }}">
+					<div style="font-size:var(--font-size-xs); color:var(--color-text-muted); margin-bottom:var(--space-lg);">
+						{{ @lang.lastVisit ?: 'Last visit' }}: {{ @player.last_visit }}
+					</div>
+					</check>
+				</div>
+			</div>
+
+			<check if="{{ count(@player_towns) }}">
+			<div class="profile-towns-card">
+				<div class="profile-towns-head">
+					<span>{{ @lang.towns ?: 'Towns' }}</span>
+					<span>{{ @player.town_count }}</span>
+				</div>
+				<div class="profile-towns-grid">
+				<repeat group="{{ @player_towns }}" value="{{ @pt }}">
+					<div class="profile-town-row">
+						<div class="profile-town-name">
+							<img class="profile-town-icon" src="{{ @imgs }}{{ @fimgs }}house_.gif" alt="">
+							<span>{{ @pt.name }}</span>
+							<check if="{{ (int) (@pt.is_capital ?? 0) === 1 }}">
+								<span class="profile-capital-badge">{{ @lang.capital ?: 'Capital' }}</span>
+							</check>
+						</div>
+						<div class="profile-town-pop">
+							<img class="profile-town-icon" src="{{ @imgs }}{{ @fimgs }}house_.gif" alt="">
+							<span>{{ @lang.population ?: 'Population' }}: {{ @pt.population }}</span>
+						</div>
+						<a class="profile-town-map" href="/map?x={{ @pt.x }}&y={{ @pt.y }}">{{ @pt.x }}, {{ @pt.y }}</a>
+					</div>
+					</repeat>
+				</div>
+			</div>
+			</check>
+		</div>
+	</check>
+
+	<check if="{{ @is_own_profile && @profile_active_tab == 'inventory' }}">
+		<div class="profile-view-panel">
+			<div class="profile-inv-shell">
+				<div class="profile-inv-head">
+					<h2 class="profile-inv-title">{{ @lang.inventory ?: 'Inventory' }}</h2>
+					<div class="profile-inv-balance">&#9670; {{ @nav_premium_balance ?: @player.premium_balance ?: 0 }} {{ @lang.gems ?: 'Gems' }}</div>
+				</div>
+
+				<div class="profile-inv-card">
+					<div class="profile-inv-card-head">{{ @lang.activeCosmetics ?: 'Active Cosmetics' }}</div>
+					<div class="profile-inv-card-body">
+						<check if="{{ count(@active_cosmetics ?: []) }}">
+							<repeat group="{{ @active_cosmetics }}" key="{{ @slot }}" value="{{ @item }}">
+								<div class="profile-inv-row">
+									<span class="profile-inv-badge profile-inv-badge-slot">{{ @slot }}</span>
+									<strong>{{ @item.name }}</strong>
+								</div>
+							</repeat>
+						</check>
+						<check if="{{ !count(@active_cosmetics ?: []) }}">
+							<div class="text-muted">{{ @lang.noActiveCosmetics ?: 'No active cosmetic yet.' }}</div>
+						</check>
+					</div>
+				</div>
+
+				<div class="profile-inv-card">
+					<div class="profile-inv-card-head">{{ @lang.inventoryItems ?: 'Your Items' }}</div>
+					<div class="profile-inv-card-body">
+						<check if="{{ count(@inventory_items ?: []) }}">
+							<div class="profile-inv-grid">
+								<repeat group="{{ @inventory_items }}" value="{{ @it }}">
+									<div class="profile-inv-item">
+										<div class="profile-inv-row">
+											<strong>{{ @it.name }}</strong>
+											<span class="profile-inv-badge profile-inv-badge-slot">{{ @it.slot }}</span>
+										</div>
+										<div class="text-muted">{{ @it.description }}</div>
+										<div class="profile-inv-row">
+											<check if="{{ @it.is_active }}">
+												<span class="profile-inv-badge profile-inv-badge-active">{{ @lang.active ?: 'Active' }}</span>
+											</check>
+											<form action="/premium/inventory/activate" method="post">
+												<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+												<input type="hidden" name="product_id" value="{{ @it.product_id }}">
+												<check if="{{ @it.is_active }}">
+													<true><button type="submit" class="profile-inv-btn" disabled>{{ @lang.activate ?: 'Activate' }}</button></true>
+													<false><button type="submit" class="profile-inv-btn">{{ @lang.activate ?: 'Activate' }}</button></false>
+												</check>
+											</form>
+										</div>
+									</div>
+								</repeat>
+							</div>
+						</check>
+						<check if="{{ !count(@inventory_items ?: []) }}">
+							<div class="text-muted">{{ @lang.inventoryEmpty ?: 'Your inventory is empty.' }}</div>
+						</check>
+					</div>
+				</div>
+			</div>
+		</div>
+	</check>
+</div>
+
+<check if="{{ count(@player_towns) }}">
+<style>
+.profile-towns-card {
+	margin-top: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+
+.profile-towns-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--space-sm);
+	padding: 10px 12px;
+	background: rgba(0,0,0,0.22);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	color: var(--color-text-heading);
+	font-weight: 700;
+}
+
+.profile-towns-grid {
+	display: grid;
+	gap: 8px;
+	padding: 10px;
+}
+
+.profile-town-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border: 1px solid rgba(199,154,57,0.16);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.15);
+}
+
+.profile-town-name {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--color-text-heading);
+	font-weight: 700;
+}
+
+.profile-town-pop {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--color-accent);
+	font-weight: 700;
+}
+
+.profile-town-icon {
+	width: 14px;
+	height: 14px;
+	opacity: 0.95;
+}
+
+.profile-capital-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: 999px;
+	border: 1px solid rgba(199,154,57,0.42);
+	background: rgba(199,154,57,0.16);
+	color: var(--color-accent);
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+}
+
+.profile-town-map {
+	display: inline-block;
+	padding: 4px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.profile-town-map:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: rgba(199,154,57,0.12);
+}
+
+@media (max-width: 720px) {
+	.profile-town-row {
+		grid-template-columns: 1fr;
+		justify-items: start;
+	}
+}
+</style>
+</check>

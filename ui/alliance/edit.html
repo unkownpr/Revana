@@ -1,0 +1,126 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.editAlliance ?: 'Edit Alliance' }} - {{ @alliance.name }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/alliance/{{ @alliance.id }}/edit" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.description ?: 'Description' }}<br>
+						<textarea class="textbox" name="description" rows="6" cols="50">{{ @alliance.description }}</textarea>
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" name="save" value="{{ @lang.save ?: 'Save' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="3">{{ @lang.manageMembers ?: 'Manage Members' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">{{ @lang.name ?: 'Name' }}</td>
+		<td class="head_table">{{ @lang.role ?: 'Role' }}</td>
+		<td class="head_table">{{ @lang.actions ?: 'Actions' }}</td>
+	</tr>
+	<repeat group="{{ @members }}" value="{{ @member }}">
+	<tr>
+		<td class="q_text"><a class="q_link" href="/profile/{{ @member.id }}">{{ @member.name }}</a></td>
+		<td class="q_text">
+			<check if="{{ @member.id == @alliance.leader_id }}">{{ @lang.leader ?: 'Leader' }}</check>
+			<check if="{{ @member.id != @alliance.leader_id }}">{{ @lang.member ?: 'Member' }}</check>
+		</td>
+		<td class="q_text">
+			<check if="{{ @member.id != @alliance.leader_id }}">
+			<form action="/alliance/{{ @alliance.id }}/kick" method="post" style="display:inline;">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="user_id" value="{{ @member.id }}">
+				<input class="button" type="submit" value="{{ @lang.kick ?: 'Kick' }}" onclick="return confirm('{{ @lang.confirmKick ?: 'Are you sure?' }}');">
+			</form>
+			</check>
+		</td>
+	</tr>
+	</repeat>
+</table>
+
+<check if="{{ count(@applications) }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="3">{{ @lang.applications ?: 'Applications' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">{{ @lang.name ?: 'Name' }}</td>
+		<td class="head_table">{{ @lang.points ?: 'Points' }}</td>
+		<td class="head_table">{{ @lang.actions ?: 'Actions' }}</td>
+	</tr>
+	<repeat group="{{ @applications }}" value="{{ @app }}">
+	<tr>
+		<td class="q_text"><a class="q_link" href="/profile/{{ @app.user_id }}">{{ @app.name }}</a></td>
+		<td class="q_text">{{ @app.points }}</td>
+		<td class="q_text">
+			<form action="/alliance/{{ @alliance.id }}/accept" method="post" style="display:inline;">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="user_id" value="{{ @app.user_id }}">
+				<input class="button" type="submit" value="{{ @lang.accept ?: 'Accept' }}">
+			</form>
+			<form action="/alliance/{{ @alliance.id }}/reject" method="post" style="display:inline;">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="user_id" value="{{ @app.user_id }}">
+				<input class="button" type="submit" value="{{ @lang.reject ?: 'Reject' }}">
+			</form>
+		</td>
+	</tr>
+	</repeat>
+</table>
+</check>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.pactManagement ?: 'Pact Management' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/alliance/{{ @alliance.id }}/pact" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.allianceName ?: 'Alliance Name' }}
+						<input class="textbox" type="text" name="pact_alliance">
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.pactType ?: 'Pact Type' }}
+						<select class="dropdown" name="pact_type">
+							<option value="nap">{{ @lang.nap ?: 'Non-Aggression Pact' }}</option>
+							<option value="alliance">{{ @lang.alliancePact ?: 'Alliance' }}</option>
+						</select>
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" name="send_pact" value="{{ @lang.sendPact ?: 'Send Pact Request' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.deleteAlliance ?: 'Delete Alliance' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/alliance/{{ @alliance.id }}/delete" method="post">
+				<input type="hidden" name="action" value="delete">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>{{ @lang.deleteAllianceDesc ?: 'This action cannot be undone.' }}</p>
+				<input class="button" type="submit" name="delete" value="{{ @lang.delete ?: 'Delete' }}" onclick="return confirm('{{ @lang.confirmDelete ?: 'Are you sure? This cannot be undone.' }}');">
+			</form>
+		</td>
+	</tr>
+</table>
+<a class="q_link" href="/alliance/{{ @alliance.id }}">{{ @lang.back ?: 'Back' }}</a>

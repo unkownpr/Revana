@@ -1,0 +1,166 @@
+<style>
+.help-shell { max-width: 1100px; margin: 0 auto; display: grid; gap: 14px; }
+.help-hero { position: relative; overflow: hidden; border: 1px solid rgba(180,137,77,0.62); border-radius: var(--radius-lg); background: linear-gradient(140deg, rgba(68,46,26,0.95), rgba(28,18,10,0.98)); box-shadow: 0 14px 30px rgba(0,0,0,0.35); padding: 18px; }
+.help-hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(199,154,57,0.24), transparent 65%); pointer-events: none; }
+.help-hero h2 { margin: 0 0 6px; color: var(--color-text-heading); font-size: 24px; position: relative; z-index: 1; }
+.help-hero p { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-sm); max-width: 780px; position: relative; z-index: 1; line-height: 1.55; }
+
+.help-layout { display: grid; gap: 12px; grid-template-columns: 250px 1fr; align-items: start; }
+.help-nav { position: sticky; top: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(180deg, rgba(48,32,19,0.92), rgba(23,15,9,0.95)); padding: 10px; }
+.help-nav-title { margin: 0 0 8px; color: var(--color-accent); font-size: var(--font-size-sm); text-transform: uppercase; letter-spacing: 0.05em; }
+.help-nav a { display: block; color: var(--color-text); text-decoration: none; border: 1px solid rgba(199,154,57,0.16); background: rgba(0,0,0,0.18); border-radius: var(--radius-sm); padding: 7px 9px; margin-bottom: 6px; font-size: var(--font-size-sm); }
+.help-nav a:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+.help-main { display: grid; gap: 12px; }
+.help-section { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(160deg, rgba(43,28,16,0.9), rgba(21,14,8,0.96)); padding: 12px; }
+.help-section h3 { margin: 0 0 8px; color: var(--color-text-heading); font-size: var(--font-size-md); }
+
+.help-steps { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.help-step { border: 1px solid rgba(199,154,57,0.2); border-radius: var(--radius-sm); background: rgba(0,0,0,0.18); padding: 9px; }
+.help-step-title { margin: 0 0 5px; color: var(--color-accent); font-size: var(--font-size-sm); font-weight: 700; }
+.help-step p { margin: 0; color: var(--color-text); line-height: 1.5; font-size: var(--font-size-sm); }
+
+.help-links { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.help-link-card { border: 1px solid rgba(199,154,57,0.22); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); padding: 10px; text-decoration: none; color: var(--color-text); }
+.help-link-card:hover { border-color: var(--color-accent); background: rgba(199,154,57,0.07); }
+.help-link-title { display: block; margin-bottom: 4px; color: var(--color-text-heading); font-size: var(--font-size-sm); font-weight: 700; }
+.help-link-desc { display: block; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.45; }
+
+.help-list { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--color-text); }
+.help-list li { line-height: 1.5; font-size: var(--font-size-sm); }
+
+@media (max-width: 860px) {
+	.help-layout { grid-template-columns: 1fr; }
+	.help-nav { position: static; }
+}
+</style>
+
+<div class="help-shell">
+	<div class="help-hero">
+		<h2>{{ @lang.helpPageTitle ?: 'Game Guide' }}</h2>
+		<p>{{ @lang.helpPageSubtitle ?: 'Learn where everything is, how to progress, and which steps to follow for faster growth.' }}</p>
+	</div>
+
+	<div class="help-layout">
+		<div class="help-nav">
+			<p class="help-nav-title">{{ @lang.helpContents ?: 'Contents' }}</p>
+			<a href="#quick-start">{{ @lang.helpQuickStartTitle ?: 'Quick Start (6 steps)' }}</a>
+			<a href="#where-what">{{ @lang.helpWhereTitle ?: 'Where is what?' }}</a>
+			<a href="#game-loop">{{ @lang.helpLoopTitle ?: 'Main game loop' }}</a>
+			<a href="#combat">{{ @lang.helpCombatTitle ?: 'Combat summary' }}</a>
+			<a href="#mistakes">{{ @lang.helpMistakesTitle ?: 'Common mistakes' }}</a>
+			<a href="#tips">{{ @lang.helpProTipsTitle ?: 'Pro tips' }}</a>
+		</div>
+
+		<div class="help-main">
+			<div class="help-section" id="quick-start">
+				<h3>{{ @lang.helpQuickStartTitle ?: 'Quick Start (6 steps)' }}</h3>
+				<div class="help-steps">
+					<div class="help-step">
+						<p class="help-step-title">1. {{ @lang.helpStep1Title ?: 'Secure your economy' }}</p>
+						<p>{{ @lang.helpStep1Desc ?: 'Open your town and improve resource lands first. Keep crop production positive so training does not stall.' }}</p>
+					</div>
+					<div class="help-step">
+						<p class="help-step-title">2. {{ @lang.helpStep2Title ?: 'Build Hall and core structures' }}</p>
+						<p>{{ @lang.helpStep2Desc ?: 'Use Hall to unlock key buildings. Upgrade storage before expensive constructions to avoid resource cap loss.' }}</p>
+					</div>
+					<div class="help-step">
+						<p class="help-step-title">3. {{ @lang.helpStep3Title ?: 'Research before training' }}</p>
+						<p>{{ @lang.helpStep3Desc ?: 'At Academy/Blacksmith, upgrade HP, ATK, and DEF. Researched units perform better in every battle.' }}</p>
+					</div>
+					<div class="help-step">
+						<p class="help-step-title">4. {{ @lang.helpStep4Title ?: 'Train balanced armies' }}</p>
+						<p>{{ @lang.helpStep4Desc ?: 'Do not only stack one unit type. Combine front, ranged, siege, and scout units for flexibility.' }}</p>
+					</div>
+					<div class="help-step">
+						<p class="help-step-title">5. {{ @lang.helpStep5Title ?: 'Use map and camps' }}</p>
+						<p>{{ @lang.helpStep5Desc ?: 'Scout nearby map tiles and hit barbarian camps regularly for resources and XP.' }}</p>
+					</div>
+					<div class="help-step">
+						<p class="help-step-title">6. {{ @lang.helpStep6Title ?: 'Join alliance and trade' }}</p>
+						<p>{{ @lang.helpStep6Desc ?: 'Alliances and market trades accelerate growth. Ask support, share resources, and coordinate attacks.' }}</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="help-section" id="where-what">
+				<h3>{{ @lang.helpWhereTitle ?: 'Where is what?' }}</h3>
+				<div class="help-links">
+					<a class="help-link-card" href="/towns">
+						<span class="help-link-title">{{ @lang.helpNavTownsTitle ?: 'Towns' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavTownsDesc ?: 'Choose your active town, open town view, and manage buildings.' }}</span>
+					</a>
+					<a class="help-link-card" href="/map">
+						<span class="help-link-title">{{ @lang.helpNavMapTitle ?: 'Map' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavMapDesc ?: 'Scout coordinates, inspect tiles, and settle new towns when requirements are met.' }}</span>
+					</a>
+					<a class="help-link-card" href="/camps">
+						<span class="help-link-title">{{ @lang.helpNavCampsTitle ?: 'Barbarian Camps' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavCampsDesc ?: 'Find active camps, estimate loot, and plan safe attacks.' }}</span>
+					</a>
+					<a class="help-link-card" href="/missions">
+						<span class="help-link-title">{{ @lang.helpNavMissionsTitle ?: 'Missions' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavMissionsDesc ?: 'Complete daily missions for XP and account progression rewards.' }}</span>
+					</a>
+					<a class="help-link-card" href="/messages">
+						<span class="help-link-title">{{ @lang.helpNavMessagesTitle ?: 'Messages & Reports' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavMessagesDesc ?: 'Track battle reports, trade updates, and player communication.' }}</span>
+					</a>
+					<a class="help-link-card" href="/forum">
+						<span class="help-link-title">{{ @lang.helpNavForumTitle ?: 'Forum' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavForumDesc ?: 'Discuss strategies with your alliance or the community.' }}</span>
+					</a>
+					<a class="help-link-card" href="/chat">
+						<span class="help-link-title">{{ @lang.helpNavChatTitle ?: 'Chat' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavChatDesc ?: 'Coordinate quickly for defense, attack windows, and support requests.' }}</span>
+					</a>
+					<a class="help-link-card" href="/stats/users">
+						<span class="help-link-title">{{ @lang.helpNavStatsTitle ?: 'Statistics' }}</span>
+						<span class="help-link-desc">{{ @lang.helpNavStatsDesc ?: 'Follow top players, town growth, and alliance rankings.' }}</span>
+					</a>
+				</div>
+			</div>
+
+			<div class="help-section" id="game-loop">
+				<h3>{{ @lang.helpLoopTitle ?: 'Main game loop' }}</h3>
+				<ol class="help-list">
+					<li>{{ @lang.helpLoop1 ?: 'Collect resources and keep production stable.' }}</li>
+					<li>{{ @lang.helpLoop2 ?: 'Upgrade buildings and unlock new options.' }}</li>
+					<li>{{ @lang.helpLoop3 ?: 'Research HP/ATK/DEF and improve army quality.' }}</li>
+					<li>{{ @lang.helpLoop4 ?: 'Train units, run missions, and attack camps.' }}</li>
+					<li>{{ @lang.helpLoop5 ?: 'Trade, join alliance actions, and repeat with higher efficiency.' }}</li>
+				</ol>
+			</div>
+
+			<div class="help-section" id="combat">
+				<h3>{{ @lang.helpCombatTitle ?: 'Combat summary' }}</h3>
+				<ul class="help-list">
+					<li>{{ @lang.helpCombat1 ?: 'HP determines how long units stay alive.' }}</li>
+					<li>{{ @lang.helpCombat2 ?: 'ATK increases the damage your army deals.' }}</li>
+					<li>{{ @lang.helpCombat3 ?: 'DEF reduces incoming damage and attrition.' }}</li>
+					<li>{{ @lang.helpCombat4 ?: 'Sending scouts first reduces blind attacks and losses.' }}</li>
+				</ul>
+			</div>
+
+			<div class="help-section" id="mistakes">
+				<h3>{{ @lang.helpMistakesTitle ?: 'Common mistakes' }}</h3>
+				<ul class="help-list">
+					<li>{{ @lang.helpMistake1 ?: 'Ignoring crop balance and overtraining too early.' }}</li>
+					<li>{{ @lang.helpMistake2 ?: 'Upgrading only one stat while neglecting others.' }}</li>
+					<li>{{ @lang.helpMistake3 ?: 'Attacking without checking reports and map context.' }}</li>
+					<li>{{ @lang.helpMistake4 ?: 'Keeping full warehouses instead of reinvesting resources.' }}</li>
+				</ul>
+			</div>
+
+			<div class="help-section" id="tips">
+				<h3>{{ @lang.helpProTipsTitle ?: 'Pro tips' }}</h3>
+				<ul class="help-list">
+					<li>{{ @lang.helpProTip1 ?: 'Queue upgrades before logging out to avoid idle time.' }}</li>
+					<li>{{ @lang.helpProTip2 ?: 'Use missions as a daily checklist for steady progress.' }}</li>
+					<li>{{ @lang.helpProTip3 ?: 'Keep at least one fast-response army for defense support.' }}</li>
+					<li>{{ @lang.helpProTip4 ?: 'Track market prices and convert excess resources regularly.' }}</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>

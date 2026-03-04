@@ -1,0 +1,48 @@
+<include href="shared/message-center-style.html" />
+
+<div class="msg-shell">
+	<div class="msg-hero">
+		<h2>{{ @message.subject }}</h2>
+		<p>{{ @lang.message ?: 'Message' }}</p>
+	</div>
+
+	<div class="msg-card">
+		<div class="msg-card-head">{{ @lang.messageDetails ?: 'Message details' }}</div>
+		<div class="msg-card-body">
+			<div class="msg-view-meta">
+				<div class="msg-view-label">{{ @lang.from ?: 'From' }}</div>
+				<div>
+					<check if="{{ @message.from_id }}">
+						<a class="q_link" href="/profile/{{ @message.from_id }}">{{ @message.from_name }}</a>
+					</check>
+					<check if="{{ !@message.from_id }}">{{ @lang.system ?: 'System' }}</check>
+				</div>
+			</div>
+			<div class="msg-view-meta">
+				<div class="msg-view-label">{{ @lang.to ?: 'To' }}</div>
+				<div><a class="q_link" href="/profile/{{ @message.to_id }}">{{ @message.to_name }}</a></div>
+			</div>
+			<div class="msg-view-meta">
+				<div class="msg-view-label">{{ @lang.date ?: 'Date' }}</div>
+				<div>{{ @message.date }}</div>
+			</div>
+			<div class="msg-view-content">{{ @message.content }}</div>
+
+			<div class="msg-toolbar">
+				<div class="msg-actions">
+					<check if="{{ @message.from_id }}">
+						<a class="msg-btn" href="/messages/compose?to={{ @message.from_name }}&subject=Re: {{ @message.subject }}">{{ @lang.reply ?: 'Reply' }}</a>
+					</check>
+					<form action="/message/{{ @message.id }}/delete" method="post">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<button class="msg-btn msg-btn-danger" type="submit">{{ @lang.delete ?: 'Delete' }}</button>
+					</form>
+				</div>
+				<div class="msg-actions">
+					<a class="msg-btn" href="/messages">{{ @lang.backToMessages ?: 'Back to Messages' }}</a>
+					<a class="msg-btn" href="/reports">{{ @lang.reports ?: 'Reports' }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

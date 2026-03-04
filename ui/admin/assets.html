@@ -1,0 +1,231 @@
+<div class="admin" x-data="{ tab: 'buildings' }">
+
+	<!-- Back button -->
+	<div style="margin-bottom:var(--space-md);">
+		<a href="/admin" class="admin-btn admin-btn--sm">&larr; {{ @lang.backToAdmin ?: 'Admin Panele Dön' }}</a>
+	</div>
+
+	<div class="admin-tabs">
+		<button class="admin-tab" :class="{ 'admin-tab--active': tab === 'buildings' }" @click="tab = 'buildings'">
+			<svg viewBox="0 0 16 16" width="14" height="14"><path d="M2 14V6l6-5 6 5v8H2zm4 0V9h4v5H6z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+			{{ @lang.buildingImages ?: 'Building Images' }}
+		</button>
+		<button class="admin-tab" :class="{ 'admin-tab--active': tab === 'units' }" @click="tab = 'units'">
+			<svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm-5 7a5 5 0 0110 0H3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+			{{ @asset_labels.units_tab ?: 'Birimler' }}
+		</button>
+		<button class="admin-tab" :class="{ 'admin-tab--active': tab === 'weapons' }" @click="tab = 'weapons'">
+			<svg viewBox="0 0 16 16" width="14" height="14"><path d="M2 14l10-10M10 2l4 4-2 2-4-4 2-2zM2 14l2-4 2 2-4 2z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+			{{ @asset_labels.weapons_tab ?: 'Silahlar' }}
+		</button>
+		<button class="admin-tab" :class="{ 'admin-tab--active': tab === 'resources' }" @click="tab = 'resources'">
+			<svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1l2 5h5l-4 3 1 5-4-3-4 3 1-5-4-3h5z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+			{{ @asset_labels.resources_tab ?: 'Kaynaklar' }}
+		</button>
+	</div>
+
+	<!-- Upload with custom filename -->
+	<div class="admin-card" style="margin-bottom:var(--space-md);">
+		<div class="admin-card-header">{{ @lang.addAsset ?: 'Yeni Görsel Ekle' }} <span class="text-muted" style="font-size:var(--font-size-xs);font-weight:400;">({{ @lang.customFilename ?: 'Özel dosya adı' }})</span></div>
+		<div class="admin-card-body">
+			<form action="/admin/assets/upload" method="post" enctype="multipart/form-data" class="admin-form">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<div class="admin-form-row">
+					<div class="admin-form-group">
+						<label>{{ @lang.category ?: 'Kategori' }}</label>
+							<select class="dropdown" name="category">
+								<option value="building">{{ @asset_labels.building ?: 'Bina' }}</option>
+								<option value="unit">{{ @asset_labels.unit ?: 'Birim' }}</option>
+								<option value="weapon">{{ @asset_labels.weapon ?: 'Silah' }}</option>
+								<option value="resource">{{ @asset_labels.resource ?: 'Kaynak' }}</option>
+							</select>
+						</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.filename ?: 'Dosya Adı' }} <span class="text-muted" style="font-size:var(--font-size-xs);">({{ @lang.filenameExample ?: 'örn: b99.png' }})</span></label>
+						<input class="textbox" type="text" name="filename" required>
+					</div>
+					<div class="admin-form-group">
+						<label>{{ @lang.file ?: 'Dosya' }}</label>
+						<input type="file" name="asset_file" accept="image/png,image/gif,image/jpeg,image/webp" required>
+					</div>
+				</div>
+				<div class="admin-form-actions">
+					<button type="submit" class="admin-btn admin-btn--primary">{{ @lang.upload ?: 'Yükle' }}</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Buildings tab -->
+	<div x-show="tab === 'buildings'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.buildingImages ?: 'Bina Görselleri' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>{{ @lang.type ?: 'Tip' }}</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.image ?: 'Görsel' }}</th>
+								<th>{{ @lang.update ?: 'Güncelle' }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @asset_buildings }}" value="{{ @a }}">
+							<tr>
+								<td>{{ @a.id }}</td>
+								<td>{{ @a.name }}</td>
+								<td>
+									<check if="{{ @a.exists }}"><img src="/default/1/{{ @a.file }}" style="width:48px;height:auto;"></check>
+									<check if="{{ !@a.exists }}"><span class="text-muted">{{ @lang.none ?: 'Yok' }}</span></check>
+									<div class="text-muted" style="font-size:var(--font-size-xs);">{{ @a.file }}</div>
+								</td>
+								<td>
+									<form action="/admin/assets/upload" method="post" enctype="multipart/form-data" class="admin-form-inline">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="category" value="building">
+										<input type="hidden" name="asset_id" value="{{ @a.id }}">
+										<input type="file" name="asset_file" accept="image/png" required>
+										<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.upload ?: 'Yükle' }}</button>
+									</form>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Units tab -->
+	<div x-show="tab === 'units'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.unitImages ?: 'Birim Görselleri' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>{{ @lang.type ?: 'Tip' }}</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.image ?: 'Görsel' }}</th>
+								<th>{{ @lang.update ?: 'Güncelle' }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @asset_units }}" value="{{ @a }}">
+							<tr>
+								<td>{{ @a.id }}</td>
+								<td>{{ @a.name }}</td>
+								<td>
+									<check if="{{ @a.exists }}"><img src="/default/1/{{ @a.file }}" style="width:40px;height:auto;"></check>
+									<check if="{{ !@a.exists }}"><span class="text-muted">{{ @lang.none ?: 'Yok' }}</span></check>
+									<div class="text-muted" style="font-size:var(--font-size-xs);">{{ @a.file }}</div>
+								</td>
+								<td>
+									<form action="/admin/assets/upload" method="post" enctype="multipart/form-data" class="admin-form-inline">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="category" value="unit">
+										<input type="hidden" name="asset_id" value="{{ @a.id }}">
+										<input type="file" name="asset_file" accept="image/gif" required>
+										<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.upload ?: 'Yükle' }}</button>
+									</form>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Weapons tab -->
+	<div x-show="tab === 'weapons'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.weaponImages ?: 'Silah Görselleri' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>{{ @lang.type ?: 'Tip' }}</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.image ?: 'Görsel' }}</th>
+								<th>{{ @lang.update ?: 'Güncelle' }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @asset_weapons }}" value="{{ @a }}">
+							<tr>
+								<td>{{ @a.id }}</td>
+								<td>{{ @a.name }}</td>
+								<td>
+									<check if="{{ @a.exists }}"><img src="/default/1/{{ @a.file }}" style="width:40px;height:auto;"></check>
+									<check if="{{ !@a.exists }}"><span class="text-muted">{{ @lang.none ?: 'Yok' }}</span></check>
+									<div class="text-muted" style="font-size:var(--font-size-xs);">{{ @a.file }}</div>
+								</td>
+								<td>
+									<form action="/admin/assets/upload" method="post" enctype="multipart/form-data" class="admin-form-inline">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="category" value="weapon">
+										<input type="hidden" name="asset_id" value="{{ @a.id }}">
+										<input type="file" name="asset_file" accept="image/gif" required>
+										<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.upload ?: 'Yükle' }}</button>
+									</form>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Resources tab -->
+	<div x-show="tab === 'resources'" x-cloak>
+		<div class="admin-card">
+			<div class="admin-card-header">{{ @lang.resourceImages ?: 'Kaynak Görselleri' }}</div>
+			<div class="admin-card-body">
+				<div class="admin-table-wrap">
+					<table class="admin-table">
+						<thead>
+							<tr>
+								<th>{{ @lang.type ?: 'Tip' }}</th>
+								<th>{{ @lang.name ?: 'Ad' }}</th>
+								<th>{{ @lang.image ?: 'Görsel' }}</th>
+								<th>{{ @lang.update ?: 'Güncelle' }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							<repeat group="{{ @asset_resources }}" value="{{ @a }}">
+							<tr>
+								<td>{{ @a.id }}</td>
+								<td>{{ @a.name }}</td>
+								<td>
+									<check if="{{ @a.exists }}"><img src="/default/1/{{ @a.file }}" style="width:18px;height:18px;"></check>
+									<check if="{{ !@a.exists }}"><span class="text-muted">{{ @lang.none ?: 'Yok' }}</span></check>
+									<div class="text-muted" style="font-size:var(--font-size-xs);">{{ @a.file }}</div>
+								</td>
+								<td>
+									<form action="/admin/assets/upload" method="post" enctype="multipart/form-data" class="admin-form-inline">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="category" value="resource">
+										<input type="hidden" name="asset_id" value="{{ @a.id }}">
+										<input type="file" name="asset_file" accept="image/gif" required>
+										<button type="submit" class="admin-btn admin-btn--sm">{{ @lang.upload ?: 'Yükle' }}</button>
+									</form>
+								</td>
+							</tr>
+							</repeat>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

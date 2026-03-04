@@ -1,0 +1,97 @@
+<div class="map-detail-page">
+	<div class="map-detail-header">
+		<h2 class="map-detail-title">{{ @lang.tileDetails ?: 'Tile Details' }}</h2>
+		<span class="map-detail-coords">({{ @tile.x }}, {{ @tile.y }})</span>
+	</div>
+
+	<div class="map-detail-card">
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.type ?: 'Type' }}</span>
+			<span class="map-detail-value">{{ @tile.type_name }}</span>
+		</div>
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.coordinates ?: 'Coordinates' }}</span>
+			<span class="map-detail-value">{{ @tile.x }}, {{ @tile.y }}</span>
+		</div>
+		<check if="{{ @tile.bonus }}">
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.bonus ?: 'Bonus' }}</span>
+			<span class="map-detail-value map-detail-bonus">{{ @tile.bonus }}</span>
+		</div>
+		</check>
+	</div>
+
+	<check if="{{ @tile.town_id }}">
+	<div class="map-detail-card">
+		<div class="map-detail-card-header">{{ @lang.townInfo ?: 'Town Info' }}</div>
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.townName ?: 'Town Name' }}</span>
+			<span class="map-detail-value">{{ @tile.town_name }}</span>
+		</div>
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.owner ?: 'Owner' }}</span>
+			<span class="map-detail-value"><a class="q_link" href="/profile/{{ @tile.player_id }}">{{ @tile.player_name }}</a></span>
+		</div>
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.population ?: 'Population' }}</span>
+			<span class="map-detail-value">{{ @tile.population }}</span>
+		</div>
+		<check if="{{ @tile.alliance_name }}">
+		<div class="map-detail-row">
+			<span class="map-detail-label">{{ @lang.alliance ?: 'Alliance' }}</span>
+			<span class="map-detail-value"><a class="q_link" href="/alliance/{{ @tile.alliance_id }}">[{{ @tile.alliance_tag }}] {{ @tile.alliance_name }}</a></span>
+		</div>
+		</check>
+	</div>
+
+	<check if="{{ isset(@SESSION.user) && @tile.player_id > 0 }}">
+	<div class="map-detail-actions">
+		<a class="map-action-btn" href="/town/{{ @current_town_id }}/dispatch?target_x={{ @tile.x }}&target_y={{ @tile.y }}">
+			<svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;"><path d="M2 14V6l3-4h6l3 4v8"/><path d="M8 3v7m-3-3l3 3 3-3"/></svg>
+			{{ @lang.sendArmy ?: 'Send Army' }}
+		</a>
+		<a class="map-action-btn" href="/messages/compose?to={{ @tile.player_name }}">
+			<svg viewBox="0 0 16 16" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;"><path d="M1 3h14v10H1V3zm0 0l7 5 7-5"/></svg>
+			{{ @lang.sendMessage ?: 'Send Message' }}
+		</a>
+	</div>
+	</check>
+
+	<check if="{{ isset(@SESSION.user) && @tile.town_id > 0 && @tile.player_id == 0 }}">
+	<div class="map-detail-card">
+		<div class="map-detail-card-header">{{ @lang.abandonedTown ?: 'Abandoned Town' }}</div>
+		<div class="map-detail-card-body">
+			<p>{{ @lang.acquireDesc ?: 'This town has been abandoned. You can claim it as your own.' }}</p>
+			<form action="/map/acquire" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="town_id" value="{{ @tile.town_id }}">
+				<button class="map-action-btn map-action-primary" type="submit" onclick="return confirm('{{ @lang.confirmAcquire ?: 'Are you sure?' }}')">
+					{{ @lang.acquire ?: 'Acquire Town' }}
+				</button>
+			</form>
+		</div>
+	</div>
+	</check>
+	</check>
+
+	<check if="{{ !@tile.town_id && @tile.can_settle && isset(@SESSION.user) }}">
+	<div class="map-detail-card">
+		<div class="map-detail-card-header">{{ @lang.settle ?: 'Settle' }}</div>
+		<div class="map-detail-card-body">
+			<p>{{ @lang.settleDesc ?: 'Found a new town on this tile.' }}</p>
+			<form action="/map/{{ @tile.x }}/{{ @tile.y }}/settle" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<div class="map-settle-form">
+					<label>{{ @lang.townName ?: 'Town Name' }}</label>
+					<input class="map-input" type="text" name="name" placeholder="{{ @lang.townName ?: 'Town Name' }}">
+					<button class="map-action-btn map-action-primary" type="submit">{{ @lang.settle ?: 'Settle' }}</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	</check>
+
+	<a class="map-back-link" href="/map?x={{ @tile.x }}&y={{ @tile.y }}">
+		&larr; {{ @lang.backToMap ?: 'Back to Map' }}
+	</a>
+</div>

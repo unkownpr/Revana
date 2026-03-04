@@ -1,0 +1,91 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="2">{{ @lang.editTown ?: 'Edit Town' }}</td>
+	</tr>
+	<tr>
+		<td colspan="2" class="q_text">
+			<form action="/town/{{ @town.id }}/edit" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.townName ?: 'Town Name' }}
+						<input class="textbox" type="text" name="name" value="{{ @town.name }}">
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.description ?: 'Description' }}<br>
+						<textarea class="textbox" name="description" rows="4" cols="40">{{ @town.description }}</textarea>
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" name="save" value="{{ @lang.save ?: 'Save' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<check if="{{ !@town.isCapital }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.setCapital ?: 'Set as Capital' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/town/{{ @town.id }}/capital" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>{{ @lang.setCapitalDesc ?: 'Make this town your capital city.' }}</p>
+				<p>
+					<input class="button" type="submit" name="setcapital" value="{{ @lang.setCapital ?: 'Set Capital' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+<check if="{{ !@town.isCapital }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.abandonTown ?: 'Abandon Town' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/town/{{ @town.id }}/abandon" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>{{ @lang.abandonDesc ?: 'Abandon this town. It will become available for other players to acquire.' }}</p>
+				<p>
+					<input class="button" type="submit" value="{{ @lang.abandon ?: 'Abandon' }}" onclick="return confirm('{{ @lang.confirmAbandon ?: 'Are you sure? This cannot be undone!' }}');">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.moveTown ?: 'Move Town' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/town/{{ @town.id }}/move" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>{{ @lang.moveTownDesc ?: 'Move this town to another resource land tile on the map.' }}</p>
+				<p>{{ @lang.currentLocation ?: 'Current location' }}: <strong>{{ @town_x }}, {{ @town_y }}</strong></p>
+				<p>{{ @lang.moveCost ?: 'Move cost' }}: <strong>{{ @move_cost_crop }} {{ @lang.crop ?: 'Crop' }}</strong></p>
+				<p>
+					<label>X
+						<input class="textbox" type="text" name="x" value="{{ @town_x }}" style="width:80px;">
+					</label>
+					<label>Y
+						<input class="textbox" type="text" name="y" value="{{ @town_y }}" style="width:80px;">
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" value="{{ @lang.moveTown ?: 'Move Town' }}" onclick="return confirm('{{ @lang.confirmMoveTown ?: 'Move this town to the selected coordinates?' }}');">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<a class="q_link" href="/town/{{ @town.id }}">{{ @lang.back ?: 'Back' }}</a>

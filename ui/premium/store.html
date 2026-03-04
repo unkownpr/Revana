@@ -1,0 +1,317 @@
+<style>
+.premium-shell {
+	display: grid;
+	gap: 16px;
+}
+
+.premium-head {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	padding: 16px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background:
+		radial-gradient(130% 120% at 0% 0%, rgba(199,154,57,0.12), transparent 58%),
+		linear-gradient(180deg, rgba(50,34,22,0.76), rgba(29,19,13,0.84));
+	box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+}
+
+.premium-title {
+	margin: 0;
+	font-size: var(--font-size-xl);
+	color: var(--color-text-heading);
+}
+
+.premium-note {
+	margin: 6px 0 0;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+	max-width: 560px;
+}
+
+.premium-balance {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 14px;
+	border: 1px solid rgba(199,154,57,0.58);
+	border-radius: 999px;
+	background: rgba(199,154,57,0.16);
+	color: var(--color-accent);
+	font-weight: 700;
+	box-shadow: inset 0 1px 0 rgba(255,224,158,0.16);
+}
+
+.premium-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 14px;
+}
+
+.premium-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(43,28,18,0.72), rgba(24,15,10,0.8));
+	overflow: hidden;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+}
+
+.premium-card-head {
+	padding: 10px 14px;
+	font-weight: 700;
+	color: var(--color-text-heading);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	background: linear-gradient(180deg, rgba(65,42,26,0.72), rgba(40,26,17,0.72));
+}
+
+.premium-card-body {
+	padding: 12px 14px;
+	display: grid;
+	gap: 10px;
+}
+
+.premium-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.premium-price {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+}
+
+.premium-buy-btn {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid rgba(199,154,57,0.45);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, rgba(150,107,46,0.95), rgba(114,78,30,0.95));
+	color: #fff8e8;
+	font-weight: 700;
+	cursor: pointer;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+	transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+}
+
+.premium-buy-btn:hover {
+	transform: translateY(-1px);
+	filter: brightness(1.05);
+	box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+}
+
+.premium-buy-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.premium-owned {
+	display: inline-flex;
+	padding: 2px 8px;
+	border-radius: 999px;
+	border: 1px solid rgba(84,166,101,0.48);
+	background: rgba(84,166,101,0.16);
+	color: #caefcf;
+	font-size: var(--font-size-xs);
+}
+
+.premium-request {
+	display: inline-flex;
+	padding: 2px 8px;
+	border-radius: 999px;
+	border: 1px solid rgba(199,154,57,0.48);
+	background: rgba(199,154,57,0.14);
+	color: #f0ddb1;
+	font-size: var(--font-size-xs);
+}
+
+.premium-footnote {
+	padding: 10px 12px;
+	border: 1px dashed rgba(199,154,57,0.35);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.18);
+	color: var(--color-text-muted);
+	font-size: var(--font-size-xs);
+}
+
+.premium-confirm-toast {
+	position: fixed;
+	right: 18px;
+	bottom: 18px;
+	width: min(420px, calc(100vw - 30px));
+	padding: 14px;
+	border: 1px solid rgba(199,154,57,0.45);
+	border-radius: var(--radius-md);
+	background:
+		radial-gradient(120% 120% at 100% 0%, rgba(199,154,57,0.16), transparent 60%),
+		linear-gradient(180deg, rgba(52,34,22,0.96), rgba(26,16,11,0.98));
+	box-shadow: 0 14px 28px rgba(0,0,0,0.42);
+	display: none;
+	z-index: 6000;
+}
+
+.premium-confirm-toast.show { display: block; }
+
+.premium-confirm-title {
+	margin: 0 0 6px;
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	color: var(--color-text-heading);
+}
+
+.premium-confirm-text {
+	margin: 0;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+}
+
+.premium-confirm-actions {
+	margin-top: 12px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.premium-confirm-btn {
+	padding: 6px 12px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--color-border);
+	background: rgba(0,0,0,0.22);
+	color: var(--color-text-heading);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.premium-confirm-btn:hover {
+	border-color: rgba(199,154,57,0.5);
+}
+
+.premium-confirm-btn--primary {
+	border-color: rgba(199,154,57,0.52);
+	background: linear-gradient(180deg, rgba(150,107,46,0.95), rgba(114,78,30,0.95));
+	color: #fff8e8;
+}
+</style>
+
+<div class="premium-shell">
+	<div class="premium-head">
+		<div>
+			<h2 class="premium-title">{{ @lang.premiumStore ?: 'Premium Store' }}</h2>
+			<p class="premium-note">{{ @lang.premiumNoP2W ?: 'Only cosmetic items are sold here. No combat or economy bonus.' }}</p>
+		</div>
+		<div class="premium-balance">
+			&#9670; {{ @premium_balance ?: 0 }} {{ @lang.gems ?: 'Gems' }}
+		</div>
+	</div>
+
+	<div class="premium-card">
+		<div class="premium-card-head">{{ @lang.gemPackages ?: 'Gem Packages' }}</div>
+		<div class="premium-card-body">
+			<div class="premium-grid">
+				<repeat group="{{ @premium_packages }}" value="{{ @pkg }}">
+					<div class="premium-card">
+						<div class="premium-card-head">{{ @pkg.name }}</div>
+						<div class="premium-card-body">
+							<div class="premium-row">
+								<span>&#9670; {{ @pkg.credits }} {{ @lang.gems ?: 'Gems' }}</span>
+								<span class="premium-price">${{ number_format(@pkg.price_usd_cents / 100, 2) }}</span>
+							</div>
+							<a class="premium-buy-btn" href="/premium/checkout/package/{{ @pkg.id }}">{{ @lang.payByCard ?: 'Pay by Card' }}</a>
+						</div>
+					</div>
+				</repeat>
+			</div>
+			<div class="premium-footnote">{{ @lang.purchaseRequestHint ?: 'Package purchases are now processed as card payment requests by admins/payment staff.' }}</div>
+		</div>
+	</div>
+
+	<div class="premium-card">
+		<div class="premium-card-head">{{ @lang.cosmeticItems ?: 'Cosmetic Items' }}</div>
+		<div class="premium-card-body">
+			<div class="premium-grid">
+				<repeat group="{{ @premium_products }}" value="{{ @prd }}">
+					<div class="premium-card">
+						<div class="premium-card-head">{{ @prd.name }}</div>
+						<div class="premium-card-body">
+							<div class="premium-price">{{ @prd.description }}</div>
+							<div class="premium-row">
+								<span>{{ @lang.slot ?: 'Slot' }}: {{ @prd.slot }}</span>
+								<span>&#9670; {{ @prd.price_credits }}</span>
+							</div>
+							<div class="premium-row">
+								<check if="{{ @prd.owned }}">
+									<span class="premium-owned">{{ @lang.owned ?: 'Owned' }}</span>
+								</check>
+								<check if="{{ !@prd.owned }}">
+									<span class="premium-request">{{ @lang.requestOnly ?: 'Request' }}</span>
+								</check>
+								<form action="/premium/product/buy" method="post" class="js-request-form">
+									<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+									<input type="hidden" name="product_id" value="{{ @prd.id }}">
+									<check if="{{ @prd.owned }}">
+										<true><button class="premium-buy-btn" type="submit" disabled>{{ @lang.buyItem ?: 'Buy Item' }}</button></true>
+										<false><button class="premium-buy-btn" type="submit">{{ @lang.createPurchaseRequest ?: 'Create Purchase Request' }}</button></false>
+									</check>
+								</form>
+							</div>
+						</div>
+					</div>
+				</repeat>
+			</div>
+			<div class="premium-footnote">{{ @lang.productRequestHint ?: 'Cosmetic purchases create a request. After approval, items are sent to your inventory.' }}</div>
+		</div>
+	</div>
+
+</div>
+
+<div id="premiumConfirmToast" class="premium-confirm-toast" role="dialog" aria-modal="true" aria-live="polite">
+	<p class="premium-confirm-title">{{ @lang.createPurchaseRequest ?: 'Create Purchase Request' }}</p>
+	<p class="premium-confirm-text">{{ @lang.createPurchaseRequestConfirm ?: 'Create purchase request?' }}</p>
+	<div class="premium-confirm-actions">
+		<button type="button" class="premium-confirm-btn" id="premiumConfirmCancel">{{ @lang.cancel ?: 'Cancel' }}</button>
+		<button type="button" class="premium-confirm-btn premium-confirm-btn--primary" id="premiumConfirmOk">{{ @lang.confirmAction ?: 'Confirm' }}</button>
+	</div>
+</div>
+
+<script>
+(function () {
+	var forms = document.querySelectorAll('.js-request-form');
+	var toast = document.getElementById('premiumConfirmToast');
+	var cancelBtn = document.getElementById('premiumConfirmCancel');
+	var okBtn = document.getElementById('premiumConfirmOk');
+	var pendingForm = null;
+
+	if (!forms.length || !toast || !cancelBtn || !okBtn) return;
+
+	function closeToast() {
+		toast.classList.remove('show');
+		pendingForm = null;
+	}
+
+	forms.forEach(function (form) {
+		form.addEventListener('submit', function (e) {
+			e.preventDefault();
+			pendingForm = form;
+			toast.classList.add('show');
+		});
+	});
+
+	cancelBtn.addEventListener('click', closeToast);
+	okBtn.addEventListener('click', function () {
+		if (!pendingForm) return;
+		var formToSubmit = pendingForm;
+		closeToast();
+		formToSubmit.submit();
+	});
+
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape') {
+			closeToast();
+		}
+	});
+})();
+</script>

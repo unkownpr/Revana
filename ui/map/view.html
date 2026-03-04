@@ -1,0 +1,591 @@
+<style>
+.map-page {
+	--map-zoom: clamp(0.62, calc((100vw - 44px) / 560), 1.265);
+	max-width: 700px;
+}
+
+.map-scene {
+	position: relative;
+	display: block;
+	width: 100%;
+	min-height: 370px;
+}
+
+@media (max-width: 768px) {
+	.map-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+
+	.map-coords-display {
+		align-self: flex-end;
+	}
+
+	.map-toolbar {
+		flex-wrap: wrap;
+		padding: 8px 10px;
+	}
+
+	.map-toolbar-group {
+		flex-wrap: wrap;
+	}
+
+	.map-viewport {
+		padding: 22px 0;
+	}
+
+	.map-nav-btn {
+		width: 32px;
+		height: 32px;
+	}
+}
+
+.map-daynight-overlay {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: calc(41px * var(--map-zoom));
+	width: calc(560px * var(--map-zoom));
+	height: calc(280px * var(--map-zoom));
+	pointer-events: none;
+	z-index: 18;
+	background:
+		radial-gradient(140% 100% at 50% -10%, rgba(128, 178, 255, 0.15), rgba(26, 40, 72, 0.5)),
+		linear-gradient(180deg, rgba(17, 29, 56, 0.42), rgba(8, 14, 29, 0.56));
+	clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+	opacity: 0;
+	transition: opacity 0.4s ease;
+}
+
+.map-fx-canvas {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	top: calc(41px * var(--map-zoom));
+	width: calc(560px * var(--map-zoom));
+	height: calc(280px * var(--map-zoom));
+	pointer-events: none;
+	z-index: 19;
+	clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.map-area {
+	width: calc(560px * var(--map-zoom));
+	min-height: calc(360px * var(--map-zoom));
+	margin: 0 auto;
+}
+
+.map-tiles-inner {
+	left: 0;
+	top: 0;
+	transform: scale(var(--map-zoom));
+	transform-origin: top left;
+}
+
+.map-time-indicator {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 6px;
+	padding: 5px 12px;
+	border: 1px solid rgba(180, 140, 78, 0.55);
+	border-radius: 999px;
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	background:
+		linear-gradient(180deg, rgba(62, 39, 22, 0.82), rgba(32, 19, 10, 0.88));
+	color: #e2c78f;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 226, 165, 0.12),
+		0 4px 14px rgba(0, 0, 0, 0.28);
+}
+
+.map-time-indicator.is-night {
+	border-color: rgba(171, 134, 72, 0.62);
+	color: #ecd7a6;
+	background:
+		linear-gradient(180deg, rgba(48, 31, 20, 0.88), rgba(24, 15, 9, 0.92));
+	box-shadow:
+		inset 0 1px 0 rgba(255, 212, 138, 0.11),
+		0 0 0 1px rgba(126, 87, 40, 0.26),
+		0 4px 14px rgba(0, 0, 0, 0.34);
+}
+
+.map-time-indicator.is-day {
+	border-color: rgba(214, 171, 92, 0.58);
+	color: #f2d89e;
+	background:
+		linear-gradient(180deg, rgba(86, 58, 30, 0.83), rgba(44, 29, 14, 0.9));
+	box-shadow:
+		inset 0 1px 0 rgba(255, 223, 152, 0.16),
+		0 0 0 1px rgba(146, 102, 44, 0.2),
+		0 4px 14px rgba(0, 0, 0, 0.3);
+}
+</style>
+
+<div class="map-page">
+	<div class="map-header">
+		<div>
+			<h2 class="map-title">
+				<svg class="nav-icon" viewBox="0 0 16 16" style="width:18px;height:18px;stroke:var(--color-accent);"><path d="M1 3l5-2 4 2 5-2v12l-5 2-4-2-5 2V3zm5-1v11m4-9v11"/></svg>
+				{{ @lang.map ?: 'Map' }}
+			</h2>
+			<div id="mapTimeIndicator" class="map-time-indicator"></div>
+		</div>
+		<div class="map-coords-display" id="coords-display">({{ @center_x }}, {{ @center_y }})</div>
+	</div>
+
+	<div class="map-toolbar">
+		<div class="map-toolbar-group">
+			<label>{{ @lang.jumpTo ?: 'Jump to' }}:</label>
+			<input class="map-input" type="text" id="x" size="2" value="{{ @center_x }}" onkeydown="if(event.key==='Enter')map()">
+			<span class="map-coord-sep">,</span>
+			<input class="map-input" type="text" id="y" size="2" value="{{ @center_y }}" onkeydown="if(event.key==='Enter')map()">
+			<button class="map-btn" onclick="map()">{{ @lang.go ?: 'Go' }}</button>
+		</div>
+		<check if="{{ isset(@SESSION.user) }}">
+		<div class="map-toolbar-group">
+			<button class="map-btn map-btn-secondary" onclick="goMyTown()" title="{{ @lang.towns ?: 'My Town' }}">
+				<svg viewBox="0 0 16 16" style="width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;vertical-align:-1px;"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+			</button>
+		</div>
+		</check>
+	</div>
+
+	<div class="map-context-menu" id="xmenu"></div>
+
+	<div class="map-viewport">
+		<button class="map-nav-btn map-nav-n" onclick="loadMap({{ @nav.north_x }},{{ @nav.north_y }})" title="{{ @lang.north ?: 'North' }}" id="btn-n">N</button>
+		<button class="map-nav-btn map-nav-s" onclick="loadMap({{ @nav.south_x }},{{ @nav.south_y }})" title="{{ @lang.south ?: 'South' }}" id="btn-s">S</button>
+		<button class="map-nav-btn map-nav-e" onclick="loadMap({{ @nav.east_x }},{{ @nav.east_y }})" title="{{ @lang.east ?: 'East' }}" id="btn-e">E</button>
+		<button class="map-nav-btn map-nav-w" onclick="loadMap({{ @nav.west_x }},{{ @nav.west_y }})" title="{{ @lang.west ?: 'West' }}" id="btn-w">W</button>
+
+		<div class="map-scene">
+			<div class="map-area" id="map-dynamic">
+				<repeat group="{{ @yLabels }}" value="{{ @yl }}">
+				<div class="map-axis-label" style='left:{{ @yl.st_x }}px;top:{{ @yl.st_y }}px;'>{{ @yl.label }}</div>
+				</repeat>
+				<repeat group="{{ @xLabels }}" value="{{ @xl }}">
+				<div class="map-axis-label" style='left:{{ @xl.st_x }}px;top:{{ @xl.st_y }}px;'>{{ @xl.label }}</div>
+				</repeat>
+
+				<div class="map-tiles-inner">
+					<repeat group="{{ @mapTiles }}" value="{{ @t }}">
+					<img class="map-tile-img" style='left:{{ @t.st_x }}px;top:{{ @t.st_y }}px;' src='{{ @t.img }}'>
+					</repeat>
+
+					<repeat group="{{ @mapTiles }}" value="{{ @t }}">
+					<check if="{{ @t.is_own }}">
+					<div class="map-own-label" style="left:{{ @t.st_x + 40 }}px;top:{{ @t.st_y + 24 }}px;">
+						&#9733; {{ @t.own_name }}
+					</div>
+					</check>
+					</repeat>
+
+					<check if="{{ count(@camp_overlays ?: []) }}">
+					<repeat group="{{ @camp_overlays }}" value="{{ @co }}">
+					<a href="/camps" title="Barbarian Camp Lv.{{ @co.level }} ({{ @co.x }},{{ @co.y }})"
+					   style="position:absolute;left:{{ @co.st_x }}px;top:{{ @co.st_y }}px;z-index:12;text-decoration:none;line-height:1;">
+						<span style="background:rgba(140,20,20,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;border:1px solid rgba(200,80,80,0.7);white-space:nowrap;">
+							&#9760; {{ @co.level }}
+						</span>
+					</a>
+					</repeat>
+					</check>
+
+					<img src="{{ @imgs }}map/map_back.gif" class="map-grid-overlay" usemap="#Map">
+					<map name="Map" id="Map">
+						<repeat group="{{ @mapTiles }}" value="{{ @t }}">
+						<area shape="poly" coords="{{ @t.coords }}" href="{{ @t.href }}"
+							data-name="{{ @t.desc_name }}"
+							data-player="{{ @t.desc_player }}"
+							data-pop="{{ @t.desc_pop }}"
+							data-alliance="{{ @t.desc_alliance }}"
+							onMouseOver="desc(this.dataset.name,this.dataset.player,this.dataset.pop,this.dataset.alliance)"
+							onMouseOut="descClear()">
+						</repeat>
+
+						<area shape="circle" coords='482,38,15' href="javascript:void(0)" onclick="loadMap({{ @nav.north_x }},{{ @nav.north_y }})">
+						<area shape="circle" coords='77,241,15' href="javascript:void(0)" onclick="loadMap({{ @nav.south_x }},{{ @nav.south_y }})">
+						<area shape="circle" coords='482,241,15' href="javascript:void(0)" onclick="loadMap({{ @nav.east_x }},{{ @nav.east_y }})">
+						<area shape="circle" coords='77,38,15' href="javascript:void(0)" onclick="loadMap({{ @nav.west_x }},{{ @nav.west_y }})">
+					</map>
+				</div>
+			</div>
+			<div id="mapDayNightOverlay" class="map-daynight-overlay"></div>
+			<canvas id="mapFxCanvas" class="map-fx-canvas"></canvas>
+		</div>
+	</div>
+
+	<div class="map-info-panel" id="descriptor">
+		<div class="map-info-row">
+			<span class="map-info-label">{{ @lang.description ?: 'Tile' }}</span>
+			<span class="map-info-value" id="info-name">-</span>
+		</div>
+		<div class="map-info-row">
+			<span class="map-info-label">{{ @lang.player ?: 'Player' }}</span>
+			<span class="map-info-value" id="info-player">-</span>
+		</div>
+		<div class="map-info-row">
+			<span class="map-info-label">{{ @lang.population ?: 'Pop' }}</span>
+			<span class="map-info-value" id="info-pop">-</span>
+		</div>
+		<div class="map-info-row">
+			<span class="map-info-label">{{ @lang.alliance ?: 'Alliance' }}</span>
+			<span class="map-info-value" id="info-alliance">-</span>
+		</div>
+	</div>
+
+	<div class="map-help-hint">
+		{{ @lang.mapKeyboardHint ?: 'Use arrow keys or WASD to navigate' }}
+	</div>
+</div>
+
+<script type="text/javascript">
+var _mapN = 0;
+var _navData = {
+	north_x: {{ @nav.north_x }}, north_y: {{ @nav.north_y }},
+	south_x: {{ @nav.south_x }}, south_y: {{ @nav.south_y }},
+	east_x: {{ @nav.east_x }}, east_y: {{ @nav.east_y }},
+	west_x: {{ @nav.west_x }}, west_y: {{ @nav.west_y }}
+};
+var _centerX = {{ @center_x }}, _centerY = {{ @center_y }};
+var _myUserId = {{ @my_user_id ?: 0 }};
+var _labels = {
+	viewProfile: {{ json_encode(@lang.viewProfile ?: 'View Profile') }},
+	sendMessage: {{ json_encode(@lang.sendMessage ?: 'Send Message') }},
+	sendArmy: {{ json_encode(@lang.sendArmy ?: 'Send Army') }},
+	goToTown: {{ json_encode(@lang.goToTown ?: 'Go to Town') }},
+	tileDetails: {{ json_encode(@lang.tileDetails ?: 'Tile Details') }}
+};
+var _mapTimeLabels = {
+	night:     {{ json_encode(@lang.timeNight ?: 'Night') }},
+	morning:   {{ json_encode(@lang.timeMorning ?: 'Morning') }},
+	noon:      {{ json_encode(@lang.timeNoon ?: 'Noon') }},
+	afternoon: {{ json_encode(@lang.timeAfternoon ?: 'Afternoon') }},
+	evening:   {{ json_encode(@lang.timeEvening ?: 'Evening') }},
+};
+var _serverHour = parseInt('{{ @server_hour ?: "12" }}', 10) || 12;
+var _serverMinute = parseInt('{{ @server_minute ?: "0" }}', 10) || 0;
+
+function _nightOpacity(hour, minute) {
+	var t = (hour % 24) + (minute / 60);
+	if (t >= 7 && t < 17) return 0;
+	if (t >= 6 && t < 7) return 0.45 * (1 - (t - 6));
+	if (t >= 17 && t < 18) return 0.45 * (t - 17);
+	return 0.45;
+}
+
+function _getMapTimePeriod(h) {
+	h = h % 24;
+	if (h >= 21 || h < 6)  return { label: _mapTimeLabels.night,     icon: '🌙', isNight: true };
+	if (h >= 6  && h < 11) return { label: _mapTimeLabels.morning,   icon: '🌅', isNight: false };
+	if (h >= 11 && h < 13) return { label: _mapTimeLabels.noon,      icon: '☀️',  isNight: false };
+	if (h >= 13 && h < 18) return { label: _mapTimeLabels.afternoon, icon: '🌤️', isNight: false };
+	return                         { label: _mapTimeLabels.evening,   icon: '🌆', isNight: false };
+}
+
+function applyMapDayNight(hour, minute) {
+	var overlay = document.getElementById('mapDayNightOverlay');
+	if (!overlay) return;
+	var op = _nightOpacity(hour, minute);
+	overlay.style.opacity = op.toFixed(3);
+	updateMapTimeIndicator(hour, minute);
+}
+
+function updateMapTimeIndicator(hour, minute) {
+	var el = document.getElementById('mapTimeIndicator');
+	if (!el) return;
+	var hh = String(hour).padStart(2, '0');
+	var mm = String(minute).padStart(2, '0');
+	var period = _getMapTimePeriod(hour);
+	el.classList.toggle('is-night', period.isNight);
+	el.classList.toggle('is-day', !period.isNight);
+	el.textContent = period.icon + ' ' + period.label + ' • ' + hh + ':' + mm;
+}
+
+function _escAttr(value) {
+	return String(value == null ? '' : value)
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+}
+
+function initMapFx() {
+	var canvas = document.getElementById('mapFxCanvas');
+	if (!canvas || !canvas.getContext) return;
+	var ctx = canvas.getContext('2d');
+	var W = 0, H = 0;
+	var leaves = [];
+	var gusts = [];
+
+	function resize() {
+		var rect = canvas.getBoundingClientRect();
+		W = Math.max(1, Math.floor(rect.width));
+		H = Math.max(1, Math.floor(rect.height));
+		canvas.width = W;
+		canvas.height = H;
+	}
+
+	function spawnLeaf(initial) {
+		return {
+			x: Math.random() * W,
+			y: initial ? Math.random() * H : -10 - Math.random() * 20,
+			vx: 0.15 + Math.random() * 0.45,
+			vy: 0.18 + Math.random() * 0.34,
+			size: 3 + Math.random() * 3,
+			rot: Math.random() * Math.PI * 2,
+			spin: -0.03 + Math.random() * 0.06,
+			alpha: 0.45 + Math.random() * 0.4,
+			color: Math.random() > 0.5 ? '#8b6e3d' : '#6d8a45'
+		};
+	}
+
+	function spawnGust() {
+		return {
+			x: -30,
+			y: Math.random() * H,
+			vx: 2.4 + Math.random() * 1.2,
+			len: 18 + Math.random() * 24,
+			alpha: 0.07 + Math.random() * 0.09
+		};
+	}
+
+	function ensure() {
+		while (leaves.length < 24) leaves.push(spawnLeaf(true));
+		while (gusts.length < 8) gusts.push(spawnGust());
+	}
+
+	function tick() {
+		ctx.clearRect(0, 0, W, H);
+
+		for (var i = 0; i < gusts.length; i++) {
+			var g = gusts[i];
+			g.x += g.vx;
+			if (g.x - g.len > W + 30) gusts[i] = spawnGust();
+			ctx.strokeStyle = 'rgba(222,236,255,' + g.alpha.toFixed(3) + ')';
+			ctx.lineWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(g.x, g.y);
+			ctx.lineTo(g.x - g.len, g.y + 2);
+			ctx.stroke();
+		}
+
+		for (var j = 0; j < leaves.length; j++) {
+			var p = leaves[j];
+			p.x += p.vx + Math.sin((Date.now() * 0.001) + j) * 0.25;
+			p.y += p.vy;
+			p.rot += p.spin;
+			if (p.x > W + 14 || p.y > H + 12) {
+				leaves[j] = spawnLeaf(false);
+				leaves[j].x = -10 - Math.random() * 24;
+				leaves[j].y = Math.random() * (H * 0.85);
+				continue;
+			}
+			ctx.save();
+			ctx.globalAlpha = p.alpha;
+			ctx.translate(p.x, p.y);
+			ctx.rotate(p.rot);
+			ctx.fillStyle = p.color;
+			ctx.beginPath();
+			ctx.ellipse(0, 0, p.size, p.size * 0.55, 0, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.restore();
+		}
+
+		requestAnimationFrame(tick);
+	}
+
+	resize();
+	ensure();
+	requestAnimationFrame(tick);
+	window.addEventListener('resize', resize);
+}
+
+function xmenu(uid, tid, utid, tx, ty) {
+	var el = document.getElementById('xmenu');
+	if (!el) return;
+	var html = '';
+	if (_myUserId && uid === _myUserId) {
+		html = '<a class="map-ctx-link" href="/town/' + tid + '">' + _labels.goToTown + '</a>';
+		html += '<a class="map-ctx-link" href="/profile/' + uid + '">' + _labels.viewProfile + '</a>';
+	} else {
+		html = '<a class="map-ctx-link" href="/profile/' + uid + '">' + _labels.viewProfile + '</a>';
+		if (utid) {
+			html += '<a class="map-ctx-link" href="/messages/compose?to=' + uid + '">' + _labels.sendMessage + '</a>';
+			html += '<a class="map-ctx-link" href="/town/' + utid + '/dispatch?target=' + tid + '">' + _labels.sendArmy + '</a>';
+		}
+	}
+	html += '<a class="map-ctx-link" href="/map/' + tx + '/' + ty + '">' + _labels.tileDetails + '</a>';
+	el.innerHTML = html;
+}
+
+function loadMap(x, y, noPush) {
+	fetch('/map/ajax?x=' + x + '&y=' + y)
+		.then(function(r) {
+			if (!r.ok) throw new Error('map_ajax_' + r.status);
+			return r.json();
+		})
+		.then(function(data) {
+			if (!data || data.error) throw new Error(data && data.error ? data.error : 'map_data_invalid');
+			renderMap(data);
+			document.getElementById('x').value = data.center_x;
+			document.getElementById('y').value = data.center_y;
+			_centerX = data.center_x;
+			_centerY = data.center_y;
+			document.getElementById('coords-display').textContent = '(' + data.center_x + ', ' + data.center_y + ')';
+
+			_navData = data.nav;
+			updateNavButtons(data.nav);
+			if (typeof data.server_hour !== 'undefined' && typeof data.server_minute !== 'undefined') {
+				_serverHour = parseInt(data.server_hour, 10) || 0;
+				_serverMinute = parseInt(data.server_minute, 10) || 0;
+				applyMapDayNight(_serverHour, _serverMinute);
+			}
+
+			if (!noPush) {
+				history.pushState({x: data.center_x, y: data.center_y}, '', '/map?x=' + data.center_x + '&y=' + data.center_y);
+			}
+		})
+		.catch(function() {
+			// Fallback keeps map usable even if AJAX endpoint fails temporarily.
+			window.location.href = '/map?x=' + encodeURIComponent(x) + '&y=' + encodeURIComponent(y);
+		});
+}
+
+function updateNavButtons(nav) {
+	var btnN = document.getElementById('btn-n');
+	var btnS = document.getElementById('btn-s');
+	var btnE = document.getElementById('btn-e');
+	var btnW = document.getElementById('btn-w');
+	if (btnN) btnN.onclick = function() { loadMap(nav.north_x, nav.north_y); };
+	if (btnS) btnS.onclick = function() { loadMap(nav.south_x, nav.south_y); };
+	if (btnE) btnE.onclick = function() { loadMap(nav.east_x, nav.east_y); };
+	if (btnW) btnW.onclick = function() { loadMap(nav.west_x, nav.west_y); };
+}
+
+function renderMap(data) {
+	_mapN++;
+	var el = document.getElementById('xmenu');
+	if (el) el.innerHTML = '';
+	descClear();
+
+	var area = document.getElementById('map-dynamic');
+	var html = '';
+	var i, t;
+	var mapName = 'Map' + _mapN;
+
+	for (i = 0; i < data.yLabels.length; i++) {
+		var yl = data.yLabels[i];
+		html += '<div class="map-axis-label" style="left:' + yl.st_x + 'px;top:' + yl.st_y + 'px;">' + yl.label + '</div>';
+	}
+
+	for (i = 0; i < data.xLabels.length; i++) {
+		var xl = data.xLabels[i];
+		html += '<div class="map-axis-label" style="left:' + xl.st_x + 'px;top:' + xl.st_y + 'px;">' + xl.label + '</div>';
+	}
+
+	html += '<div class="map-tiles-inner">';
+
+	for (i = 0; i < data.mapTiles.length; i++) {
+		t = data.mapTiles[i];
+		html += '<img class="map-tile-img" style="left:' + t.st_x + 'px;top:' + t.st_y + 'px;" src="' + _escAttr(t.img) + '">';
+	}
+
+	html += '<img src="' + _escAttr(data.imgs) + 'map/map_back.gif" class="map-grid-overlay" usemap="#' + _escAttr(mapName) + '">';
+	html += '<map name="' + _escAttr(mapName) + '" id="' + _escAttr(mapName) + '">';
+
+	for (i = 0; i < data.mapTiles.length; i++) {
+		t = data.mapTiles[i];
+		html += '<area shape="poly" coords="' + _escAttr(t.coords) + '" href="' + _escAttr(t.href) + '"';
+		html += ' data-name="' + _escAttr(t.desc_name) + '"';
+		html += ' data-player="' + _escAttr(t.desc_player) + '"';
+		html += ' data-pop="' + _escAttr(t.desc_pop) + '"';
+		html += ' data-alliance="' + _escAttr(t.desc_alliance) + '"';
+		html += ' onMouseOver="desc(this.dataset.name,this.dataset.player,this.dataset.pop,this.dataset.alliance)"';
+		html += ' onMouseOut="descClear()">';
+	}
+
+	var nav = data.nav;
+	html += '<area shape="circle" coords="482,38,15" href="javascript:void(0)" onclick="loadMap(' + nav.north_x + ',' + nav.north_y + ')">';
+	html += '<area shape="circle" coords="77,241,15" href="javascript:void(0)" onclick="loadMap(' + nav.south_x + ',' + nav.south_y + ')">';
+	html += '<area shape="circle" coords="482,241,15" href="javascript:void(0)" onclick="loadMap(' + nav.east_x + ',' + nav.east_y + ')">';
+	html += '<area shape="circle" coords="77,38,15" href="javascript:void(0)" onclick="loadMap(' + nav.west_x + ',' + nav.west_y + ')">';
+
+	html += '</map>';
+
+	if (data.camp_overlays && data.camp_overlays.length) {
+		for (i = 0; i < data.camp_overlays.length; i++) {
+			var co = data.camp_overlays[i];
+			html += '<a href="/camps" title="Barbarian Camp Lv.' + co.level + ' (' + co.x + ',' + co.y + ')"'
+				+ ' style="position:absolute;left:' + co.st_x + 'px;top:' + co.st_y + 'px;z-index:12;text-decoration:none;line-height:1;">'
+				+ '<span style="background:rgba(140,20,20,0.85);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;border:1px solid rgba(200,80,80,0.7);white-space:nowrap;">'
+				+ '&#9760; ' + co.level
+				+ '</span></a>';
+		}
+	}
+
+	html += '</div>';
+
+	area.innerHTML = html;
+}
+
+function desc(name, player, pop, alliance) {
+	var panel = document.getElementById('descriptor');
+	if (panel) panel.classList.add('map-info-active');
+	var el;
+	el = document.getElementById('info-name');
+	if (el) el.textContent = name || '-';
+	el = document.getElementById('info-player');
+	if (el) el.textContent = player || '-';
+	el = document.getElementById('info-pop');
+	if (el) el.textContent = pop || '-';
+	el = document.getElementById('info-alliance');
+	if (el) el.textContent = alliance || '-';
+}
+
+function descClear() {
+	var panel = document.getElementById('descriptor');
+	if (panel) panel.classList.remove('map-info-active');
+	desc('-', '-', '-', '-');
+}
+
+function map() {
+	var x = document.getElementById('x');
+	var y = document.getElementById('y');
+	if (!x || !y) return;
+	loadMap(parseInt(x.value) || 0, parseInt(y.value) || 0);
+}
+
+function goMyTown() {
+	window.location.href = '/map';
+}
+
+document.addEventListener('keydown', function(e) {
+	if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+	switch (e.key) {
+		case 'ArrowUp': case 'w': case 'W':
+			e.preventDefault(); loadMap(_navData.north_x, _navData.north_y); break;
+		case 'ArrowDown': case 's': case 'S':
+			e.preventDefault(); loadMap(_navData.south_x, _navData.south_y); break;
+		case 'ArrowRight': case 'd': case 'D':
+			e.preventDefault(); loadMap(_navData.east_x, _navData.east_y); break;
+		case 'ArrowLeft': case 'a': case 'A':
+			e.preventDefault(); loadMap(_navData.west_x, _navData.west_y); break;
+	}
+});
+
+window.addEventListener('popstate', function(e) {
+	if (e.state && e.state.x !== undefined) {
+		loadMap(e.state.x, e.state.y, true);
+	}
+});
+
+history.replaceState({x: {{ @center_x }}, y: {{ @center_y }}}, '', '/map?x={{ @center_x }}&y={{ @center_y }}');
+applyMapDayNight(_serverHour, _serverMinute);
+initMapFx();
+</script>

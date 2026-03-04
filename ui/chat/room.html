@@ -1,0 +1,337 @@
+<style>
+.chat-page {
+	max-width: 980px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+.chat-page-shell {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72));
+	overflow: hidden;
+}
+
+.chat-page-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--space-md);
+	padding: 12px 14px;
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+}
+
+.chat-page-title {
+	margin: 0;
+	font-size: var(--font-size-lg);
+	color: var(--color-text-heading);
+}
+
+.chat-page-room {
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+}
+
+.chat-page-tabs {
+	display: flex;
+	gap: var(--space-xs);
+	padding: 10px 14px;
+	overflow-x: auto;
+	border-bottom: 1px solid rgba(199,154,57,0.15);
+}
+
+.chat-page-tab {
+	display: inline-block;
+	padding: 4px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	text-decoration: none;
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	white-space: nowrap;
+}
+
+.chat-page-tab:hover {
+	color: var(--color-text);
+	background: var(--color-surface-hover);
+}
+
+.chat-page-tab.active {
+	background: var(--color-accent);
+	border-color: var(--color-accent);
+	color: #1c1208;
+	font-weight: 700;
+}
+
+.chat-page-messages {
+	height: 460px;
+	overflow-y: auto;
+	padding: var(--space-sm) var(--space-md);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+}
+
+.chat-page-msg {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--space-sm);
+}
+
+.chat-page-msg-self {
+	justify-content: flex-start;
+	text-align: left;
+}
+
+.chat-page-msg-other {
+	justify-content: flex-end;
+	text-align: right;
+}
+
+.chat-page-msg-other .avatar { order: 2; }
+.chat-page-msg-other .chat-bubble { order: 1; }
+
+.chat-bubble {
+	max-width: 76%;
+	padding: 8px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.22);
+}
+
+.chat-page-msg-self .chat-bubble {
+	border-color: rgba(199,154,57,0.35);
+	background: rgba(199,154,57,0.10);
+}
+
+.chat-meta {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin-bottom: 2px;
+}
+
+.chat-page-msg-other .chat-meta {
+	justify-content: flex-end;
+}
+
+.chat-author {
+	font-weight: 700;
+	color: var(--color-accent);
+}
+
+.chat-time {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+}
+
+.chat-body {
+	line-height: 1.4;
+	word-break: break-word;
+}
+
+.chat-empty {
+	padding: var(--space-xl) 0;
+	text-align: center;
+	color: var(--color-text-muted);
+}
+
+.chat-page-input {
+	display: flex;
+	gap: var(--space-xs);
+	padding: 10px 14px;
+	border-top: 1px solid rgba(199,154,57,0.2);
+	background: rgba(0,0,0,0.18);
+}
+
+.chat-page-input .textbox {
+	flex: 1;
+}
+
+.chat-page .button,
+.chat-page button.button,
+.chat-page a.button {
+	display: inline-block;
+	text-decoration: none;
+	padding: 8px 14px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.chat-page .button:hover,
+.chat-page button.button:hover,
+.chat-page a.button:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: linear-gradient(180deg, rgba(199,154,57,0.15), rgba(0,0,0,0.18));
+}
+
+.chat-admin {
+	margin-top: var(--space-md);
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-md);
+}
+
+.chat-admin-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.16);
+	overflow: hidden;
+}
+
+.chat-admin-card h3 {
+	margin: 0;
+	padding: 10px 12px;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-heading);
+	background: rgba(0,0,0,0.22);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+}
+
+.chat-admin-body {
+	padding: 12px;
+	display: grid;
+	gap: 10px;
+}
+
+.chat-admin-list {
+	max-height: 220px;
+	overflow: auto;
+	display: grid;
+	gap: 8px;
+}
+
+.chat-admin-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 8px;
+	border: 1px solid rgba(199,154,57,0.2);
+	border-radius: var(--radius-sm);
+}
+
+.chat-page-actions {
+	margin-top: var(--space-md);
+	display: flex;
+	justify-content: flex-end;
+}
+
+@media (max-width: 840px) {
+	.chat-admin { grid-template-columns: 1fr; }
+	.chat-bubble { max-width: 88%; }
+}
+</style>
+
+<div class="chat-page">
+	<div class="chat-page-shell">
+		<div class="chat-page-head">
+			<h2 class="chat-page-title">{{ @lang.chat ?: 'Chat' }}</h2>
+			<div class="chat-page-room">{{ @lang.chatRoom ?: 'Chat Room' }}: {{ @room_name }}</div>
+		</div>
+
+		<div class="chat-page-tabs">
+			<repeat group="{{ @rooms }}" value="{{ @r }}">
+				<a href="/chat/{{ @r.id }}" class="chat-page-tab {{ @r.id == @current_room ? 'active' : '' }}">{{ @r.name }}</a>
+			</repeat>
+		</div>
+
+		<div id="chat_messages" class="chat-page-messages">
+			<check if="{{ count(@chat_messages) }}">
+			<repeat group="{{ @chat_messages }}" value="{{ @cmsg }}">
+				<check if="{{ (@SESSION.user.id ?: 0) == (@cmsg.sender ?: -1) }}">
+				<div class="chat-page-msg chat-page-msg-self">
+					<img class="avatar avatar-sm" src="{{ @cmsg.sender_avatar }}" alt="{{ @cmsg.senderName }}">
+					<div class="chat-bubble">
+						<div class="chat-meta">
+							<span class="chat-author"><a class="q_link" href="/profile/{{ @cmsg.sender }}">{{ @cmsg.senderName }}</a></span>
+							<span class="chat-time">{{ @cmsg.timeStamp }}</span>
+						</div>
+						<div class="chat-body">{{ @cmsg.message }}</div>
+					</div>
+				</div>
+				<false>
+				<div class="chat-page-msg chat-page-msg-other">
+					<img class="avatar avatar-sm" src="{{ @cmsg.sender_avatar }}" alt="{{ @cmsg.senderName }}">
+					<div class="chat-bubble">
+						<div class="chat-meta">
+							<span class="chat-author"><a class="q_link" href="/profile/{{ @cmsg.sender }}">{{ @cmsg.senderName }}</a></span>
+							<span class="chat-time">{{ @cmsg.timeStamp }}</span>
+						</div>
+						<div class="chat-body">{{ @cmsg.message }}</div>
+					</div>
+				</div>
+				</false>
+			</check>
+			</repeat>
+			</check>
+			<check if="{{ !count(@chat_messages) }}">
+				<div class="chat-empty">{{ @lang.noChatMessages ?: 'No messages yet.' }}</div>
+			</check>
+		</div>
+
+		<check if="{{ !@admin_mode }}">
+		<form action="/chat/{{ @room }}" method="post" class="chat-page-input">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<input type="hidden" name="room" value="{{ @room }}">
+			<input class="textbox" type="text" name="message" maxlength="500" autocomplete="off" placeholder="{{ @lang.chat ?: 'Chat' }}...">
+			<button class="button" type="submit" name="send">{{ @lang.send ?: 'Send' }}</button>
+		</form>
+		</check>
+	</div>
+
+	<check if="{{ @admin_mode }}">
+	<div class="chat-admin">
+		<div class="chat-admin-card">
+			<h3>{{ @lang.create ?: 'Create' }} {{ @lang.chatRoom ?: 'Chat Room' }}</h3>
+			<div class="chat-admin-body">
+				<form action="/chat/admin" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input type="hidden" name="action" value="create">
+					<input class="textbox" type="text" name="name" maxlength="64" placeholder="{{ @lang.name ?: 'Name' }}">
+					<div><button class="button" type="submit">{{ @lang.add ?: 'Add' }}</button></div>
+				</form>
+			</div>
+		</div>
+		<div class="chat-admin-card">
+			<h3>{{ @lang.delete ?: 'Delete' }} {{ @lang.chatRoom ?: 'Chat Room' }}</h3>
+			<div class="chat-admin-body">
+				<div class="chat-admin-list">
+					<repeat group="{{ @rooms }}" value="{{ @r }}">
+						<div class="chat-admin-item">
+							<span>{{ @r.name }}</span>
+							<check if="{{ @r.id > 1 }}">
+							<form action="/chat/admin" method="post" style="margin:0;">
+								<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+								<input type="hidden" name="action" value="delete">
+								<input type="hidden" name="room_id" value="{{ @r.id }}">
+								<button class="button" type="submit">{{ @lang.delete ?: 'Delete' }}</button>
+							</form>
+							</check>
+						</div>
+					</repeat>
+				</div>
+			</div>
+		</div>
+	</div>
+	</check>
+
+	<div class="chat-page-actions">
+		<a class="button" href="/towns">{{ @lang.back ?: 'Back' }}</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var chatDiv = document.getElementById('chat_messages');
+	if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+</script>
+<noscript>
+	<a class="q_link" href="/chat/{{ @room }}">{{ @lang.refresh ?: 'Refresh' }}</a>
+</noscript>

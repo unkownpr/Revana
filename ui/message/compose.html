@@ -1,0 +1,44 @@
+<include href="shared/message-center-style.html" />
+
+<div class="msg-shell">
+	<div class="msg-hero">
+		<h2>{{ @lang.composeMessage ?: 'Compose Message' }}</h2>
+		<p>{{ @lang.composeMessageDesc ?: 'Send a new message.' }}</p>
+	</div>
+
+	<div class="msg-tabs">
+		<a href="/messages" class="msg-tab">{{ @lang.messages ?: 'Messages' }}</a>
+		<a href="/reports" class="msg-tab">{{ @lang.reports ?: 'Reports' }}</a>
+		<a href="/messages/compose" class="msg-tab active">{{ @lang.compose ?: 'Compose' }}</a>
+	</div>
+
+	<div class="msg-card">
+		<div class="msg-card-head">{{ @lang.composeMessage ?: 'Compose Message' }}</div>
+		<div class="msg-card-body">
+			<form action="/messages/compose" method="post" class="msg-form-grid">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+
+				<div class="msg-field">
+					<label for="recipient">{{ @lang.recipient ?: 'Recipient' }}</label>
+					<input id="recipient" class="textbox" type="text" name="recipient" value="{{ @prefill_to }}">
+				</div>
+
+				<div class="msg-field">
+					<label for="subject">{{ @lang.subject ?: 'Subject' }}</label>
+					<input id="subject" class="textbox" type="text" name="subject" value="{{ @prefill_subject }}">
+				</div>
+
+				<div class="msg-field">
+					<label for="contents">{{ @lang.message ?: 'Message' }}</label>
+					<textarea id="contents" class="textbox msg-body" name="contents" rows="9">{{ @prefill_content }}</textarea>
+				</div>
+				<include href="shared/recaptcha-widget.html" />
+
+				<div class="msg-toolbar">
+					<a class="msg-btn" href="/messages">{{ @lang.backToMessages ?: 'Back to Messages' }}</a>
+					<input class="button" type="submit" name="send" value="{{ @lang.send ?: 'Send' }}">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

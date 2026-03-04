@@ -1,0 +1,96 @@
+<html>
+<link rel="stylesheet" type="text/css" href="/default/1/default.css">
+<head>
+<title>Devana - Installation</title>
+</head>
+<body class="q_body">
+<div align="center">
+
+<table class="q_table">
+	<tr>
+		<td class="td_logo"><img src="/default/1/logo.jpg"></td>
+	</tr>
+	<tr>
+		<td class="td_top_menu">
+			<font class="q_label">Installation Wizard - Step 1: System Requirements</font>
+		</td>
+	</tr>
+	<tr>
+		<td class="td_content">
+			<br>
+			<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+				<tr>
+					<td class="head_table" width="350">Requirement</td>
+					<td class="head_table" width="80">Status</td>
+					<td class="head_table" width="70">Details</td>
+				</tr>
+				<repeat group="{{ @checks }}" key="{{ @key }}" value="{{ @check }}">
+				<tr>
+					<td class="q_text" align="left">{{ @check.label }}</td>
+					<td align="center">
+						<check if="{{ @check.passed }}">
+							<font color="green"><b>OK</b></font>
+						</check>
+						<check if="{{ !@check.passed }}">
+							<font color="red"><b>FAIL</b></font>
+						</check>
+					</td>
+					<td class="q_text">{{ @check.current }}</td>
+				</tr>
+				</repeat>
+			</table>
+			<br>
+			<check if="{{ @all_passed }}">
+				<form method="post" action="/install/step2">
+					<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+						<tr>
+							<td class="head_table" colspan="2">Database Configuration</td>
+						</tr>
+						<tr>
+							<td class="q_text" align="right" width="200">Game Title:</td>
+							<td><input class="textbox" type="text" name="game_title" value="Devana"></td>
+						</tr>
+						<tr>
+							<td class="q_text" align="right">Database Host:</td>
+							<td><input class="textbox" type="text" name="db_host" value="localhost"></td>
+						</tr>
+						<tr>
+							<td class="q_text" align="right">Database Port:</td>
+							<td><input class="textbox" type="text" name="db_port" value="3306"></td>
+						</tr>
+						<tr>
+							<td class="q_text" align="right">Database Name:</td>
+							<td><input class="textbox" type="text" name="db_name" value="devana"></td>
+						</tr>
+						<tr>
+							<td class="q_text" align="right">Database User:</td>
+							<td><input class="textbox" type="text" name="db_user" value="root"></td>
+						</tr>
+						<tr>
+							<td class="q_text" align="right">Database Password:</td>
+							<td><input class="textbox" type="password" name="db_pass" value=""></td>
+						</tr>
+						<tr>
+							<td colspan="2" align="center">
+								<br>
+								<input class="button" type="submit" value="Next: Setup Database">
+								<br><br>
+							</td>
+						</tr>
+					</table>
+				</form>
+			</check>
+			<check if="{{ !@all_passed }}">
+				<br>
+				<font color="red"><b>Please fix the requirements above before continuing.</b></font>
+				<br><br>
+				<a class="q_link" href="/install">Refresh</a>
+			</check>
+			<br>
+		</td>
+	</tr>
+</table>
+
+</div>
+</body>
+</html>

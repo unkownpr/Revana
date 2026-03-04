@@ -1,0 +1,35 @@
+<div class="admin-card">
+	<div class="admin-card-header">
+		<span>Yeni Harita Oluştur</span>
+		<a class="admin-btn admin-btn--sm" href="/admin/maps">Listeye Dön</a>
+	</div>
+	<div class="admin-card-body">
+		<form action="/admin/maps/create" method="post" class="admin-form">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<div class="map-create-grid">
+				<div class="admin-form-group admin-form-group--full">
+					<label>Harita Adı</label>
+					<input class="textbox" type="text" name="name" required maxlength="60" placeholder="Örn: Kıta - Sezon 2">
+				</div>
+				<div class="admin-form-group">
+					<label>Genişlik</label>
+					<input class="textbox" type="number" name="width" value="50" min="10" max="200">
+				</div>
+				<div class="admin-form-group">
+					<label>Yükseklik</label>
+					<input class="textbox" type="number" name="height" value="50" min="10" max="200">
+				</div>
+				<div class="admin-form-group admin-form-group--full">
+					<label class="map-create-check">
+						<input type="checkbox" name="generate_random" value="1">
+						Otomatik rastgele arazi üret
+					</label>
+				</div>
+			</div>
+			<div class="map-create-actions">
+				<button type="submit" class="admin-btn admin-btn--primary">Haritayı Oluştur</button>
+				<a class="admin-btn" href="/admin/maps">İptal</a>
+			</div>
+		</form>
+	</div>
+</div>

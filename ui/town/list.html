@@ -1,0 +1,142 @@
+<style>
+.towns-page { max-width: 900px; margin: 0 auto; }
+
+.towns-page-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-lg);
+}
+
+.towns-page-title {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	font-size: var(--font-size-xl);
+	color: var(--color-accent);
+}
+
+.towns-count {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+	background: rgba(80,55,30,0.3);
+	padding: 3px 10px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border);
+}
+
+.towns-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+	gap: var(--space-md);
+}
+
+.town-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-xs);
+	padding: var(--space-md) var(--space-sm) var(--space-sm);
+	background: rgba(22, 14, 10, 0.6);
+	border: 1px solid rgba(127, 97, 64, 0.3);
+	border-radius: var(--radius-sm);
+	text-decoration: none;
+	transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+	position: relative;
+}
+
+.town-card:hover {
+	border-color: var(--color-accent);
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.town-card-img {
+	width: 56px;
+	height: 64px;
+	object-fit: contain;
+	filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.town-card-name {
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	color: var(--color-accent);
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 100%;
+}
+
+.town-card-pop {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+}
+
+.town-card-capital {
+	position: absolute;
+	top: 6px;
+	right: 8px;
+	font-size: 12px;
+	color: var(--color-accent);
+}
+
+.town-card-edit {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-decoration: none;
+	padding: 2px 8px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: var(--color-surface-alt);
+	margin-top: 2px;
+	display: inline-block;
+	transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.town-card-edit:hover {
+	color: var(--color-accent);
+	border-color: var(--color-accent);
+}
+
+.towns-empty {
+	text-align: center;
+	color: var(--color-text-muted);
+	padding: var(--space-xl);
+	background: rgba(22,14,10,0.4);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+}
+</style>
+
+<div class="towns-page">
+	<div class="towns-page-header">
+		<h2 class="towns-page-title">
+			<svg style="width:18px;height:18px;fill:var(--color-accent);" viewBox="0 0 16 16"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+			{{ @lang.towns ?: 'Your Towns' }}
+		</h2>
+		<span class="towns-count">{{ count(@towns) }} {{ @lang.towns ?: 'Towns' }}</span>
+	</div>
+
+	<check if="{{ @towns }}">
+	<div class="towns-grid">
+		<repeat group="{{ @towns }}" value="{{ @town }}">
+		<div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+			<a class="town-card" href="/town/{{ @town.id }}">
+				<check if="{{ @town.isCapital }}"><span class="town-card-capital">&#9733;</span></check>
+				<img class="town-card-img" src="/default/1/b7.png" alt="">
+				<span class="town-card-name">{{ @town.name }}</span>
+				<span class="town-card-pop">{{ @lang.population ?: 'Pop.' }}: {{ @town.population }}</span>
+			</a>
+			<a class="town-card-edit" href="/town/{{ @town.id }}/edit">{{ @lang.edit ?: 'Edit' }}</a>
+		</div>
+		</repeat>
+	</div>
+	</check>
+
+	<check if="{{ !@towns }}">
+	<div class="towns-empty">{{ @lang.noTown ?: 'No towns yet.' }}</div>
+	</check>
+</div>

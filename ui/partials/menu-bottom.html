@@ -1,0 +1,10 @@
+<check if="{{ isset(@SESSION.user) }}">
+	<a class="q_link" href="/reports">{{ @lang.reports ?: 'Reports' }}</a>
+	<a class="q_link" href="/messages">{{ @lang.messages ?: 'Messages' }}</a>
+</check>
+<span class="nav-separator"></span>
+<a class="q_link" href="/help">{{ @lang.help ?: 'Help' }}</a>
+<check if="{{ isset(@SESSION.user) && @SESSION.user.level > 3 }}">
+	<span class="nav-separator"></span>
+	<a class="q_link" href="/admin">{{ @lang.adminPanel ?: 'Admin Panel' }}</a>
+</check>

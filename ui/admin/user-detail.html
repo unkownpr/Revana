@@ -1,0 +1,101 @@
+<div class="admin">
+
+	<!-- Back link -->
+	<div style="margin-bottom: var(--space-md);">
+		<a href="/admin" class="admin-btn admin-btn--sm">&larr; {{ @lang.backToAdmin ?: 'Back to Admin' }}</a>
+	</div>
+
+	<!-- User Info Card -->
+	<div class="admin-card">
+		<div class="admin-card-header">{{ @lang.userDetail ?: 'User Detail' }}</div>
+		<div class="admin-card-body">
+			<div style="display:flex; gap:var(--space-lg); align-items:flex-start; flex-wrap:wrap;">
+				<img src="{{ @detail_user.avatar }}" alt="{{ @detail_user.name }}" style="width:80px; height:80px; border-radius:50%;">
+				<div class="admin-table-wrap" style="flex:1; min-width:300px;">
+					<table class="admin-table">
+						<tbody>
+							<tr><td><strong>ID</strong></td><td>{{ @detail_user.id }}</td></tr>
+							<tr><td><strong>{{ @lang.name ?: 'Name' }}</strong></td><td>{{ @detail_user.name }}</td></tr>
+							<tr><td><strong>{{ @lang.email ?: 'Email' }}</strong></td><td>{{ @detail_user.email }}</td></tr>
+							<tr><td><strong>{{ @lang.level ?: 'Level' }}</strong></td><td>{{ @detail_user.level }}</td></tr>
+							<tr><td><strong>{{ @lang.points ?: 'Points' }}</strong></td><td>{{ @detail_user.points }}</td></tr>
+							<tr><td><strong>{{ @lang.faction ?: 'Faction' }}</strong></td><td>{{ @detail_user.faction }}</td></tr>
+							<tr><td><strong>{{ @lang.alliance ?: 'Alliance' }}</strong></td><td>{{ @detail_user.alliance }}</td></tr>
+							<tr><td><strong>{{ @lang.regDate ?: 'Registered' }}</strong></td><td>{{ @detail_user.joined }}</td></tr>
+							<tr><td><strong>{{ @lang.lastVisit ?: 'Last Visit' }}</strong></td><td>{{ @detail_user.lastVisit }}</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Password Reset Card -->
+	<div class="admin-card">
+		<div class="admin-card-header">{{ @lang.resetPassword ?: 'Reset Password' }}</div>
+		<div class="admin-card-body">
+			<form action="/admin/user/{{ @detail_user.id }}/password" method="post" class="admin-form">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<div class="admin-form-row">
+					<div class="admin-form-group" style="flex:1;">
+						<label>{{ @lang.newPassword ?: 'New Password' }}</label>
+						<input class="textbox" type="password" name="new_password" required minlength="4">
+					</div>
+					<div class="admin-form-group" style="align-self:flex-end;">
+						<button type="submit" class="admin-btn admin-btn--primary" onclick="return confirm('{{ @lang.confirmResetPassword ?: 'Are you sure you want to reset this password?' }}');">{{ @lang.resetPassword ?: 'Reset Password' }}</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Towns / Resources -->
+	<div class="admin-card">
+		<div class="admin-card-header">{{ @lang.editResources ?: 'Edit Resources' }} ({{ count(@detail_towns) }} {{ @lang.towns ?: 'towns' }})</div>
+		<div class="admin-card-body">
+			<check if="{{ count(@detail_towns) }}">
+				<repeat group="{{ @detail_towns }}" value="{{ @dt }}">
+					<div style="border:1px solid var(--border-color, #333); border-radius:var(--radius-md, 6px); padding:var(--space-md); margin-bottom:var(--space-md);">
+						<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-sm);">
+							<strong>{{ @dt.name }}</strong>
+							<span class="text-muted">ID: {{ @dt.id }} &middot; {{ @lang.population ?: 'Population' }}: {{ @dt.population }}</span>
+						</div>
+						<form action="/admin/user/{{ @detail_user.id }}/resources" method="post" class="admin-form">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="town_id" value="{{ @dt.id }}">
+							<div style="display:flex; gap:var(--space-sm); flex-wrap:wrap; align-items:flex-end;">
+								<div class="admin-form-group" style="flex:1; min-width:100px;">
+									<label>{{ @lang.crop ?: 'Crop' }}</label>
+									<input class="textbox" type="number" name="crop" value="{{ @dt.res_crop }}" min="0" style="width:100%;">
+								</div>
+								<div class="admin-form-group" style="flex:1; min-width:100px;">
+									<label>{{ @lang.lumber ?: 'Lumber' }}</label>
+									<input class="textbox" type="number" name="lumber" value="{{ @dt.res_lumber }}" min="0" style="width:100%;">
+								</div>
+								<div class="admin-form-group" style="flex:1; min-width:100px;">
+									<label>{{ @lang.stone ?: 'Stone' }}</label>
+									<input class="textbox" type="number" name="stone" value="{{ @dt.res_stone }}" min="0" style="width:100%;">
+								</div>
+								<div class="admin-form-group" style="flex:1; min-width:100px;">
+									<label>{{ @lang.iron ?: 'Iron' }}</label>
+									<input class="textbox" type="number" name="iron" value="{{ @dt.res_iron }}" min="0" style="width:100%;">
+								</div>
+								<div class="admin-form-group" style="flex:1; min-width:100px;">
+									<label>{{ @lang.gold ?: 'Gold' }}</label>
+									<input class="textbox" type="number" name="gold" value="{{ @dt.res_gold }}" min="0" style="width:100%;">
+								</div>
+								<div class="admin-form-group">
+									<button type="submit" class="admin-btn admin-btn--primary admin-btn--sm">{{ @lang.save ?: 'Save' }}</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</repeat>
+			</check>
+			<check if="{{ !count(@detail_towns) }}">
+				<p class="text-muted" style="margin:0; font-style:italic;">{{ @lang.noTown ?: 'No towns.' }}</p>
+			</check>
+		</div>
+	</div>
+
+</div>

@@ -1,0 +1,67 @@
+<include href="shared/stats-rankings-style.html" />
+
+<div class="stats-shell">
+	<div class="stats-header">
+		<div>
+			<h2 class="stats-title">{{ @lang.townRankings ?: 'Town Rankings' }}</h2>
+			<p class="stats-sub">{{ @lang.viewStatsFor ?: 'View statistics for' }}: {{ @lang.towns ?: 'Towns' }}</p>
+		</div>
+		<div class="stats-count">{{ @lang.towns ?: 'Towns' }}: {{ @total_towns }}</div>
+	</div>
+
+	<div class="nav-tabs">
+		<a href="/stats/users">{{ @lang.players ?: 'Players' }}</a>
+		<a href="/stats/towns" class="active">{{ @lang.towns ?: 'Towns' }}</a>
+		<a href="/stats/alliances">{{ @lang.alliances ?: 'Alliances' }}</a>
+	</div>
+
+	<div class="rank-wrap">
+		<table class="rank-table">
+			<tr>
+				<th class="col-rank">#</th>
+				<th>{{ @lang.townName ?: 'Town Name' }}</th>
+				<th class="mobile-hide">{{ @lang.owner ?: 'Owner' }}</th>
+				<th class="col-pop">{{ @lang.population ?: 'Population' }}</th>
+				<th class="col-coord">{{ @lang.coordinates ?: 'Coords' }}</th>
+			</tr>
+			<check if="{{ @ranked_towns }}">
+				<repeat group="{{ @ranked_towns }}" key="{{ @i }}" value="{{ @rt }}">
+				<tr>
+					<td class="col-rank">
+						<check if="{{ @offset + @i + 1 <= 3 }}"><span class="rank-medal">{{ @offset + @i + 1 }}</span></check>
+						<check if="{{ @offset + @i + 1 > 3 }}"><span class="rank-number">{{ @offset + @i + 1 }}</span></check>
+					</td>
+					<td>
+						<div class="rank-entity-inline">
+							<img class="town-icon-sm" src="{{ @imgs }}{{ @fimgs }}b7.png" alt="">
+							<span>{{ @rt.name }}</span>
+						</div>
+					</td>
+					<td class="mobile-hide">
+						<check if="{{ @rt.owner_id }}">
+							<a class="q_link owner-inline" href="/profile/{{ @rt.owner_id }}">
+								<img class="avatar avatar-sm" src="{{ @rt.owner_avatar_url }}" alt="{{ @rt.owner_name }}">
+								<span>{{ @rt.owner_name }}</span>
+							</a>
+						</check>
+						<check if="{{ !@rt.owner_id }}">-</check>
+					</td>
+					<td class="col-pop">{{ @rt.population }}</td>
+					<td class="col-coord">
+						<div class="coord-wrap">
+							<a class="map-go-btn" href="/map?x={{ @rt.x }}&y={{ @rt.y }}">{{ isset(@lang.goToMap) ? @lang.goToMap : 'Go to Map' }}</a>
+						</div>
+					</td>
+				</tr>
+				</repeat>
+			</check>
+		</table>
+		<check if="{{ !@ranked_towns }}"><div class="empty-state">{{ @lang.noResults ?: 'No results found.' }}</div></check>
+	</div>
+
+	<div class="pagination-bar">
+		<div><check if="{{ @page > 1 }}"><a class="q_link" href="/stats/towns?page={{ @page - 1 }}">{{ @lang.prev ?: '<< Prev' }}</a></check></div>
+		<div>{{ @lang.page ?: 'Page' }} {{ @page }} / {{ @total_pages }}</div>
+		<div><check if="{{ @page < @total_pages }}"><a class="q_link" href="/stats/towns?page={{ @page + 1 }}">{{ @lang.next ?: 'Next >>' }}</a></check></div>
+	</div>
+</div>

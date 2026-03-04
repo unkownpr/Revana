@@ -1,0 +1,6 @@
+<check if="{{ (int) (@game.recaptcha_enabled ?? 0) === 1 && trim((string) (@game.recaptcha_site_key ?? '')) !== '' }}">
+	<div style="margin-top:10px;">
+		<div class="g-recaptcha" data-sitekey="{{ @game.recaptcha_site_key }}"></div>
+	</div>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</check>

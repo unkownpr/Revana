@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ @CSRF }}">
+<meta name="author" content="{{ @meta_author ?: 'Devana' }}">
+<meta name="description" content="{{ @meta_description ?: @game_title }}">
+<meta name="keywords" content="{{ @meta_keywords ?: 'devana,strategy,game' }}">
+<title>{{ @game_title }} - {{ @page_title }}</title>
+<link rel="icon" type="image/x-icon" href="{{ @site_favicon_url ?: '/default/1/logo.jpg' }}">
+<link rel="stylesheet" type="text/css" href="{{ @imgs }}{{ @fimgs }}default.css">
+<check if="{{ @is_admin_page }}">
+	<link rel="stylesheet" type="text/css" href="/ui/admin/admin-theme.css">
+</check>
+<script src="/func.js" type="text/javascript"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+</head>
+
+<body class="{{ @body_class ?: 'q_body' }}">
+<div id="game-tooltip" class="game-tooltip" role="tooltip" aria-hidden="true"></div>
+
+<check if="{{ isset(@flash_message) }}">
+	<include href="shared/message-flash.html" />
+</check>
+
+<check if="{{ @is_admin_page }}">
+	<div class="admin-app">
+		<aside class="admin-sidebar">
+			<a href="/admin" class="admin-brand">
+				<span class="admin-brand-mark">ADM</span>
+				<span class="admin-brand-text">{{ @lang.adminPanel ?: 'Admin Panel' }}</span>
+			</a>
+			<div class="admin-sidebar-user">
+				<strong>{{ @SESSION.user.name ?: 'Admin' }}</strong>
+				<span>{{ @lang.level ?: 'Level' }} {{ @SESSION.user.level ?: 0 }}</span>
+			</div>
+				<nav class="admin-nav">
+					<a href="/admin#dashboard" class="admin-nav-link">{{ @lang.dashboard ?: 'Dashboard' }}</a>
+				<a href="/admin#announcements" class="admin-nav-link">{{ @lang.announcements ?: 'Announcements' }}</a>
+				<a href="/admin#config" class="admin-nav-link">{{ @lang.gameConfig ?: 'Configuration' }}</a>
+				<a href="/admin#missions" class="admin-nav-link">{{ @lang.missions ?: 'Missions' }}</a>
+				<a href="/admin#premium" class="admin-nav-link">{{ @lang.adminPremium ?: 'Premium' }}</a>
+				<a href="/admin#users" class="admin-nav-link">{{ @lang.userManagement ?: 'Users' }}</a>
+				<a href="/admin#factions" class="admin-nav-link">{{ @lang.factionManagement ?: 'Factions' }}</a>
+				<a href="/admin#camps" class="admin-nav-link">{{ @lang.adminCamps ?: 'Camps' }}</a>
+				<a href="/admin#bots" class="admin-nav-link">{{ @lang.bots ?: 'Bots' }}</a>
+				<a href="/admin#achievements" class="admin-nav-link">{{ @lang.achievements ?: 'Achievements' }}</a>
+				<a href="/admin#seasons" class="admin-nav-link">{{ @lang.season ?: 'Seasons' }}</a>
+				<a href="/admin#wars" class="admin-nav-link">{{ @lang.allianceWars ?: 'Wars' }}</a>
+				<a href="/admin#maintenance" class="admin-nav-link">{{ @lang.maintenance ?: 'Maintenance' }}</a>
+					<a href="/admin/maps" class="admin-nav-link{{ @admin_section == 'maps' ? ' is-active' : '' }}">{{ @lang.adminMaps ?: 'Maps' }}</a>
+					<a href="/admin/assets" class="admin-nav-link{{ @admin_section == 'assets' ? ' is-active' : '' }}">{{ @lang.adminAssets ?: 'Assets' }}</a>
+				<a href="/" class="admin-nav-link admin-nav-link--back">{{ @lang.backToHome ?: 'Back to Home' }}</a>
+			</nav>
+		</aside>
+		<div class="admin-content-wrap">
+			<header class="admin-topbar">
+				<h1>{{ @page_title ?: (@lang.adminPanel ?: 'Admin Panel') }}</h1>
+			</header>
+			<main class="admin-main">
+				<include href="{{ @content }}" />
+			</main>
+		</div>
+	</div>
+</check>
+
+<check if="{{ !@is_admin_page }}">
+	<div class="game-wrapper">
+		<nav class="game-nav">
+			<include href="partials/menu-top.html" />
+		</nav>
+
+		<check if="{{ isset(@resources) && !isset(@hide_resource_bar) }}">
+			<include href="partials/resource-bar.html" />
+		</check>
+
+			<main class="game-content">
+				<include href="{{ @content }}" />
+			</main>
+
+			<footer class="game-footer">
+				<div class="footer-inner">
+					<div class="footer-stats">
+						<a href="/stats/users" class="footer-stat">
+							<span class="footer-stat-value">{{ @footer_stats.players ?: '0' }}</span>
+							<span class="footer-stat-label">{{ @lang.statsUsers ?: 'Players' }}</span>
+						</a>
+						<a href="/stats/towns" class="footer-stat">
+							<span class="footer-stat-value">{{ @footer_stats.towns ?: '0' }}</span>
+							<span class="footer-stat-label">{{ @lang.statsTowns ?: 'Towns' }}</span>
+						</a>
+						<a href="/stats/alliances" class="footer-stat">
+							<span class="footer-stat-value">{{ @footer_stats.alliances ?: '0' }}</span>
+							<span class="footer-stat-label">{{ @lang.statsAlliances ?: 'Alliances' }}</span>
+						</a>
+					</div>
+						<div class="footer-links">
+							<a href="/stats/users">{{ @lang.statistics ?: 'Stats' }}</a>
+							<a href="/help">{{ @lang.help ?: 'Help' }}</a>
+						</div>
+							<div class="footer-signature">
+								<span class="footer-signature-label">{{ @lang.developedBy ?: 'Developed by' }}</span>
+								<a class="footer-signature-link" href="https://ssilistre.dev" target="_blank" rel="noopener noreferrer">ssilistre.dev</a>
+							</div>
+					</div>
+				</footer>
+			</div>
+</check>
+
+	<check if="{{ isset(@SESSION.user) && !@is_admin_page }}">
+	<div class="chat-widget" x-data="chatWidget({{ @SESSION.user.id ?: 0 }})" x-init="init()">
+	<!-- Toggle Button -->
+	<button class="chat-toggle" @click="toggleChat()" :class="{ 'chat-toggle--active': open }">
+		<svg viewBox="0 0 16 16" width="14" height="14"><path d="M2 2h12v8H6l-3 3v-3H2V2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+		{{ @lang.chatRoom ?: 'Chat' }}
+		<span class="chat-badge" x-show="unreadCount > 0" x-text="unreadCount" x-cloak></span>
+	</button>
+
+	<!-- Chat Panel -->
+	<div class="chat-panel" x-show="open" x-transition.opacity.duration.200ms x-cloak>
+		<div class="chat-header">
+			<span class="chat-header-title">{{ @lang.chatRoom ?: 'Chat' }}</span>
+			<div class="chat-room-tabs">
+				<template x-for="room in rooms" :key="room.id">
+					<button class="chat-room-tab" :class="{ 'chat-room-tab--active': currentRoom == room.id }" @click="loadMessages(room.id)" x-text="room.name"></button>
+				</template>
+			</div>
+			<button class="chat-close" @click="toggleChat()">&times;</button>
+		</div>
+		<div class="chat-messages" x-ref="chatMessages">
+			<template x-for="msg in messages" :key="msg.id">
+				<div class="chat-msg" :class="isOwn(msg) ? 'chat-msg--self' : 'chat-msg--other'">
+					<img class="avatar avatar-sm" :src="msg.avatar" alt="">
+					<div class="chat-text">
+						<span class="chat-author" x-text="msg.sender"></span>
+						<span class="chat-time" x-text="msg.time"></span>
+						<div class="chat-body" x-text="msg.message"></div>
+					</div>
+				</div>
+			</template>
+			<div class="chat-empty" x-show="messages.length === 0">{{ @lang.noChatMessages ?: 'No messages yet.' }}</div>
+		</div>
+		<form class="chat-input" @submit.prevent="sendMessage()">
+			<input type="text" x-model="newMessage" placeholder="{{ @lang.chat ?: 'Chat' }}..." class="chat-input-field" maxlength="500" autocomplete="off">
+			<button type="submit" class="chat-send-btn">
+				<svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 8l14-7-4 7 4 7z" fill="currentColor"/></svg>
+			</button>
+		</form>
+	</div>
+	</div>
+	</check>
+
+<script type="text/javascript">
+(function () {
+	const tooltip = document.getElementById('game-tooltip');
+	if (!tooltip) return;
+
+	const offset = 12;
+	let activeEl = null;
+
+	function positionTooltip(e) {
+		if (!tooltip.classList.contains('show')) return;
+		const rect = tooltip.getBoundingClientRect();
+		let x = e.clientX + offset;
+		let y = e.clientY + offset;
+		if (x + rect.width > window.innerWidth - 8) x = e.clientX - rect.width - offset;
+		if (y + rect.height > window.innerHeight - 8) y = e.clientY - rect.height - offset;
+		tooltip.style.left = x + 'px';
+		tooltip.style.top = y + 'px';
+	}
+
+	function showTooltip(el, e) {
+		const text = el.getAttribute('data-tooltip');
+		if (!text) return;
+		activeEl = el;
+		tooltip.textContent = text;
+		tooltip.setAttribute('aria-hidden', 'false');
+		tooltip.classList.add('show');
+		positionTooltip(e);
+	}
+
+	function hideTooltip() {
+		activeEl = null;
+		tooltip.classList.remove('show');
+		tooltip.setAttribute('aria-hidden', 'true');
+	}
+
+	document.addEventListener('mouseover', function (e) {
+		const el = e.target.closest('[data-tooltip]');
+		if (!el) return;
+		showTooltip(el, e);
+	});
+
+	document.addEventListener('mousemove', function (e) {
+		if (!activeEl) return;
+		positionTooltip(e);
+	});
+
+	document.addEventListener('mouseout', function (e) {
+		if (!activeEl) return;
+		const related = e.relatedTarget;
+		if (related && activeEl.contains(related)) return;
+		if (activeEl && related && related.closest && related.closest('[data-tooltip]') === activeEl) return;
+		hideTooltip();
+	});
+
+	document.addEventListener('scroll', hideTooltip, true);
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape') hideTooltip();
+	});
+})();
+</script>
+
+<script type="text/javascript">
+(function () {
+	var nav = document.querySelector('.game-nav');
+	if (!nav) return;
+
+	var toggle = nav.querySelector('[data-nav-toggle]');
+	var panel = nav.querySelector('[data-nav-panel]');
+	if (!toggle || !panel) return;
+
+	function isMobileNav() {
+		return window.matchMedia('(max-width: 768px)').matches;
+	}
+
+	function setNavOpen(open) {
+		nav.classList.toggle('nav-open', !!open);
+		toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+	}
+
+	toggle.addEventListener('click', function () {
+		setNavOpen(!nav.classList.contains('nav-open'));
+	});
+
+	nav.addEventListener('click', function (e) {
+		var link = e.target.closest('a');
+		if (!link || !isMobileNav()) return;
+		setNavOpen(false);
+	});
+
+	document.addEventListener('click', function (e) {
+		if (!isMobileNav()) return;
+		if (nav.contains(e.target)) return;
+		setNavOpen(false);
+	});
+
+	window.addEventListener('resize', function () {
+		if (!isMobileNav()) setNavOpen(false);
+	});
+})();
+</script>
+
+<style>
+.game-tooltip {
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 9999;
+	pointer-events: none;
+	display: none;
+	max-width: 220px;
+	padding: 6px 9px;
+	border: 1px solid rgba(199,154,57,0.55);
+	border-radius: 8px;
+	background: linear-gradient(180deg, rgba(52,34,20,0.97), rgba(25,16,11,0.98));
+	color: #e8d8b5;
+	font-size: 12px;
+	line-height: 1.3;
+	box-shadow: 0 8px 18px rgba(0,0,0,0.4), inset 0 0 12px rgba(199,154,57,0.08);
+}
+
+.game-tooltip.show {
+	display: block;
+}
+</style>
+
+</body>
+</html>

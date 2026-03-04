@@ -1,0 +1,244 @@
+<style>
+.offers-shell {
+	display: grid;
+	gap: 14px;
+	max-width: 980px;
+	margin: 0 auto;
+}
+
+.offers-hero {
+	background:
+		linear-gradient(145deg, rgba(224, 176, 92, 0.16), rgba(60, 40, 24, 0.92));
+	border: 1px solid rgba(180, 137, 77, 0.62);
+	border-radius: var(--radius-lg);
+	padding: 16px;
+	text-align: left;
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+}
+
+.offers-hero h2 {
+	margin: 0 0 6px;
+	font-size: 22px;
+	color: var(--color-text-heading);
+}
+
+.offers-hero p {
+	margin: 0;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+}
+
+.offers-card {
+	background: linear-gradient(180deg, rgba(46, 32, 21, 0.96), rgba(24, 15, 9, 0.98));
+	border: 1px solid rgba(133, 100, 63, 0.78);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow:
+		0 10px 20px rgba(0,0,0,0.24),
+		inset 0 0 0 1px rgba(214, 170, 94, 0.06);
+}
+
+.offers-card-head {
+	padding: 10px 14px;
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	color: var(--color-accent);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid rgba(161, 122, 63, 0.44);
+	background: linear-gradient(180deg, rgba(59, 39, 22, 0.9), rgba(40, 26, 15, 0.92));
+	box-shadow: inset 0 1px 0 rgba(241, 208, 145, 0.08);
+}
+
+.offers-card-body {
+	padding: 14px;
+}
+
+.offers-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.offers-filter-label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+}
+
+.offers-filter-chip {
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	padding: 6px 10px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border);
+	background: rgba(200, 149, 42, 0.08);
+	color: var(--color-text);
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.offers-filter-chip:hover {
+	background: rgba(200, 149, 42, 0.18);
+	border-color: var(--color-border-light);
+	color: var(--color-accent);
+}
+
+.offer-list {
+	display: grid;
+	gap: 10px;
+}
+
+.offer-item {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr 1fr auto auto;
+	gap: 10px;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0, 0, 0, 0.2);
+	text-align: left;
+}
+
+.offer-from {
+	display: grid;
+	gap: 3px;
+}
+
+.offer-label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+}
+
+.offer-value {
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+}
+
+.offer-ratio {
+	padding: 4px 8px;
+	border-radius: 999px;
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	background: rgba(200, 149, 42, 0.18);
+	color: var(--color-accent);
+	justify-self: start;
+}
+
+.offer-empty {
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+	text-align: left;
+}
+
+.offers-footer {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.offers-action-link {
+	display: inline-flex;
+	text-decoration: none;
+	padding: 10px 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(200, 149, 42, 0.08);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.offers-action-link:hover {
+	background: rgba(200, 149, 42, 0.16);
+	border-color: var(--color-border-light);
+	color: var(--color-accent);
+}
+
+@media (max-width: 900px) {
+	.offer-item {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+<div class="offers-shell">
+	<div class="offers-hero">
+		<h2>{{ @lang.availableOffers ?: 'Available Offers' }}</h2>
+		<p>
+			<check if="{{ @show_all }}">{{ @lang.browseOffers ?: 'Browse All Offers' }}</check>
+			<check if="{{ !@show_all }}">{{ @lang.myOffers ?: 'My Offers' }}</check>
+		</p>
+	</div>
+
+	<check if="{{ @show_all }}">
+	<div class="offers-card">
+		<div class="offers-card-head">{{ @lang.filterBy ?: 'Filter by' }}</div>
+		<div class="offers-card-body">
+			<div class="offers-filters">
+				<span class="offers-filter-label">{{ @lang.resource ?: 'Resource' }}</span>
+				<a class="offers-filter-chip" href="/town/{{ @town.id }}/offers/all">{{ @lang.all ?: 'All' }}</a>
+				<a class="offers-filter-chip" href="/town/{{ @town.id }}/offers/all?sType=0&sSubType=0">{{ @lang.crop ?: 'Crop' }}</a>
+				<a class="offers-filter-chip" href="/town/{{ @town.id }}/offers/all?sType=0&sSubType=1">{{ @lang.lumber ?: 'Lumber' }}</a>
+				<a class="offers-filter-chip" href="/town/{{ @town.id }}/offers/all?sType=0&sSubType=2">{{ @lang.stone ?: 'Stone' }}</a>
+				<a class="offers-filter-chip" href="/town/{{ @town.id }}/offers/all?sType=0&sSubType=3">{{ @lang.iron ?: 'Iron' }}</a>
+			</div>
+		</div>
+	</div>
+	</check>
+
+	<div class="offers-card">
+		<div class="offers-card-head">{{ @lang.availableOffers ?: 'Available Offers' }}</div>
+		<div class="offers-card-body">
+			<check if="{{ count(@offers) }}">
+				<div class="offer-list">
+					<repeat group="{{ @offers }}" value="{{ @offer }}">
+						<div class="offer-item">
+							<div class="offer-from">
+								<div class="offer-label">{{ @lang.from ?: 'From' }}</div>
+								<div class="offer-value"><a class="q_link" href="/profile/{{ @offer.seller_user_id }}">{{ @offer.seller_name }}</a></div>
+							</div>
+							<div>
+								<div class="offer-label">{{ @lang.sell ?: 'Offers' }}</div>
+								<div class="offer-value">{{ @offer.sQ }} {{ @offer.sell_label }}</div>
+							</div>
+							<div>
+								<div class="offer-label">{{ @lang.buy ?: 'Wants' }}</div>
+								<div class="offer-value">{{ @offer.bQ }} {{ @offer.buy_label }}</div>
+							</div>
+							<div class="offer-ratio">{{ @lang.ratio ?: 'Ratio' }} {{ @offer.ratio }}</div>
+							<div>
+								<check if="{{ @show_all }}">
+									<form action="/town/{{ @town.id }}/offer/accept" method="post">
+										<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+										<input type="hidden" name="seller" value="{{ @offer.seller }}">
+										<input type="hidden" name="sType" value="{{ @offer.sType }}">
+										<input type="hidden" name="sSubType" value="{{ @offer.sSubType }}">
+										<input type="hidden" name="bType" value="{{ @offer.bType }}">
+										<input type="hidden" name="bSubType" value="{{ @offer.bSubType }}">
+										<input class="button" type="submit" value="{{ @lang.accept ?: 'Accept' }}">
+									</form>
+								</check>
+								<check if="{{ !@show_all }}">-</check>
+							</div>
+						</div>
+					</repeat>
+				</div>
+			</check>
+			<check if="{{ !count(@offers) }}">
+				<div class="offer-empty">{{ @lang.noOffers ?: 'No offers available.' }}</div>
+			</check>
+		</div>
+	</div>
+
+	<div class="offers-footer">
+		<a class="offers-action-link" href="/town/{{ @town.id }}/market">{{ @lang.back ?: 'Back' }}</a>
+	</div>
+</div>

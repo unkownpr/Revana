@@ -1,0 +1,598 @@
+<style>
+.bg-mask-wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 14px; }
+.bg-mask-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.bg-mask-title { margin: 0; color: var(--admin-title, #f4f8ff); font-size: 22px; }
+.bg-mask-sub { margin-top: 4px; color: var(--admin-muted, #8fa6c0); font-size: var(--font-size-md); }
+.mask-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+	padding: 10px;
+	border: 1px solid var(--admin-border, #2a3f58);
+	border-radius: 12px;
+	background: linear-gradient(180deg, rgba(24, 39, 58, 0.92), rgba(17, 30, 45, 0.96));
+	box-shadow: inset 0 1px 0 rgba(190, 220, 255, 0.06);
+}
+.mask-btn {
+	border: 1px solid var(--admin-border, #2a3f58);
+	background: linear-gradient(180deg, rgba(28, 47, 69, 0.96), rgba(20, 34, 50, 0.96));
+	color: var(--admin-text, #dce8f6);
+	padding: 8px 12px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 700;
+	text-decoration: none;
+	transition: all 0.15s ease;
+}
+.mask-btn:hover {
+	border-color: var(--admin-border-strong, #3c5777);
+	background: linear-gradient(180deg, rgba(35, 58, 84, 0.96), rgba(24, 40, 58, 0.96));
+}
+.mask-btn.active {
+	border-color: rgba(77, 163, 255, 0.88);
+	box-shadow: 0 0 0 2px rgba(77, 163, 255, 0.22);
+}
+.mask-btn--accent {
+	background: linear-gradient(180deg, rgba(84, 171, 247, 0.96), rgba(45, 131, 224, 0.96));
+	color: #091522;
+	border-color: rgba(136, 204, 255, 0.95);
+}
+.mask-btn--danger {
+	background: linear-gradient(180deg, rgba(238, 95, 111, 0.95), rgba(207, 67, 84, 0.95));
+	border-color: rgba(255, 132, 147, 0.88);
+}
+.mask-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--font-size-xs);
+	color: var(--admin-muted, #8fa6c0);
+}
+.mask-chip input[type="range"] { width: 140px; }
+.bg-mask-canvas-wrap {
+	position: relative;
+	width: 100%;
+	max-width: 780px;
+	aspect-ratio: 640 / 372;
+	height: auto;
+	border: 1px solid var(--admin-border-strong, #3c5777);
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 16px 30px rgba(0,0,0,0.34), inset 0 1px 0 rgba(183, 220, 255, 0.06);
+}
+.bg-mask-canvas-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+.bg-mask-overlay { position: absolute; inset: 0; cursor: crosshair; }
+.bg-mask-overlay.tool-erase { cursor: not-allowed; }
+.bg-zone {
+	position: absolute;
+	border: 2px solid rgba(214, 76, 56, 0.95);
+	background: rgba(214, 76, 56, 0.26);
+	box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
+}
+.bg-zone.circle,
+.bg-zone.brush { border-radius: 50%; }
+.bg-zone.poly { border-style: solid; }
+.bg-zone.selected { border-color: #f2d089; box-shadow: 0 0 0 2px rgba(242,208,137,0.22), inset 0 0 0 1px rgba(255,255,255,0.26); }
+/* FX zone renkleri */
+.bg-zone.fx-water  { border-color: rgba(60,140,220,0.95);  background: rgba(60,140,220,0.28); }
+.bg-zone.fx-fire   { border-color: rgba(230,110,30,0.95);  background: rgba(230,110,30,0.28); }
+.bg-zone.fx-wind   { border-color: rgba(80,210,190,0.95);  background: rgba(80,210,190,0.22); }
+.bg-zone.fx-smoke  { border-color: rgba(170,170,170,0.95); background: rgba(170,170,170,0.22); }
+.bg-zone.fx-road   { border-color: rgba(214,176,88,0.95);  background: rgba(214,176,88,0.22); }
+.bg-zone-list { display: grid; gap: 8px; max-height: 460px; overflow: auto; }
+.bg-zone-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--admin-border, #2a3f58); border-radius: 8px; background: rgba(14, 24, 36, 0.7); }
+.bg-zone-meta { color: var(--admin-muted, #8fa6c0); font-size: var(--font-size-xs); }
+.fx-pill {
+	display: inline-block; padding: 1px 7px; border-radius: 4px;
+	font-size: var(--font-size-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fx-pill-none  { background: rgba(214,76,56,0.22);  color: #e07060; border: 1px solid rgba(214,76,56,0.5); }
+.fx-pill-water { background: rgba(60,140,220,0.22); color: #70b8f0; border: 1px solid rgba(60,140,220,0.5); }
+.fx-pill-fire  { background: rgba(230,110,30,0.22); color: #f09050; border: 1px solid rgba(230,110,30,0.5); }
+.fx-pill-wind  { background: rgba(80,210,190,0.22); color: #60d8c8; border: 1px solid rgba(80,210,190,0.5); }
+.fx-pill-smoke { background: rgba(170,170,170,0.18);color: #c0c0c0; border: 1px solid rgba(170,170,170,0.4); }
+.fx-pill-road  { background: rgba(214,176,88,0.2);  color: #e7c77a; border: 1px solid rgba(214,176,88,0.45); }
+.fx-select { background: rgba(15, 27, 40, 0.95); border: 1px solid var(--admin-border-strong, #3c5777); color: #e9f3ff; border-radius: 5px; padding: 3px 6px; font-size: var(--font-size-xs); cursor: pointer; }
+.poly-node {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	margin-left: -4px;
+	margin-top: -4px;
+	border-radius: 50%;
+	background: #f4cd7e;
+	border: 1px solid rgba(40, 24, 12, 0.95);
+	box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.poly-node--handle {
+	width: 12px;
+	height: 12px;
+	margin-left: -6px;
+	margin-top: -6px;
+	background: #ffd37f;
+	border: 1px solid rgba(60, 35, 18, 0.95);
+	cursor: move;
+}
+.bg-mask-main {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+	gap: 14px;
+	align-items: start;
+}
+@media (max-width: 1040px) {
+	.bg-mask-main {
+		grid-template-columns: 1fr;
+	}
+	.bg-mask-canvas-wrap {
+		max-width: 100%;
+	}
+}
+</style>
+
+<div class="bg-mask-wrap" x-data="bgMaskEditor()">
+	<div class="bg-mask-head">
+		<div>
+			<h2 class="bg-mask-title">Yasak Bolge Duzenleyici</h2>
+			<div class="bg-mask-sub">{{ @mask_background }} icin bina surukleme yasak alanlarini secin.</div>
+		</div>
+		<div style="display:flex; gap:8px; flex-wrap:wrap;">
+			<a class="mask-btn" href="/admin">Admin</a>
+			<a class="mask-btn" href="/admin/background/{{ @mask_background }}/mask">Yenile</a>
+			<button type="button" class="mask-btn mask-btn--danger" @click="clearAll()">Temizle</button>
+			<button type="button" class="mask-btn mask-btn--accent" @click="save()">Kaydet</button>
+		</div>
+	</div>
+
+	<div class="mask-toolbar">
+		<button type="button" class="mask-btn" :class="{ 'active': tool === 'rect' }" @click="setTool('rect')">Dikdortgen</button>
+		<button type="button" class="mask-btn" :class="{ 'active': tool === 'circle' }" @click="setTool('circle')">Daire</button>
+		<button type="button" class="mask-btn" :class="{ 'active': tool === 'poly' }" @click="setTool('poly')">Poligon</button>
+		<button type="button" class="mask-btn" :class="{ 'active': tool === 'brush' }" @click="setTool('brush')">Kalem</button>
+		<button type="button" class="mask-btn" :class="{ 'active': tool === 'erase' }" @click="setTool('erase')">Silgi</button>
+		<button type="button" class="mask-btn" x-show="tool === 'poly'" @click="finishPolygon()">Poligonu Bitir</button>
+		<button type="button" class="mask-btn" x-show="tool === 'poly'" @click="cancelPolygon()">Poligonu Iptal</button>
+		<span class="mask-chip">
+			Kalem: <input type="range" min="6" max="54" step="2" x-model.number="brushSize">
+			<strong x-text="brushSize"></strong>
+		</span>
+		<span class="mask-chip">Mod: <strong x-text="toolLabel()"></strong></span>
+		<span class="mask-chip" style="margin-left:auto;">
+			FX Etiketi:
+			<select class="fx-select" x-model="currentFx">
+				<option value="none">🚫 Yasak (none)</option>
+				<option value="water">💧 Su (water)</option>
+				<option value="fire">🔥 Ateş (fire)</option>
+				<option value="wind">💨 Rüzgar (wind)</option>
+				<option value="smoke">💨 Duman (smoke)</option>
+				<option value="road">🛣 Yol (road)</option>
+			</select>
+		</span>
+	</div>
+
+		<div class="bg-mask-main">
+			<div class="admin-card">
+				<div class="admin-card-header">Onizleme</div>
+				<div class="admin-card-body">
+					<div class="bg-mask-canvas-wrap" x-ref="wrap">
+						<img src="/default/1/{{ @mask_background }}" alt="{{ @mask_background }}">
+						<div class="bg-mask-overlay"
+							 :class="{ 'tool-erase': tool === 'erase' }"
+							 @mousedown="startDraw($event)"
+							 @mousemove="moveDraw($event)"
+							 @mouseup="endDraw()"
+							 @mouseleave="endDraw()"
+							 @dblclick.prevent="tool === 'poly' && finishPolygon()">
+							<template x-for="(z, i) in zones" :key="'zone-'+i">
+								<div class="bg-zone"
+									 :class="zoneClass(z, i)"
+									 @mousedown="if ((z.t || 'rect') === 'poly' && tool === 'poly') { $event.stopPropagation(); $event.preventDefault(); selectZone(i); }"
+									 @click.stop="selectZone(i)"
+									 :style="zoneStyle(z)"></div>
+							</template>
+							<template x-if="draft">
+								<div class="bg-zone" :class="zoneClass(draft, -1)" :style="zoneStyle(draft) + 'border-style:dashed;background:rgba(199,154,57,0.16);border-color:rgba(199,154,57,0.95);'"></div>
+							</template>
+							<template x-for="(p, i) in polyPreviewPoints()" :key="'poly-point-'+i">
+								<div class="poly-node" :style="'left:' + p.x + 'px;top:' + p.y + 'px;'"></div>
+							</template>
+							<template x-for="(p, i) in editablePolygonPoints()" :key="'poly-handle-'+i">
+								<div class="poly-node poly-node--handle"
+									 :style="'left:' + p.x + 'px;top:' + p.y + 'px;'"
+									 @mousedown.stop.prevent="startPointDrag($event, i)"></div>
+							</template>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="admin-card">
+				<div class="admin-card-header">Bolgeler (<span x-text="zones.length"></span>)</div>
+				<div class="admin-card-body">
+					<div class="bg-zone-list">
+						<template x-for="(z, i) in zones" :key="'row-'+i">
+							<div class="bg-zone-item">
+								<div>
+									<div>
+										#<span x-text="i + 1"></span>
+										<strong x-text="z.t || 'rect'"></strong>
+										<span class="fx-pill" :class="'fx-pill-' + (z.fx || 'none')" x-text="z.fx || 'none'"></span>
+									</div>
+									<div class="bg-zone-meta" x-text="zoneMeta(z)"></div>
+								</div>
+								<div style="display:flex; gap:6px; align-items:center;">
+									<select class="fx-select" :value="z.fx || 'none'" @change="setZoneFx(i, $event.target.value)">
+										<option value="none">Yasak</option>
+										<option value="water">Su</option>
+										<option value="fire">Ateş</option>
+										<option value="wind">Rüzgar</option>
+										<option value="smoke">Duman</option>
+										<option value="road">Yol</option>
+									</select>
+									<button type="button" class="mask-btn" x-show="(z.t || 'rect') === 'poly'" @click="togglePolygonEdit(i)" :class="{ 'active': editingPolyIndex === i }">Nokta Duzenle</button>
+									<button type="button" class="mask-btn" @click="removeZone(i)">Sil</button>
+								</div>
+							</div>
+						</template>
+						<div class="text-muted" x-show="zones.length === 0">Henuz yasak bolge yok.</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script>
+function bgMaskEditor() {
+	return {
+		zones: {{ json_encode(@mask_zones) }},
+		tool: 'rect',
+		currentFx: 'none',
+		brushSize: 18,
+		draft: null,
+		start: null,
+		drawing: false,
+		lastBrushPoint: null,
+		polyPoints: [],
+		polyCursor: null,
+		editingPolyIndex: -1,
+		draggingPointIndex: -1,
+		_onPointDrag: null,
+		_onPointDragEnd: null,
+
+		toolLabel: function() {
+			if (this.tool === 'rect') return 'Dikdortgen';
+			if (this.tool === 'circle') return 'Daire';
+			if (this.tool === 'poly') return 'Poligon';
+			if (this.tool === 'brush') return 'Kalem';
+			return 'Silgi';
+		},
+
+		setTool: function(t) {
+			this.tool = t;
+			this.drawing = false;
+			this.draft = null;
+			this.start = null;
+			this.lastBrushPoint = null;
+			if (t !== 'poly') {
+				this.polyPoints = [];
+				this.polyCursor = null;
+			}
+		},
+
+		selectZone: function(i) {
+			if (this.editingPolyIndex >= 0 && this.editingPolyIndex !== i) {
+				this.editingPolyIndex = -1;
+			}
+		},
+
+		togglePolygonEdit: function(i) {
+			var z = this.zones[i];
+			if (!z || (z.t || 'rect') !== 'poly') return;
+			this.editingPolyIndex = (this.editingPolyIndex === i) ? -1 : i;
+			this.draggingPointIndex = -1;
+		},
+
+		editablePolygonPoints: function() {
+			if (this.editingPolyIndex < 0) return [];
+			var z = this.zones[this.editingPolyIndex];
+			if (!z || (z.t || 'rect') !== 'poly' || !Array.isArray(z.points)) return [];
+			return z.points;
+		},
+
+		getScale: function() {
+			var wrap = this.$refs.wrap;
+			if (!wrap) return { sx: 1, sy: 1 };
+			var rect = wrap.getBoundingClientRect();
+			return { sx: 640 / Math.max(1, rect.width), sy: 372 / Math.max(1, rect.height) };
+		},
+
+		getPoint: function(ev) {
+			var wrap = this.$refs.wrap;
+			if (!wrap) return { x: 0, y: 0 };
+			var rect = wrap.getBoundingClientRect();
+			var sc = this.getScale();
+			var x = Math.round((ev.clientX - rect.left) * sc.sx);
+			var y = Math.round((ev.clientY - rect.top) * sc.sy);
+			x = Math.max(0, Math.min(639, x));
+			y = Math.max(0, Math.min(371, y));
+			return { x: x, y: y };
+		},
+
+		startDraw: function(ev) {
+			if (this.draggingPointIndex >= 0) return;
+			this.drawing = true;
+			this.start = this.getPoint(ev);
+			if (this.tool === 'poly') {
+				this.addPolygonPoint(this.start);
+				this.drawing = false;
+				return;
+			}
+			if (this.tool === 'erase') {
+				this.eraseAt(this.start);
+				return;
+			}
+			if (this.tool === 'brush') {
+				this.addBrushPoint(this.start);
+				this.lastBrushPoint = this.start;
+				return;
+			}
+			if (this.tool === 'circle') {
+				this.draft = { t: 'circle', cx: this.start.x, cy: this.start.y, r: 1 };
+				return;
+			}
+			this.draft = { t: 'rect', x: this.start.x, y: this.start.y, w: 1, h: 1 };
+		},
+
+		moveDraw: function(ev) {
+			if (this.draggingPointIndex >= 0) return;
+			var p = this.getPoint(ev);
+			if (this.tool === 'poly') {
+				this.polyCursor = p;
+				return;
+			}
+			if (!this.drawing || !this.start) return;
+			if (this.tool === 'erase') {
+				this.eraseAt(p);
+				return;
+			}
+			if (this.tool === 'brush') {
+				this.addBrushSegment(p);
+				return;
+			}
+			if (this.tool === 'circle') {
+				var dx = p.x - this.start.x;
+				var dy = p.y - this.start.y;
+				var r = Math.max(2, Math.round(Math.sqrt((dx * dx) + (dy * dy))));
+				this.draft = { t: 'circle', cx: this.start.x, cy: this.start.y, r: r };
+				return;
+			}
+			var x = Math.min(this.start.x, p.x);
+			var y = Math.min(this.start.y, p.y);
+			var w = Math.abs(p.x - this.start.x);
+			var h = Math.abs(p.y - this.start.y);
+			this.draft = { t: 'rect', x: x, y: y, w: w, h: h };
+		},
+
+		endDraw: function() {
+			if (!this.drawing) return;
+			this.drawing = false;
+			if (this.tool === 'rect' && this.draft && this.draft.w >= 6 && this.draft.h >= 6) {
+				this.zones.push(Object.assign({}, this.draft, { fx: this.currentFx }));
+			}
+			if (this.tool === 'circle' && this.draft && this.draft.r >= 4) {
+				this.zones.push(Object.assign({}, this.draft, { fx: this.currentFx }));
+			}
+			if (this.zones.length > 2500) {
+				this.zones = this.zones.slice(0, 2500);
+			}
+			this.start = null;
+			this.lastBrushPoint = null;
+			this.draft = null;
+		},
+
+		startPointDrag: function(ev, pointIndex) {
+			if (this.editingPolyIndex < 0) return;
+			var z = this.zones[this.editingPolyIndex];
+			if (!z || (z.t || 'rect') !== 'poly' || !Array.isArray(z.points)) return;
+			if (pointIndex < 0 || pointIndex >= z.points.length) return;
+			this.draggingPointIndex = pointIndex;
+			var self = this;
+			this._onPointDrag = function(e) { self.onPointDrag(e); };
+			this._onPointDragEnd = function() { self.endPointDrag(); };
+			document.addEventListener('mousemove', this._onPointDrag);
+			document.addEventListener('mouseup', this._onPointDragEnd);
+		},
+
+		onPointDrag: function(ev) {
+			if (this.editingPolyIndex < 0 || this.draggingPointIndex < 0) return;
+			var z = this.zones[this.editingPolyIndex];
+			if (!z || (z.t || 'rect') !== 'poly' || !Array.isArray(z.points)) return;
+			var p = this.getPoint(ev);
+			z.points[this.draggingPointIndex] = { x: p.x, y: p.y };
+		},
+
+		endPointDrag: function() {
+			if (this._onPointDrag) document.removeEventListener('mousemove', this._onPointDrag);
+			if (this._onPointDragEnd) document.removeEventListener('mouseup', this._onPointDragEnd);
+			this._onPointDrag = null;
+			this._onPointDragEnd = null;
+			this.draggingPointIndex = -1;
+		},
+
+		addPolygonPoint: function(p) {
+			if (this.polyPoints.length >= 3) {
+				var f = this.polyPoints[0];
+				var dx = p.x - f.x;
+				var dy = p.y - f.y;
+				if ((dx * dx) + (dy * dy) <= 100) {
+					this.finishPolygon();
+					return;
+				}
+			}
+			this.polyPoints.push({ x: p.x, y: p.y });
+		},
+
+		finishPolygon: function() {
+			if (this.polyPoints.length < 3) return;
+			this.zones.push({ t: 'poly', points: this.polyPoints.slice(0, 80), fx: this.currentFx });
+			this.polyPoints = [];
+			this.polyCursor = null;
+		},
+
+		cancelPolygon: function() {
+			this.polyPoints = [];
+			this.polyCursor = null;
+		},
+
+		polyPreviewPoints: function() {
+			var pts = this.polyPoints.slice();
+			if (this.tool === 'poly' && this.polyCursor && pts.length > 0) {
+				pts.push({ x: this.polyCursor.x, y: this.polyCursor.y });
+			}
+			return pts;
+		},
+
+		addBrushPoint: function(p) {
+			var r = Math.max(3, Math.round(this.brushSize / 2));
+			this.zones.push({ t: 'brush', cx: p.x, cy: p.y, r: r, fx: this.currentFx });
+		},
+
+		addBrushSegment: function(p) {
+			if (!this.lastBrushPoint) {
+				this.addBrushPoint(p);
+				this.lastBrushPoint = p;
+				return;
+			}
+			var dx = p.x - this.lastBrushPoint.x;
+			var dy = p.y - this.lastBrushPoint.y;
+			var dist = Math.sqrt((dx * dx) + (dy * dy));
+			if (dist < 2) return;
+			var step = Math.max(2, Math.round(this.brushSize / 4));
+			var steps = Math.max(1, Math.round(dist / step));
+			for (var i = 1; i <= steps; i++) {
+				var t = i / steps;
+				this.addBrushPoint({
+					x: Math.round(this.lastBrushPoint.x + (dx * t)),
+					y: Math.round(this.lastBrushPoint.y + (dy * t))
+				});
+			}
+			this.lastBrushPoint = p;
+		},
+
+		eraseAt: function(p) {
+			var radius = Math.max(6, Math.round(this.brushSize / 2));
+			this.zones = this.zones.filter(function(z) {
+				if ((z.t || 'rect') === 'rect') {
+					var x = parseInt(z.x || 0, 10);
+					var y = parseInt(z.y || 0, 10);
+					var w = parseInt(z.w || 0, 10);
+					var h = parseInt(z.h || 0, 10);
+					return !(p.x >= x - radius && p.x <= x + w + radius && p.y >= y - radius && p.y <= y + h + radius);
+				}
+				if ((z.t || '') === 'poly' && Array.isArray(z.points)) {
+					for (var i = 0; i < z.points.length; i++) {
+						var dxp = p.x - parseInt(z.points[i].x || 0, 10);
+						var dyp = p.y - parseInt(z.points[i].y || 0, 10);
+						if ((dxp * dxp) + (dyp * dyp) <= (radius * radius)) return false;
+					}
+					return true;
+				}
+				var cx = parseInt(z.cx || 0, 10);
+				var cy = parseInt(z.cy || 0, 10);
+				var r = parseInt(z.r || 0, 10) + radius;
+				var dx = p.x - cx;
+				var dy = p.y - cy;
+				return ((dx * dx) + (dy * dy)) > (r * r);
+			});
+		},
+
+		zoneClass: function(z, i) {
+			var t = (z && z.t) ? z.t : 'rect';
+			var selected = (typeof i === 'number' && this.editingPolyIndex === i) ? ' selected' : '';
+			var fx = (z && z.fx && z.fx !== 'none') ? (' fx-' + z.fx) : '';
+			if (t === 'circle') return 'circle' + fx + selected;
+			if (t === 'brush') return 'brush' + fx + selected;
+			if (t === 'poly') return 'poly' + fx + selected;
+			return (fx + selected).trim();
+		},
+
+		setZoneFx: function(i, fx) {
+			if (this.zones[i]) this.zones[i] = Object.assign({}, this.zones[i], { fx: fx });
+		},
+
+		zoneStyle: function(z) {
+			var t = (z && z.t) ? z.t : 'rect';
+			if (t === 'rect') {
+				return 'left:' + (z.x || 0) + 'px;top:' + (z.y || 0) + 'px;width:' + (z.w || 0) + 'px;height:' + (z.h || 0) + 'px;';
+			}
+			if (t === 'poly' && Array.isArray(z.points) && z.points.length > 2) {
+				var minX = 639, minY = 371, maxX = 0, maxY = 0;
+				for (var i = 0; i < z.points.length; i++) {
+					var px = parseInt(z.points[i].x || 0, 10);
+					var py = parseInt(z.points[i].y || 0, 10);
+					if (px < minX) minX = px;
+					if (py < minY) minY = py;
+					if (px > maxX) maxX = px;
+					if (py > maxY) maxY = py;
+				}
+				var w = Math.max(1, maxX - minX);
+				var h = Math.max(1, maxY - minY);
+				var clip = [];
+				for (var k = 0; k < z.points.length; k++) {
+					var rx = (((parseInt(z.points[k].x || 0, 10) - minX) / w) * 100).toFixed(2);
+					var ry = (((parseInt(z.points[k].y || 0, 10) - minY) / h) * 100).toFixed(2);
+					clip.push(rx + '% ' + ry + '%');
+				}
+				return 'left:' + minX + 'px;top:' + minY + 'px;width:' + w + 'px;height:' + h + 'px;clip-path:polygon(' + clip.join(',') + ');';
+			}
+			var cx = parseInt(z.cx || 0, 10);
+			var cy = parseInt(z.cy || 0, 10);
+			var r = parseInt(z.r || 0, 10);
+			var size = r * 2;
+			return 'left:' + (cx - r) + 'px;top:' + (cy - r) + 'px;width:' + size + 'px;height:' + size + 'px;';
+		},
+
+		zoneMeta: function(z) {
+			var t = (z && z.t) ? z.t : 'rect';
+			if (t === 'rect') return 'x:' + z.x + ' y:' + z.y + ' w:' + z.w + ' h:' + z.h;
+			if (t === 'poly') return 'points:' + (Array.isArray(z.points) ? z.points.length : 0);
+			return 'cx:' + z.cx + ' cy:' + z.cy + ' r:' + z.r;
+		},
+
+		removeZone: function(i) {
+			this.zones.splice(i, 1);
+			if (this.editingPolyIndex === i) {
+				this.editingPolyIndex = -1;
+			} else if (this.editingPolyIndex > i) {
+				this.editingPolyIndex -= 1;
+			}
+		},
+
+		clearAll: function() {
+			this.zones = [];
+			this.cancelPolygon();
+			this.editingPolyIndex = -1;
+		},
+
+		save: function() {
+			if (this.polyPoints.length >= 3) {
+				this.finishPolygon();
+			}
+			fetch('/admin/background/{{ @mask_background }}/mask', {
+				method: 'POST',
+				headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+				body: 'csrf_token=' + encodeURIComponent('{{ @CSRF }}') + '&zones_json=' + encodeURIComponent(JSON.stringify(this.zones))
+			})
+			.then(function(r) { return r.json(); })
+			.then(function(data) {
+				if (data && data.ok) {
+					window.location.href = '/admin/background/{{ @mask_background }}/mask';
+					return;
+				}
+				alert('Kaydetme basarisiz.');
+			})
+			.catch(function() { alert('Kaydetme basarisiz.'); });
+		}
+	};
+}
+</script>

@@ -1,0 +1,218 @@
+<style>
+.season-page { max-width: 860px; margin: 0 auto; }
+
+/* Tab linkleri */
+.season-tabs { display:flex; gap:8px; margin-bottom:20px; }
+.season-tab { padding:7px 18px; border-radius:6px; background:rgba(22,14,10,0.7); border:1px solid rgba(136,103,65,0.4); color:#c8a96e; text-decoration:none; font-size:0.88em; transition:background .2s; }
+.season-tab:hover { background:rgba(136,103,65,0.25); }
+.season-tab.active { background:rgba(136,103,65,0.35); border-color:rgba(200,169,110,0.7); color:#e8c97e; }
+
+/* Banner */
+.season-banner { background:linear-gradient(135deg,rgba(40,24,10,0.9),rgba(22,14,10,0.95)); border:1px solid rgba(200,169,110,0.35); border-radius:12px; padding:22px 24px; margin-bottom:16px; position:relative; overflow:hidden; }
+.season-banner::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at top right,rgba(200,169,110,0.08),transparent 60%); pointer-events:none; }
+.season-banner-top { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; }
+.season-name { font-size:1.5em; font-weight:700; color:#e8c97e; letter-spacing:.02em; }
+.season-status { display:flex; align-items:center; gap:6px; background:rgba(80,160,80,0.18); border:1px solid rgba(80,160,80,0.45); border-radius:20px; padding:4px 14px; font-size:0.82em; color:#7ecf8a; font-weight:600; }
+.season-status-dot { width:7px; height:7px; border-radius:50%; background:#7ecf8a; box-shadow:0 0 6px #7ecf8a; animation:pulse-dot 1.8s infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* İstatistik kartları */
+.season-stats { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+.stat-card { flex:1; min-width:120px; background:rgba(0,0,0,0.25); border:1px solid rgba(136,103,65,0.25); border-radius:8px; padding:10px 14px; }
+.stat-label { font-size:0.73em; color:#8fa8ba; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.stat-value { font-size:1.25em; font-weight:700; color:#e8c97e; line-height:1.1; }
+.stat-sub { font-size:0.75em; color:#7a9ab0; margin-top:2px; }
+.stat-card.stat-highlight .stat-value { color:#f0a060; font-size:1.5em; }
+
+/* Countdown */
+.countdown-row { display:flex; gap:6px; align-items:baseline; margin-top:2px; }
+.countdown-val { font-size:1.35em; font-weight:700; color:#f0a060; min-width:28px; text-align:center; }
+.countdown-sep { color:#7a9ab0; font-size:1em; padding:0 1px; }
+.countdown-unit { font-size:0.68em; color:#7a9ab0; display:block; text-align:center; margin-top:1px; }
+
+/* İlerleme çubuğu */
+.season-progress-wrap { margin-top:18px; }
+.season-progress-label { display:flex; justify-content:space-between; font-size:0.78em; color:#8fa8ba; margin-bottom:5px; }
+.season-progress-bar { height:8px; background:rgba(0,0,0,0.3); border-radius:4px; overflow:hidden; }
+.season-progress-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,#a07030,#e8c97e,#c8a96e); transition:width .4s ease; }
+.season-date-row { display:flex; justify-content:space-between; font-size:0.75em; color:#6a8a9a; margin-top:4px; }
+
+/* Liderlik tablosu */
+.season-lb-card { background:rgba(22,14,10,0.7); border:1px solid rgba(136,103,65,0.35); border-radius:12px; overflow:hidden; }
+.season-lb-header { padding:14px 18px; border-bottom:1px solid rgba(136,103,65,0.25); display:flex; justify-content:space-between; align-items:center; }
+.season-lb-title { font-size:1em; font-weight:600; color:#c8a96e; }
+.season-lb-count { font-size:0.82em; color:#6a8a9a; }
+.lb-table { width:100%; border-collapse:collapse; }
+.lb-table th { text-align:left; padding:9px 16px; font-size:0.78em; color:#7a9ab0; text-transform:uppercase; letter-spacing:.05em; background:rgba(0,0,0,0.15); }
+.lb-table td { padding:10px 16px; font-size:0.9em; border-bottom:1px solid rgba(255,255,255,0.04); }
+.lb-table tr:last-child td { border-bottom:none; }
+.lb-table tr:hover td { background:rgba(136,103,65,0.08); }
+.lb-me td { background:rgba(136,103,65,0.13) !important; }
+.lb-rank { font-weight:700; font-size:1em; width:44px; }
+.lb-rank-1 { color:#ffd700; }
+.lb-rank-2 { color:#c0c0c0; }
+.lb-rank-3 { color:#cd7f32; }
+.lb-score { color:#c8a96e; font-weight:600; text-align:right; }
+.lb-score-bar { height:4px; border-radius:2px; background:rgba(200,169,110,0.2); margin-top:3px; }
+.lb-score-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#a07030,#e8c97e); }
+.lb-username a { color:#ddd; text-decoration:none; }
+.lb-username a:hover { color:#e8c97e; }
+.lb-me-badge { font-size:0.68em; background:rgba(200,169,110,0.25); color:#c8a96e; border-radius:3px; padding:1px 5px; margin-left:6px; }
+.my-rank-note { text-align:center; padding:14px; font-size:0.85em; color:#8fa8ba; border-top:1px solid rgba(136,103,65,0.2); }
+.no-lb { text-align:center; padding:36px; color:#7a9ab0; }
+</style>
+
+<div class="season-page">
+
+  <div class="season-tabs">
+    <a href="/season" class="season-tab active">&#9733; {{ @lang.season ?: 'Season' }}</a>
+    <a href="/season/hall-of-fame" class="season-tab">&#127942; {{ @lang.hallOfFame ?: 'Hall of Fame' }}</a>
+  </div>
+
+  <!-- Banner -->
+  <div class="season-banner">
+    <div class="season-banner-top">
+      <div class="season-name">{{ @season.name }}</div>
+      <div class="season-status">
+        <span class="season-status-dot"></span>
+        {{ @lang.active ?: 'Active' }}
+      </div>
+    </div>
+
+    <div class="season-stats">
+
+      <!-- Kalan süre (countdown) -->
+      <div class="stat-card stat-highlight">
+        <div class="stat-label">{{ @lang.timeRemaining ?: 'Remaining' }}</div>
+        <div class="countdown-row">
+          <div>
+            <span class="countdown-val" id="cd-days">{{ @days_remaining }}</span>
+            <span class="countdown-unit">{{ @lang.days ?: 'days' }}</span>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div>
+            <span class="countdown-val" id="cd-hours">{{ @hours_remaining }}</span>
+            <span class="countdown-unit">{{ @lang.hours ?: 'hrs' }}</span>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div>
+            <span class="countdown-val" id="cd-mins">--</span>
+            <span class="countdown-unit">{{ @lang.minutes ?: 'min' }}</span>
+          </div>
+          <span class="countdown-sep">:</span>
+          <div>
+            <span class="countdown-val" id="cd-secs">--</span>
+            <span class="countdown-unit">{{ @lang.seconds ?: 'sec' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toplam süre -->
+      <div class="stat-card">
+        <div class="stat-label">{{ @lang.duration ?: 'Duration' }}</div>
+        <div class="stat-value">{{ @total_days }}</div>
+        <div class="stat-sub">{{ @lang.days ?: 'days' }}</div>
+      </div>
+
+      <!-- Katılımcı -->
+      <div class="stat-card">
+        <div class="stat-label">{{ @lang.players ?: 'Players' }}</div>
+        <div class="stat-value">{{ @total_players }}</div>
+        <div class="stat-sub">{{ @lang.onLeaderboard ?: 'on board' }}</div>
+      </div>
+
+      <!-- Benim sıram -->
+      <check if="{{ @my_rank }}">
+        <div class="stat-card">
+          <div class="stat-label">{{ @lang.myRank ?: 'My Rank' }}</div>
+          <div class="stat-value">#{{ @my_rank }}</div>
+          <div class="stat-sub">{{ @lang.outOf ?: 'of' }} {{ @total_players }}</div>
+        </div>
+      </check>
+
+    </div>
+
+    <!-- İlerleme çubuğu -->
+    <div class="season-progress-wrap">
+      <div class="season-progress-label">
+        <span>{{ @lang.seasonStart ?: 'Start' }}: {{ @start_date_fmt }}</span>
+        <span>{{ @progress_pct }}%</span>
+        <span>{{ @lang.seasonEnd ?: 'End' }}: {{ @end_date_fmt }}</span>
+      </div>
+      <div class="season-progress-bar">
+        <div class="season-progress-fill" style="width:{{ @progress_pct }}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liderlik Tablosu -->
+  <div class="season-lb-card">
+    <div class="season-lb-header">
+      <span class="season-lb-title">&#127942; {{ @lang.leaderboard ?: 'Leaderboard' }}</span>
+      <span class="season-lb-count">{{ @total_players }} {{ @lang.players ?: 'players' }}</span>
+    </div>
+
+    <check if="{{ count(@leaderboard) }}">
+      <true>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ @lang.player ?: 'Player' }}</th>
+              <th style="text-align:right;">{{ @lang.seasonScore ?: 'Score' }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <repeat group="{{ @leaderboard }}" value="{{ @row }}">
+              <tr class="{{ @row.is_me ? 'lb-me' : '' }}">
+                <td class="lb-rank {{ @row.rank == 1 ? 'lb-rank-1' : (@row.rank == 2 ? 'lb-rank-2' : (@row.rank == 3 ? 'lb-rank-3' : '')) }}">
+                  {{ @row.rank == 1 ? '🥇' : (@row.rank == 2 ? '🥈' : (@row.rank == 3 ? '🥉' : @row.rank)) }}
+                </td>
+                <td class="lb-username">
+                  <a href="/profile/{{ @row.user_id }}">{{ @row.username }}</a>
+                  <check if="{{ @row.is_me }}"><span class="lb-me-badge">{{ @lang.you ?: 'you' }}</span></check>
+                </td>
+                <td class="lb-score">{{ @row.score }}</td>
+              </tr>
+            </repeat>
+          </tbody>
+        </table>
+
+        <check if="{{ !@my_rank && count(@leaderboard) }}">
+          <div class="my-rank-note">{{ @lang.notOnLeaderboard ?: 'You are not on the leaderboard yet. Start playing to earn season points!' }}</div>
+        </check>
+      </true>
+      <false>
+        <div class="no-lb">{{ @lang.noData ?: 'No scores yet. Be the first!' }}</div>
+      </false>
+    </check>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var endTs = {{ @end_timestamp }} * 1000;
+  function tick() {
+    var diff = endTs - Date.now();
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent  = '0';
+      document.getElementById('cd-hours').textContent = '00';
+      document.getElementById('cd-mins').textContent  = '00';
+      document.getElementById('cd-secs').textContent  = '00';
+      return;
+    }
+    var s = Math.floor(diff / 1000);
+    var d = Math.floor(s / 86400);
+    var h = Math.floor((s % 86400) / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sc = s % 60;
+    document.getElementById('cd-days').textContent  = d;
+    document.getElementById('cd-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(m).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(sc).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>

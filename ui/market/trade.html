@@ -1,0 +1,255 @@
+<style>
+.trade-shell {
+	display: grid;
+	gap: 14px;
+	max-width: 980px;
+	margin: 0 auto;
+}
+
+.trade-hero {
+	background:
+		linear-gradient(145deg, rgba(224, 176, 92, 0.16), rgba(60, 40, 24, 0.92));
+	border: 1px solid rgba(180, 137, 77, 0.62);
+	border-radius: var(--radius-lg);
+	padding: 16px;
+	text-align: left;
+	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+}
+
+.trade-hero h2 {
+	margin: 0 0 6px;
+	font-size: 22px;
+	color: var(--color-text-heading);
+}
+
+.trade-stat {
+	margin-top: 10px;
+	display: inline-block;
+	padding: 8px 12px;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--color-border);
+	background: rgba(17, 10, 6, 0.55);
+	font-size: var(--font-size-sm);
+	color: var(--color-text);
+}
+
+.trade-stat strong {
+	color: var(--color-accent);
+}
+
+.trade-card {
+	background: linear-gradient(180deg, rgba(46, 32, 21, 0.96), rgba(24, 15, 9, 0.98));
+	border: 1px solid rgba(133, 100, 63, 0.78);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow:
+		0 10px 20px rgba(0,0,0,0.24),
+		inset 0 0 0 1px rgba(214, 170, 94, 0.06);
+}
+
+.trade-card-head {
+	padding: 10px 14px;
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	color: var(--color-accent);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid rgba(161, 122, 63, 0.44);
+	background: linear-gradient(180deg, rgba(59, 39, 22, 0.9), rgba(40, 26, 15, 0.92));
+	box-shadow: inset 0 1px 0 rgba(241, 208, 145, 0.08);
+}
+
+.trade-card-body {
+	padding: 14px;
+}
+
+.trade-form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+
+.trade-form-block {
+	padding: 12px;
+	border: 1px solid rgba(200, 149, 42, 0.2);
+	border-radius: var(--radius-md);
+	background: rgba(255, 255, 255, 0.02);
+}
+
+.trade-field {
+	display: grid;
+	gap: 6px;
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+.trade-field label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+}
+
+.trade-field .textbox {
+	width: 100%;
+}
+
+.trade-submit {
+	text-align: right;
+	margin-top: 6px;
+}
+
+.trade-list {
+	display: grid;
+	gap: 10px;
+}
+
+.trade-item {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr auto;
+	gap: 10px;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0, 0, 0, 0.2);
+	text-align: left;
+}
+
+.trade-label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+}
+
+.trade-value {
+	font-size: var(--font-size-sm);
+	color: var(--color-text);
+}
+
+.trade-timer {
+	padding: 4px 8px;
+	border-radius: 999px;
+	background: rgba(200, 149, 42, 0.18);
+	color: var(--color-accent);
+	font-weight: 700;
+	font-size: var(--font-size-xs);
+}
+
+.trade-footer {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.trade-action-link {
+	display: inline-flex;
+	text-decoration: none;
+	padding: 10px 12px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(200, 149, 42, 0.08);
+	color: var(--color-text);
+	font-size: var(--font-size-sm);
+	font-weight: 600;
+	transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.trade-action-link:hover {
+	background: rgba(200, 149, 42, 0.16);
+	border-color: var(--color-border-light);
+	color: var(--color-accent);
+}
+
+@media (max-width: 900px) {
+	.trade-form-grid,
+	.trade-item {
+		grid-template-columns: 1fr;
+	}
+
+	.trade-submit {
+		text-align: left;
+	}
+}
+</style>
+
+<div class="trade-shell">
+	<div class="trade-hero">
+		<h2>{{ @lang.sendResources ?: 'Send Resources' }}</h2>
+		<div class="trade-stat">{{ @lang.merchants ?: 'Merchants' }}: <strong>{{ @merchants_available }} / {{ @merchants_total }}</strong></div>
+	</div>
+
+	<div class="trade-card">
+		<div class="trade-card-head">{{ @lang.destination ?: 'Destination' }}</div>
+		<div class="trade-card-body">
+			<form action="/town/{{ @town.id }}/market/send" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<div class="trade-form-grid">
+					<div class="trade-form-block">
+						<div class="trade-field">
+							<label for="target">{{ @lang.targetTown ?: 'Target town name' }}</label>
+							<input class="textbox" id="target" type="text" name="target">
+						</div>
+						<div class="trade-field">
+							<label>{{ @lang.orCoords ?: 'Or coordinates (x, y)' }}</label>
+							<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+								<input class="textbox" type="text" name="target_x" placeholder="X">
+								<input class="textbox" type="text" name="target_y" placeholder="Y">
+							</div>
+						</div>
+					</div>
+					<div class="trade-form-block">
+						<div class="trade-field">
+							<label for="crop">{{ @lang.crop ?: 'Crop' }}</label>
+							<input class="textbox" id="crop" type="text" name="crop" value="0">
+						</div>
+						<div class="trade-field">
+							<label for="lumber">{{ @lang.lumber ?: 'Lumber' }}</label>
+							<input class="textbox" id="lumber" type="text" name="lumber" value="0">
+						</div>
+						<div class="trade-field">
+							<label for="stone">{{ @lang.stone ?: 'Stone' }}</label>
+							<input class="textbox" id="stone" type="text" name="stone" value="0">
+						</div>
+						<div class="trade-field">
+							<label for="iron">{{ @lang.iron ?: 'Iron' }}</label>
+							<input class="textbox" id="iron" type="text" name="iron" value="0">
+						</div>
+					</div>
+				</div>
+				<div class="trade-submit">
+					<input class="button" type="submit" name="send" value="{{ @lang.send ?: 'Send' }}">
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<check if="{{ count(@active_trades) }}">
+	<div class="trade-card">
+		<div class="trade-card-head">{{ @lang.activeTrades ?: 'Active Trades' }}</div>
+		<div class="trade-card-body">
+			<div class="trade-list">
+				<repeat group="{{ @active_trades }}" key="{{ @i }}" value="{{ @trade }}">
+					<div class="trade-item">
+						<div>
+							<div class="trade-label">{{ @lang.destination ?: 'Destination' }}</div>
+							<div class="trade-value">{{ @trade.target_name }}</div>
+						</div>
+						<div>
+							<div class="trade-label">{{ @lang.resources ?: 'Resources' }}</div>
+							<div class="trade-value">{{ @trade.resources }}</div>
+						</div>
+						<div>
+							<div class="trade-label">{{ @lang.arrives ?: 'Arrives' }}</div>
+							<div class="trade-timer"><span id="tr{{ @i }}">{{ @trade.timeLeft }}</span></div>
+							<script type="text/javascript"> timer('tr{{ @i }}', '/town/{{ @town.id }}/market/trade'); </script>
+						</div>
+					</div>
+				</repeat>
+			</div>
+		</div>
+	</div>
+	</check>
+
+	<div class="trade-footer">
+		<a class="trade-action-link" href="/town/{{ @town.id }}/market">{{ @lang.back ?: 'Back' }}</a>
+	</div>
+</div>

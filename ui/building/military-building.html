@@ -1,0 +1,312 @@
+<style>
+.bshell { text-align: left; }
+.bshell-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-md); padding: 14px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72)); }
+.bshell-header-left { display: flex; align-items: center; gap: 14px; }
+.bshell-header-img  { width: 52px; height: 66px; object-fit: contain; flex-shrink: 0; }
+.bshell-title { margin: 0; color: var(--color-text-heading); font-size: var(--font-size-xl); }
+.bshell-sub   { margin: 3px 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.bshell-level { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--color-border-light); background: rgba(0,0,0,0.22); color: var(--color-accent); font-weight: 700; white-space: nowrap; }
+
+/* ── Top Row ───────────────────────────────────────────────── */
+.bshell-top { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+.bpanel { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: rgba(0,0,0,0.18); overflow: hidden; }
+.bpanel-title { margin: 0; padding: 10px 14px; font-size: var(--font-size-sm); color: var(--color-text-heading); background: rgba(0,0,0,0.22); border-bottom: 1px solid rgba(199,154,57,0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+.bpanel-body  { padding: 14px; }
+
+/* ── Upgrade chips ─────────────────────────────────────────── */
+.cost-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.cost-chip { display: flex; flex-direction: column; align-items: center; gap: 2px; background: rgba(0,0,0,0.2); border: 1px solid rgba(199,154,57,0.12); border-radius: var(--radius-sm); padding: 6px 4px; font-size: 11px; }
+.cost-chip img { width: 18px; height: 18px; }
+.cost-chip-label { color: var(--color-text-muted); font-size: 9px; text-transform: uppercase; }
+.cost-chip-val   { font-weight: 700; color: var(--color-accent); }
+.cost-chip.zero  { opacity: 0.35; }
+
+.btn-upgrade { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(61,184,106,0.55); border-radius: var(--radius-sm); background: linear-gradient(180deg, rgba(50,140,75,0.75), rgba(30,90,50,0.85)); color: #d4fce2; font-family: var(--font-family); font-size: var(--font-size-sm); font-weight: 700; cursor: pointer; text-align: center; }
+.btn-upgrade:hover { background: linear-gradient(180deg, rgba(60,165,90,0.9), rgba(38,110,60,0.95)); }
+.btn-disabled { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(120,120,120,0.2); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: 700; text-align: center; cursor: not-allowed; }
+.btn-max { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(199,154,57,0.3); border-radius: var(--radius-sm); background: rgba(199,154,57,0.1); color: var(--color-accent); font-size: var(--font-size-sm); font-weight: 700; text-align: center; }
+.btn-primary { display: block; width: 100%; padding: 11px 0; border: 1px solid rgba(199,154,57,0.5); border-radius: var(--radius-sm); background: linear-gradient(180deg, rgba(80,58,24,0.8), rgba(50,34,14,0.9)); color: var(--color-accent); font-family: var(--font-family); font-size: var(--font-size-sm); font-weight: 700; cursor: pointer; text-align: center; margin-top: 12px; }
+.btn-primary:hover { border-color: var(--color-accent); background: linear-gradient(180deg, rgba(100,74,30,0.9), rgba(62,42,16,0.95)); }
+.btn-back { display: inline-block; text-decoration: none; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt)); color: var(--color-text-heading); font-size: var(--font-size-sm); font-weight: 700; }
+.btn-back:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+/* ── Section Heading ───────────────────────────────────────── */
+.section-heading { display: flex; align-items: center; gap: 10px; margin: var(--space-md) 0 var(--space-sm); }
+.section-heading h3 { margin: 0; font-size: var(--font-size-md); color: var(--color-text-heading); }
+.section-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(199,154,57,0.35), transparent); }
+
+/* ── Unit Cards ────────────────────────────────────────────── */
+.unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-md); }
+
+.unit-card { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(160deg, rgba(50,34,20,0.7), rgba(28,18,10,0.8)); overflow: hidden; }
+.unit-card.locked { opacity: 0.6; border-color: rgba(100,100,100,0.3); }
+.unit-card-strip { height: 3px; background: linear-gradient(90deg, rgba(199,154,57,0.6), transparent); }
+.unit-card.locked .unit-card-strip { background: linear-gradient(90deg, #555, transparent); }
+
+.unit-card-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid rgba(199,154,57,0.1); }
+.unit-card-img  { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+.unit-card-name { margin: 0; font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-heading); }
+.unit-card-stats { display: flex; gap: 6px; margin-top: 3px; }
+.stat-badge { font-size: 10px; padding: 1px 6px; border-radius: 999px; font-weight: 700; }
+.stat-atk { background: rgba(220,80,60,0.2); color: #f09080; border: 1px solid rgba(220,80,60,0.3); }
+.stat-def { background: rgba(60,120,220,0.2); color: #80a0f0; border: 1px solid rgba(60,120,220,0.3); }
+
+.unit-costs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 8px 12px; border-bottom: 1px solid rgba(199,154,57,0.08); }
+.uc-item { display: flex; flex-direction: column; align-items: center; gap: 1px; background: rgba(0,0,0,0.18); border-radius: 4px; padding: 4px 2px; }
+.uc-item img { width: 14px; height: 14px; }
+.uc-label { font-size: 8px; color: var(--color-text-muted); text-transform: uppercase; }
+.uc-val   { font-size: 11px; font-weight: 700; color: var(--color-accent); }
+
+.unit-card-foot { padding: 8px 12px; }
+.unit-qty-row { display: flex; align-items: center; gap: 8px; }
+.qty-label { font-size: 11px; color: var(--color-text-muted); flex-shrink: 0; }
+.qty-input { flex: 1; padding: 5px 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(199,154,57,0.25); border-radius: var(--radius-sm); color: var(--color-text-heading); font-family: var(--font-family); font-size: var(--font-size-sm); text-align: center; }
+.unit-locked-msg { font-size: var(--font-size-xs); color: #d59f67; padding: 8px 0 2px; }
+
+/* ── Weapon Cards ──────────────────────────────────────────── */
+.weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-md); }
+.weapon-card { border: 1px solid rgba(199,154,57,0.25); border-radius: var(--radius-md); background: linear-gradient(160deg, rgba(40,30,10,0.75), rgba(25,18,8,0.85)); overflow: hidden; }
+.weapon-card-strip { height: 3px; background: linear-gradient(90deg, rgba(199,154,57,0.8), transparent); }
+.weapon-card-head { padding: 10px 12px; border-bottom: 1px solid rgba(199,154,57,0.1); }
+.weapon-card-name { margin: 0; font-size: var(--font-size-sm); font-weight: 700; color: var(--color-text-heading); }
+.weapon-card-bonus { font-size: 11px; color: #e8bc60; margin-top: 3px; }
+.weapon-costs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 8px 12px; border-bottom: 1px solid rgba(199,154,57,0.08); }
+.weapon-card-foot { padding: 8px 12px; }
+
+/* ── Queue ─────────────────────────────────────────────────── */
+.queue-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-md); }
+.queue-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(0,0,0,0.2); border: 1px solid rgba(199,154,57,0.15); border-radius: var(--radius-sm); }
+.queue-item-name { font-weight: 700; color: var(--color-text-heading); font-size: var(--font-size-sm); flex: 1; }
+.queue-item-time { font-size: var(--font-size-xs); color: var(--color-accent); }
+.queue-item-cancel { font-size: 12px; color: #d59f67; background: none; border: 1px solid rgba(201,96,73,0.3); border-radius: 4px; padding: 2px 7px; cursor: pointer; text-decoration: none; }
+.queue-item-cancel:hover { border-color: rgba(201,96,73,0.6); color: #f3c9b8; }
+
+@media (max-width: 720px) { .bshell-top { grid-template-columns: 1fr; } .unit-grid { grid-template-columns: 1fr; } }
+</style>
+
+<div class="bshell">
+
+	<div class="bshell-header">
+		<div class="bshell-header-left">
+			<img class="bshell-header-img" src="{{ @imgs }}{{ @fimgs }}b{{ @building.slot }}.png" alt="{{ @building.name }}">
+			<div>
+				<h2 class="bshell-title">{{ @building.name }}</h2>
+				<p class="bshell-sub">{{ @building.description }}</p>
+			</div>
+		</div>
+		<div class="bshell-level">{{ @lang.level ?: 'Level' }} {{ @building.level }} / {{ @building.max_level }}</div>
+	</div>
+
+	<!-- Üst satır: istatistik + yükseltme -->
+	<div class="bshell-top">
+		<div class="bpanel">
+			<p class="bpanel-title">📊 {{ @lang.info ?: 'Info' }}</p>
+			<div class="bpanel-body" style="display:flex;flex-direction:column;gap:8px;">
+				<div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);">
+					<span style="color:var(--color-text-muted);">{{ @lang.currentLevel ?: 'Current level' }}</span>
+					<strong style="color:var(--color-accent);">{{ @building.level }} / {{ @building.max_level }}</strong>
+				</div>
+				<div style="display:flex;justify-content:space-between;font-size:var(--font-size-sm);">
+					<span style="color:var(--color-text-muted);">{{ @lang.nextBuildTime ?: 'Next build time' }}</span>
+					<strong style="color:var(--color-accent);">{{ @upgrade_cost.time }}</strong>
+				</div>
+			</div>
+		</div>
+
+		<div class="bpanel">
+			<p class="bpanel-title">⬆️ {{ @lang.upgrade ?: 'Upgrade' }}</p>
+			<div class="bpanel-body">
+				<check if="{{ @building.level < @building.max_level }}">
+					<div class="cost-chips">
+						<div class="cost-chip{{ @upgrade_cost.crop == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+							<span class="cost-chip-label">{{ @lang.crop ?: 'Crop' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.crop }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.lumber == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/1.png" alt="{{ @lang.lumber ?: 'Lumber' }}">
+							<span class="cost-chip-label">{{ @lang.lumber ?: 'Lumber' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.lumber }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.stone == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/2.png" alt="{{ @lang.stone ?: 'Stone' }}">
+							<span class="cost-chip-label">{{ @lang.stone ?: 'Stone' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.stone }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.iron == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+							<span class="cost-chip-label">{{ @lang.iron ?: 'Iron' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.iron }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.gold == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/4.png" alt="{{ @lang.gold ?: 'Gold' }}">
+							<span class="cost-chip-label">{{ @lang.gold ?: 'Gold' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.gold }}</span>
+						</div>
+						<div class="cost-chip">
+							<span style="font-size:18px">⏱</span>
+							<span class="cost-chip-label">{{ @lang.time ?: 'Time' }}</span>
+							<span class="cost-chip-val" style="font-size:10px">{{ @upgrade_cost.time }}</span>
+						</div>
+					</div>
+					<check if="{{ @can_upgrade }}">
+						<form id="upgradeForm" action="/town/{{ @town.id }}/building/{{ @building.slot }}" method="post">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="action" value="upgrade">
+							<button class="btn-upgrade" type="submit" id="upgradeSubmitBtn">⬆️ {{ @lang.level ?: 'Level' }} {{ @building.level + 1 }}</button>
+						</form>
+					</check>
+					<check if="{{ !@can_upgrade }}"><div class="btn-disabled">❌ {{ @lang.insufficientResources ?: 'Insufficient resources' }}</div></check>
+				</check>
+				<check if="{{ @building.level >= @building.max_level }}">
+					<div class="btn-max">✅ {{ @lang.maxLevel ?: 'Max level' }}</div>
+				</check>
+			</div>
+		</div>
+	</div>
+
+	<!-- ── Asker Eğitimi ───────────────────────────────────── -->
+	<check if="{{ count(@trainable_units) }}">
+		<div class="section-heading">
+			<h3>⚔️ {{ @lang.trainUnits ?: 'Train Units' }}</h3>
+			<div class="section-line"></div>
+		</div>
+		<form action="/town/{{ @town.id }}/building/{{ @building.slot }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<input type="hidden" name="action" value="train">
+			<div class="unit-grid">
+				<repeat group="{{ @trainable_units }}" value="{{ @unit }}">
+					<div class="unit-card{{ !@unit.researched ? ' locked' : '' }}">
+						<div class="unit-card-strip"></div>
+						<div class="unit-card-head">
+							<img class="unit-card-img" src="{{ @imgs }}{{ @fimgs }}2{{ @unit.id }}.gif" alt="{{ @unit.name }}">
+							<div>
+								<p class="unit-card-name">{{ @unit.name }}</p>
+								<div class="unit-card-stats">
+									<span class="stat-badge stat-atk">ATK {{ @unit.attack }}</span>
+									<span class="stat-badge stat-def">DEF {{ @unit.defense }}</span>
+								</div>
+							</div>
+						</div>
+						<div class="unit-costs">
+							<div class="uc-item">
+								<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+								<span class="uc-label">{{ @lang.crop ?: 'Crop' }}</span>
+								<span class="uc-val">{{ @unit.cost_crop }}</span>
+							</div>
+							<div class="uc-item">
+								<img src="{{ @imgs }}images/resources/1.png" alt="{{ @lang.lumber ?: 'Lumber' }}">
+								<span class="uc-label">{{ @lang.lumber ?: 'Lumber' }}</span>
+								<span class="uc-val">{{ @unit.cost_lumber }}</span>
+							</div>
+							<div class="uc-item">
+								<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+								<span class="uc-label">{{ @lang.iron ?: 'Iron' }}</span>
+								<span class="uc-val">{{ @unit.cost_iron }}</span>
+							</div>
+							<div class="uc-item" style="grid-column:1/-1;flex-direction:row;gap:4px;">
+								<span style="font-size:12px">⏱</span>
+								<span class="uc-label">{{ @lang.time ?: 'Time' }}</span>
+								<span class="uc-val">{{ @unit.time }}</span>
+							</div>
+						</div>
+						<div class="unit-card-foot">
+							<check if="{{ @unit.researched }}">
+								<div class="unit-qty-row">
+									<span class="qty-label">{{ @lang.quantity ?: 'Quantity' }}:</span>
+									<input class="qty-input textbox" type="number" name="qty[{{ @unit.id }}]" value="0" min="0">
+								</div>
+							</check>
+							<check if="{{ !@unit.researched }}">
+								<p class="unit-locked-msg">🔒 {{ @lang.researchRequired ?: 'Research at Academy/Blacksmith first (HP + ATK + DEF)' }}</p>
+							</check>
+						</div>
+					</div>
+				</repeat>
+			</div>
+			<button class="btn-primary" type="submit">⚔️ {{ @lang.trainSelectedUnits ?: 'Train Selected Units' }}</button>
+		</form>
+	</check>
+
+	<!-- ── Silah Üretimi ───────────────────────────────────── -->
+	<check if="{{ count(@forgeable_weapons) }}">
+		<div class="section-heading">
+			<h3>🗡️ {{ @lang.produceWeapons ?: 'Produce Weapons' }}</h3>
+			<div class="section-line"></div>
+		</div>
+		<form action="/town/{{ @town.id }}/building/{{ @building.slot }}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<input type="hidden" name="action" value="forge">
+			<div class="weapon-grid">
+				<repeat group="{{ @forgeable_weapons }}" value="{{ @weapon }}">
+					<div class="weapon-card">
+						<div class="weapon-card-strip"></div>
+						<div class="weapon-card-head">
+							<p class="weapon-card-name">{{ @weapon.name }}</p>
+							<p class="weapon-card-bonus">+{{ @weapon.bonus }}% {{ @lang.attackBonus ?: 'attack bonus' }}</p>
+						</div>
+						<div class="weapon-costs">
+							<div class="uc-item">
+								<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+								<span class="uc-label">{{ @lang.crop ?: 'Crop' }}</span>
+								<span class="uc-val">{{ @weapon.cost_crop }}</span>
+							</div>
+							<div class="uc-item">
+								<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+								<span class="uc-label">{{ @lang.iron ?: 'Iron' }}</span>
+								<span class="uc-val">{{ @weapon.cost_iron }}</span>
+							</div>
+							<div class="uc-item">
+								<img src="{{ @imgs }}images/resources/4.png" alt="{{ @lang.gold ?: 'Gold' }}">
+								<span class="uc-label">{{ @lang.gold ?: 'Gold' }}</span>
+								<span class="uc-val">{{ @weapon.cost_gold }}</span>
+							</div>
+							<div class="uc-item" style="grid-column:1/-1;flex-direction:row;gap:4px;">
+								<span style="font-size:12px">⏱</span>
+								<span class="uc-label">{{ @lang.time ?: 'Time' }}</span>
+								<span class="uc-val">{{ @weapon.time }}</span>
+							</div>
+						</div>
+						<div class="weapon-card-foot">
+							<div class="unit-qty-row">
+								<span class="qty-label">{{ @lang.quantity ?: 'Quantity' }}:</span>
+								<input class="qty-input textbox" type="number" name="qty[{{ @weapon.id }}]" value="0" min="0">
+							</div>
+						</div>
+					</div>
+				</repeat>
+			</div>
+			<button class="btn-primary" type="submit">🗡️ {{ @lang.produceSelectedWeapons ?: 'Produce Selected Weapons' }}</button>
+		</form>
+	</check>
+
+	<!-- ── Eğitim Kuyruğu ─────────────────────────────────── -->
+	<check if="{{ count(@train_queue) }}">
+		<div class="section-heading">
+			<h3>⏳ {{ @lang.trainingQueue ?: 'Training Queue' }}</h3>
+			<div class="section-line"></div>
+		</div>
+		<div class="queue-list">
+			<repeat group="{{ @train_queue }}" key="{{ @i }}" value="{{ @tq }}">
+				<div class="queue-item">
+					<span class="queue-item-name">{{ @tq.name }} <span style="color:var(--color-accent);">x{{ @tq.quantity }}</span></span>
+					<span class="queue-item-time" id="tq{{ @i }}">{{ @tq.timeLeft }}</span>
+					<script>timer('tq{{ @i }}', '/town/{{ @town.id }}/building/{{ @building.slot }}');</script>
+					<a class="queue-item-cancel" href="/town/{{ @town.id }}/building/{{ @building.slot }}/cancel-train/{{ @tq.id }}">✕</a>
+				</div>
+			</repeat>
+		</div>
+	</check>
+
+	<div style="margin-top:var(--space-md);">
+		<a class="btn-back" href="/town/{{ @town.id }}">← {{ @lang.backToTown ?: 'Back to Town' }}</a>
+	</div>
+</div>
+
+<script>
+(function() {
+	var uf = document.getElementById('upgradeForm');
+	var ub = document.getElementById('upgradeSubmitBtn');
+	if (uf && ub) { uf.addEventListener('submit', function() { if (ub.disabled) return false; ub.disabled = true; ub.textContent = '⏳ {{ @lang.upgrading ?: "Upgrading..." }}'; }); }
+})();
+</script>

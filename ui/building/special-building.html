@@ -1,0 +1,189 @@
+<style>
+.bshell { text-align: left; }
+.bshell-header { display: flex; justify-content: space-between; align-items: center; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-md); padding: 14px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72)); }
+.bshell-header-left { display: flex; align-items: center; gap: 14px; }
+.bshell-header-img  { width: 52px; height: 66px; object-fit: contain; flex-shrink: 0; }
+.bshell-title { margin: 0; color: var(--color-text-heading); font-size: var(--font-size-xl); }
+.bshell-sub   { margin: 3px 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.bshell-level { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--color-border-light); background: rgba(0,0,0,0.22); color: var(--color-accent); font-weight: 700; white-space: nowrap; }
+.bshell-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-bottom: var(--space-md); }
+.bpanel { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: rgba(0,0,0,0.18); overflow: hidden; }
+.bpanel-title { margin: 0; padding: 10px 14px; font-size: var(--font-size-sm); color: var(--color-text-heading); background: rgba(0,0,0,0.22); border-bottom: 1px solid rgba(199,154,57,0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+.bpanel-body  { padding: 14px; }
+
+/* ── Bonus Display ─────────────────────────────────────────── */
+.bonus-compare { display: flex; align-items: center; gap: 16px; justify-content: center; }
+.bonus-box { flex: 1; text-align: center; background: rgba(0,0,0,0.2); border: 1px solid rgba(199,154,57,0.15); border-radius: var(--radius-sm); padding: 12px 8px; }
+.bonus-box-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 4px; }
+.bonus-box-val   { font-size: var(--font-size-xl); font-weight: 700; color: var(--color-accent); }
+.bonus-box.next  { border-color: rgba(61,184,106,0.3); }
+.bonus-box.next .bonus-box-val { color: #62d48a; }
+.bonus-arrow { font-size: 20px; color: rgba(199,154,57,0.5); flex-shrink: 0; }
+.bonus-empty { padding: 20px; text-align: center; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+
+.cost-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.cost-chip { display: flex; flex-direction: column; align-items: center; gap: 2px; background: rgba(0,0,0,0.2); border: 1px solid rgba(199,154,57,0.12); border-radius: var(--radius-sm); padding: 6px 4px; font-size: 11px; }
+.cost-chip img { width: 18px; height: 18px; }
+.cost-chip-label { color: var(--color-text-muted); font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; }
+.cost-chip-val   { font-weight: 700; color: var(--color-accent); }
+.cost-chip.zero  { opacity: 0.35; }
+
+.btn-upgrade  { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(61,184,106,0.55); border-radius: var(--radius-sm); background: linear-gradient(180deg, rgba(50,140,75,0.75), rgba(30,90,50,0.85)); color: #d4fce2; font-family: var(--font-family); font-size: var(--font-size-sm); font-weight: 700; cursor: pointer; text-align: center; }
+.btn-upgrade:hover { background: linear-gradient(180deg, rgba(60,165,90,0.9), rgba(38,110,60,0.95)); }
+.btn-disabled { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(120,120,120,0.2); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); color: var(--color-text-muted); font-size: var(--font-size-sm); font-weight: 700; text-align: center; cursor: not-allowed; }
+.btn-max { display: block; width: 100%; padding: 10px 0; border: 1px solid rgba(199,154,57,0.3); border-radius: var(--radius-sm); background: rgba(199,154,57,0.1); color: var(--color-accent); font-size: var(--font-size-sm); font-weight: 700; text-align: center; }
+.btn-back { display: inline-block; text-decoration: none; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt)); color: var(--color-text-heading); font-size: var(--font-size-sm); font-weight: 700; }
+.btn-back:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.btn-danger { display: inline-block; padding: 8px 16px; border: 1px solid rgba(201,96,73,0.5); border-radius: var(--radius-sm); background: linear-gradient(180deg, rgba(117,38,24,0.75), rgba(84,24,16,0.85)); color: #f3c9b8; font-family: var(--font-family); font-size: var(--font-size-sm); font-weight: 700; cursor: pointer; }
+.danger-panel { border: 1px solid rgba(201,96,73,0.3); border-radius: var(--radius-md); overflow: hidden; }
+.danger-panel-title { margin: 0; padding: 10px 14px; font-size: var(--font-size-sm); color: #f3c9b8; background: rgba(100,30,20,0.3); border-bottom: 1px solid rgba(201,96,73,0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+.danger-panel-body { padding: 12px 14px; }
+.danger-note { color: var(--color-text-muted); font-size: var(--font-size-sm); margin: 0 0 12px; line-height: 1.5; }
+.confirm-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 5000; }
+.confirm-backdrop.show { display: flex; }
+.confirm-box { width: min(400px, 100%); border: 1px solid rgba(199,154,57,0.35); border-radius: var(--radius-md); background: linear-gradient(180deg, rgba(58,40,24,0.97), rgba(28,18,12,0.98)); box-shadow: 0 12px 32px rgba(0,0,0,0.5); padding: 20px; }
+.confirm-box-title { margin: 0 0 8px; color: var(--color-text-heading); font-size: var(--font-size-md); }
+.confirm-box-text  { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.5; }
+.confirm-box-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); margin-top: 18px; }
+@media (max-width: 720px) { .bshell-grid { grid-template-columns: 1fr; } .bonus-compare { flex-direction: column; } }
+</style>
+
+<div class="bshell">
+
+	<div class="bshell-header">
+		<div class="bshell-header-left">
+			<img class="bshell-header-img" src="{{ @imgs }}{{ @fimgs }}b{{ @building.slot }}.png" alt="{{ @building.name }}">
+			<div>
+				<h2 class="bshell-title">{{ @building.name }}</h2>
+				<p class="bshell-sub">{{ @building.description }}</p>
+			</div>
+		</div>
+		<div class="bshell-level">{{ @lang.level ?: 'Level' }} {{ @building.level }} / {{ @building.max_level }}</div>
+	</div>
+
+	<div class="bshell-grid">
+
+		<!-- Bonus Bilgisi -->
+		<div class="bpanel">
+			<p class="bpanel-title">✨ Bonus</p>
+			<div class="bpanel-body">
+				<check if="{{ @building.bonus }}">
+					<div class="bonus-compare">
+						<div class="bonus-box">
+						<div class="bonus-box-label">{{ @lang.currentBonus ?: 'Current bonus' }}</div>
+							<div class="bonus-box-val">{{ @building.bonus }}</div>
+						</div>
+						<check if="{{ @building.level < @building.max_level && @building.next_bonus }}">
+							<div class="bonus-arrow">→</div>
+							<div class="bonus-box next">
+								<div class="bonus-box-label">{{ @lang.nextLevel ?: 'Next level' }}</div>
+								<div class="bonus-box-val">{{ @building.next_bonus }}</div>
+							</div>
+						</check>
+					</div>
+				</check>
+				<check if="{{ !@building.bonus }}">
+					<div class="bonus-empty">{{ @lang.noNumericBonus ?: 'This building has no numeric bonus.' }}</div>
+				</check>
+			</div>
+		</div>
+
+		<!-- Yükseltme -->
+		<div class="bpanel">
+			<p class="bpanel-title">⬆️ {{ @lang.upgrade ?: 'Upgrade' }}</p>
+			<div class="bpanel-body">
+				<check if="{{ @building.level < @building.max_level }}">
+					<div class="cost-chips">
+						<div class="cost-chip{{ @upgrade_cost.crop == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+							<span class="cost-chip-label">{{ @lang.crop ?: 'Crop' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.crop }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.lumber == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/1.png" alt="{{ @lang.lumber ?: 'Lumber' }}">
+							<span class="cost-chip-label">{{ @lang.lumber ?: 'Lumber' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.lumber }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.stone == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/2.png" alt="{{ @lang.stone ?: 'Stone' }}">
+							<span class="cost-chip-label">{{ @lang.stone ?: 'Stone' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.stone }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.iron == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+							<span class="cost-chip-label">{{ @lang.iron ?: 'Iron' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.iron }}</span>
+						</div>
+						<div class="cost-chip{{ @upgrade_cost.gold == 0 ? ' zero' : '' }}">
+							<img src="{{ @imgs }}images/resources/4.png" alt="{{ @lang.gold ?: 'Gold' }}">
+							<span class="cost-chip-label">{{ @lang.gold ?: 'Gold' }}</span>
+							<span class="cost-chip-val">{{ @upgrade_cost.gold }}</span>
+						</div>
+						<div class="cost-chip">
+							<span style="font-size:18px">⏱</span>
+							<span class="cost-chip-label">{{ @lang.time ?: 'Time' }}</span>
+							<span class="cost-chip-val" style="font-size:10px">{{ @upgrade_cost.time }}</span>
+						</div>
+					</div>
+					<check if="{{ @can_upgrade }}">
+						<form id="upgradeForm" action="/town/{{ @town.id }}/building/{{ @building.slot }}" method="post">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="action" value="upgrade">
+							<button class="btn-upgrade" type="submit" id="upgradeSubmitBtn">⬆️ {{ @lang.level ?: 'Level' }} {{ @building.level + 1 }}</button>
+						</form>
+					</check>
+					<check if="{{ !@can_upgrade }}"><div class="btn-disabled">❌ {{ @lang.insufficientResources ?: 'Insufficient resources' }}</div></check>
+				</check>
+				<check if="{{ @building.level >= @building.max_level }}">
+					<div class="btn-max">✅ {{ @lang.maxLevel ?: 'Max level' }}</div>
+				</check>
+			</div>
+		</div>
+
+	</div>
+
+	<check if="{{ @building.level > 0 }}">
+	<div class="danger-panel" style="margin-bottom:var(--space-md);">
+		<p class="danger-panel-title">🔥 {{ @lang.dangerZoneDemolish ?: 'Danger Zone - Demolition' }}</p>
+		<div class="danger-panel-body">
+			<p class="danger-note">{{ @lang.demolishWarnBonus ?: 'Lowering the level reduces bonus values. This action cannot be undone.' }}</p>
+			<form id="demolishForm" action="/town/{{ @town.id }}/demolish" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<input type="hidden" name="a" value="4">
+				<input type="hidden" name="b" value="{{ @building.slot }}">
+				<button class="btn-danger" type="button" id="openDemolish">🔥 {{ @lang.demolishLevelDown ?: 'Lower Level' }}</button>
+			</form>
+		</div>
+	</div>
+	</check>
+
+	<a class="btn-back" href="/town/{{ @town.id }}">← {{ @lang.backToTown ?: 'Back to Town' }}</a>
+</div>
+
+<div id="demolishBackdrop" class="confirm-backdrop">
+	<div class="confirm-box">
+		<p class="confirm-box-title">🔥 {{ @lang.areYouSure ?: 'Are you sure?' }}</p>
+		<p class="confirm-box-text"><strong>{{ @building.name }}</strong> {{ @lang.willBeLoweredFrom ?: 'will be lowered from level' }} <strong>{{ @building.level }}</strong> {{ @lang.demolishToLevel ?: 'to level' }} <strong>{{ @building.level - 1 }}</strong>. {{ @lang.irreversibleAction ?: 'This action cannot be undone.' }}</p>
+		<div class="confirm-box-actions">
+			<button type="button" class="btn-back" id="demolishCancel">{{ @lang.cancel ?: 'Cancel' }}</button>
+			<button type="button" class="btn-danger" id="demolishConfirm">🔥 {{ @lang.yesDemolish ?: 'Yes, Demolish' }}</button>
+		</div>
+	</div>
+</div>
+
+<script>
+(function() {
+	var b = document.getElementById('demolishBackdrop');
+	var f = document.getElementById('demolishForm');
+	var openBtn = document.getElementById('openDemolish');
+	if (!openBtn || !b) return;
+	openBtn.addEventListener('click', function() { b.classList.add('show'); });
+	document.getElementById('demolishCancel').addEventListener('click', function() { b.classList.remove('show'); });
+	document.getElementById('demolishConfirm').addEventListener('click', function() { f.submit(); });
+	b.addEventListener('click', function(e) { if (e.target === b) b.classList.remove('show'); });
+	document.addEventListener('keydown', function(e) { if (e.key === 'Escape') b.classList.remove('show'); });
+	var uf = document.getElementById('upgradeForm');
+	var ub = document.getElementById('upgradeSubmitBtn');
+	if (uf && ub) { uf.addEventListener('submit', function() { if (ub.disabled) return false; ub.disabled = true; ub.textContent = '⏳ {{ @lang.upgrading ?: "Upgrading..." }}'; }); }
+})();
+</script>

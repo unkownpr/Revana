@@ -1,0 +1,72 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="4">{{ @forum.name }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">{{ @lang.thread ?: 'Thread' }}</td>
+		<td class="head_table">{{ @lang.replies ?: 'Replies' }}</td>
+		<td class="head_table">{{ @lang.author ?: 'Author' }}</td>
+		<td class="head_table">{{ @lang.lastPost ?: 'Last Post' }}</td>
+	</tr>
+	<check if="{{ count(@threads) }}">
+	<repeat group="{{ @threads }}" value="{{ @thread }}">
+	<tr>
+		<td class="q_text">
+			<check if="{{ @thread.pinned }}"><b>[{{ @lang.pinned ?: 'Pinned' }}]</b> </check>
+			<check if="{{ @thread.locked }}"><b>[{{ @lang.locked ?: 'Locked' }}]</b> </check>
+			<a class="q_link" href="/forum/{{ @forum.id }}/thread/{{ @thread.id }}">{{ @thread.title }}</a>
+		</td>
+		<td class="q_text">{{ @thread.reply_count }}</td>
+		<td class="q_text"><a class="q_link" href="/profile/{{ @thread.author_id }}">{{ @thread.author_name }}</a></td>
+		<td class="q_text">
+			<check if="{{ @thread.last_post_date }}">
+				{{ @thread.last_post_date }}<br>
+				<small>{{ @lang.by ?: 'by' }} {{ @thread.last_post_user }}</small>
+			</check>
+		</td>
+	</tr>
+	</repeat>
+	</check>
+	<check if="{{ !count(@threads) }}">
+	<tr>
+		<td class="q_text" colspan="4">{{ @lang.noThreads ?: 'No threads yet.' }}</td>
+	</tr>
+	</check>
+</table>
+
+<check if="{{ @page > 1 }}">
+	<a class="q_link" href="/forum/{{ @forum.id }}?page={{ @page - 1 }}">{{ @lang.prev ?: '<< Prev' }}</a>
+</check>
+{{ @lang.page ?: 'Page' }} {{ @page }} / {{ @total_pages }}
+<check if="{{ @page < @total_pages }}">
+	<a class="q_link" href="/forum/{{ @forum.id }}?page={{ @page + 1 }}">{{ @lang.next ?: 'Next >>' }}</a>
+</check>
+
+<check if="{{ isset(@SESSION.user) }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table">{{ @lang.newThread ?: 'New Thread' }}</td>
+	</tr>
+	<tr>
+		<td class="q_text">
+			<form action="/forum/{{ @forum.id }}/thread" method="post">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+				<p>
+					<label>{{ @lang.title ?: 'Title' }}
+						<input class="textbox" type="text" name="title" size="40">
+					</label>
+				</p>
+				<p>
+					<label>{{ @lang.message ?: 'Message' }}<br>
+						<textarea class="textbox" name="content" rows="6" cols="50"></textarea>
+					</label>
+				</p>
+				<p>
+					<input class="button" type="submit" name="create" value="{{ @lang.post ?: 'Post' }}">
+				</p>
+			</form>
+		</td>
+	</tr>
+</table>
+</check>
+<a class="q_link" href="/forum">{{ @lang.backToForums ?: 'Back to Forums' }}</a>

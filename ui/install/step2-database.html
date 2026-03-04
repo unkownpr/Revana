@@ -1,0 +1,70 @@
+<html>
+<link rel="stylesheet" type="text/css" href="/default/1/default.css">
+<head>
+<title>Devana - Installation</title>
+</head>
+<body class="q_body">
+<div align="center">
+
+<table class="q_table">
+	<tr>
+		<td class="td_logo"><img src="/default/1/logo.jpg"></td>
+	</tr>
+	<tr>
+		<td class="td_top_menu">
+			<font class="q_label">Installation Wizard - Step 2: Database Error</font>
+		</td>
+	</tr>
+	<tr>
+		<td class="td_content">
+			<br>
+			<check if="{{ isset(@error) }}">
+				<font color="red"><b>Error: {{ @error }}</b></font>
+				<br><br>
+			</check>
+			<form method="post" action="/install/step2">
+				<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+					<tr>
+						<td class="head_table" colspan="2">Database Configuration</td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right" width="200">Game Title:</td>
+						<td><input class="textbox" type="text" name="game_title" value="{{ @game_title }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Database Host:</td>
+						<td><input class="textbox" type="text" name="db_host" value="{{ @db_host }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Database Port:</td>
+						<td><input class="textbox" type="text" name="db_port" value="{{ @db_port }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Database Name:</td>
+						<td><input class="textbox" type="text" name="db_name" value="{{ @db_name }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Database User:</td>
+						<td><input class="textbox" type="text" name="db_user" value="{{ @db_user }}"></td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">Database Password:</td>
+						<td><input class="textbox" type="password" name="db_pass" value=""></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<br>
+							<input class="button" type="submit" value="Retry">
+							<br><br>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<br>
+		</td>
+	</tr>
+</table>
+
+</div>
+</body>
+</html>

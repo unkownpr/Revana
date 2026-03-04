@@ -1,0 +1,12 @@
+/vendor/
+/tmp/
+*.lock
+config.ini
+.env
+.vscode
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+/data/devana.sql
+devana.sql

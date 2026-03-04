@@ -1,0 +1,76 @@
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="4">{{ @lang.combatSimulator ?: 'Combat Simulator' }}</td>
+	</tr>
+</table>
+
+<form action="/town/{{ @town.id }}/combat-sim" method="post">
+	<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+
+	<table class="q_table">
+		<tr>
+			<td class="head_table" colspan="2">{{ @lang.attacker ?: 'Attacker' }}</td>
+			<td class="head_table" colspan="2">{{ @lang.defender ?: 'Defender' }}</td>
+		</tr>
+		<tr>
+			<td class="head_table">{{ @lang.unit ?: 'Unit' }}</td>
+			<td class="head_table">{{ @lang.quantity ?: 'Qty' }}</td>
+			<td class="head_table">{{ @lang.unit ?: 'Unit' }}</td>
+			<td class="head_table">{{ @lang.quantity ?: 'Qty' }}</td>
+		</tr>
+		<repeat group="{{ @unit_types }}" value="{{ @utype }}">
+		<tr>
+			<td class="q_text">{{ @utype.name }}</td>
+			<td class="q_text"><input class="textbox" type="text" name="att[{{ @utype.id }}]" size="5" value="0"></td>
+			<td class="q_text">{{ @utype.name }}</td>
+			<td class="q_text"><input class="textbox" type="text" name="def[{{ @utype.id }}]" size="5" value="0"></td>
+		</tr>
+		</repeat>
+		<tr>
+			<td class="q_text">{{ @lang.wallLevel ?: 'Wall level' }}</td>
+			<td class="q_text"><input class="textbox" type="text" name="att_wall" size="3" value="0"></td>
+			<td class="q_text">{{ @lang.wallLevel ?: 'Wall level' }}</td>
+			<td class="q_text"><input class="textbox" type="text" name="def_wall" size="3" value="0"></td>
+		</tr>
+		<tr>
+			<td class="q_text">{{ @lang.morale ?: 'Morale' }} %</td>
+			<td class="q_text"><input class="textbox" type="text" name="att_morale" size="3" value="100"></td>
+			<td class="q_text">{{ @lang.morale ?: 'Morale' }} %</td>
+			<td class="q_text"><input class="textbox" type="text" name="def_morale" size="3" value="100"></td>
+		</tr>
+		<tr>
+			<td colspan="4" class="q_text">
+				<input class="button" type="submit" name="simulate" value="{{ @lang.simulate ?: 'Simulate' }}">
+			</td>
+		</tr>
+	</table>
+</form>
+
+<check if="{{ isset(@result) }}">
+<table class="q_table">
+	<tr>
+		<td class="head_table" colspan="4">{{ @lang.result ?: 'Result' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table" colspan="2">{{ @lang.attacker ?: 'Attacker' }}</td>
+		<td class="head_table" colspan="2">{{ @lang.defender ?: 'Defender' }}</td>
+	</tr>
+	<tr>
+		<td class="head_table">{{ @lang.unit ?: 'Unit' }}</td>
+		<td class="head_table">{{ @lang.losses ?: 'Losses' }}</td>
+		<td class="head_table">{{ @lang.unit ?: 'Unit' }}</td>
+		<td class="head_table">{{ @lang.losses ?: 'Losses' }}</td>
+	</tr>
+	<repeat group="{{ @result.attacker_losses }}" key="{{ @uid }}" value="{{ @loss }}">
+	<tr>
+		<td class="q_text">{{ @loss.name }}</td>
+		<td class="q_text">{{ @loss.lost }} / {{ @loss.total }}</td>
+		<td class="q_text">{{ @result.defender_losses[$uid].name }}</td>
+		<td class="q_text">{{ @result.defender_losses[$uid].lost }} / {{ @result.defender_losses[$uid].total }}</td>
+	</tr>
+	</repeat>
+	<tr>
+		<td class="head_table" colspan="4">{{ @lang.winner ?: 'Winner' }}: {{ @result.winner }}</td>
+	</tr>
+</table>
+</check>

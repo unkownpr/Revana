@@ -1,0 +1,164 @@
+<button class="nav-mobile-toggle" type="button" aria-expanded="false" aria-controls="game-nav-mobile-panel" data-nav-toggle>
+	<span class="nav-mobile-toggle-icon" aria-hidden="true">
+		<span></span><span></span><span></span>
+	</span>
+	<span>{{ @lang.menu ?: 'Menu' }}</span>
+</button>
+
+<div class="nav-mobile-panel" id="game-nav-mobile-panel" data-nav-panel>
+<div class="nav-primary">
+	<a class="nav-link" href="/">
+		<svg class="nav-icon" viewBox="0 0 16 16"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z"/></svg>
+		{{ @lang.home ?: 'Home' }}
+	</a>
+	<a class="nav-link" href="/map">
+		<svg class="nav-icon" viewBox="0 0 16 16"><path d="M1 3l5-2 4 2 5-2v12l-5 2-4-2-5 2V3zm5-1v11m4-9v11"/></svg>
+		{{ @lang.map ?: 'Map' }}
+	</a>
+	<check if="{{ isset(@SESSION.user) }}">
+		<span class="nav-separator"></span>
+		<a class="nav-link" href="/towns">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M2 14V6l3-4h6l3 4v8H2zm4 0v-4h4v4M6 6h4"/></svg>
+			{{ @lang.towns ?: 'Towns' }}
+		</a>
+		<check if="{{ @nav_town }}">
+		<a class="nav-link nav-link--town" href="/town/{{ @nav_town.id }}" data-tooltip="{{ @nav_town.name }}">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M8 1L1 7h2v7h4v-4h2v4h4V7h2L8 1z" fill="currentColor" opacity=".9"/></svg>
+			{{ @nav_town.name }}
+		</a>
+		</check>
+		<a class="nav-link" href="/camps">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M8 1l-7 9h3v5h8v-5h3L8 1zm0 3l4.5 6H11v4H5v-4H3.5L8 4z"/></svg>
+			{{ @lang.barbarianCamps ?: 'Camps' }}
+		</a>
+		<check if="{{ @has_active_season }}">
+		<a class="nav-link" href="/season">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M8 1l1.5 4.5H15l-4.5 3.3 1.7 5.2L8 11l-4.2 3 1.7-5.2L1 5.5h5.5z" fill="gold"/></svg>
+			{{ @lang.season ?: 'Season' }}
+		</a>
+		</check>
+		<a class="nav-link" href="/premium/store">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M8 1.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm-2 8.3L4 15l4-2 4 2-2-5.2" /></svg>
+			{{ @lang.premiumStore ?: 'Premium' }}
+		</a>
+		<check if="{{ @SESSION.user.alliance }}">
+		<span class="nav-separator"></span>
+		<a class="nav-link" href="/forum">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M2 1h12v3H2V1zm0 5h12v3H2V6zm0 5h12v3H2v-3z"/></svg>
+			{{ @lang.forum ?: 'Forum' }}
+		</a>
+		</check>
+	</check>
+</div>
+
+<div class="nav-tools">
+	<check if="{{ !isset(@SESSION.user) }}">
+		<a class="nav-link nav-link-auth" href="/login">
+			<svg class="nav-icon" viewBox="0 0 16 16"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zm-5 7a5 5 0 0110 0H3z"/></svg>
+			{{ @lang.login ?: 'Login' }}
+		</a>
+		<a class="nav-link nav-link-accent" href="/register">{{ @lang.register ?: 'Register' }}</a>
+	</check>
+	<check if="{{ isset(@SESSION.user) }}">
+		<div class="nav-dropdown nav-dropdown-icon">
+			<a class="nav-link nav-icon-btn" href="/messages">
+				<svg class="nav-icon nav-icon-lg" viewBox="0 0 16 16"><path d="M1 3h14v10H1V3zm0 0l7 5 7-5"/></svg>
+				<check if="{{ @nav_msg_count }}"><span class="nav-badge-dot">{{ @nav_msg_count }}</span></check>
+			</a>
+			<div class="nav-dropdown-menu">
+				<div class="dropdown-label">{{ @lang.messages ?: 'Messages' }}</div>
+				<check if="{{ isset(@nav_recent_msgs) && count(@nav_recent_msgs) }}">
+					<true>
+						<repeat group="{{ @nav_recent_msgs }}" value="{{ @rmsg }}">
+							<a href="/messages/view/{{ @rmsg.id }}" class="dropdown-msg-item">
+								<span class="dropdown-msg-from">{{ @rmsg.sender_name ?: 'System' }}</span>
+								<span class="dropdown-msg-subject">{{ @rmsg.subject }}</span>
+								<span class="dropdown-msg-time">{{ @rmsg.sent }}</span>
+							</a>
+						</repeat>
+					</true>
+					<false>
+						<div class="dropdown-empty">{{ @lang.noMessages ?: 'No messages.' }}</div>
+					</false>
+				</check>
+				<div class="dropdown-divider"></div>
+				<a href="/messages" class="dropdown-view-all">{{ @lang.viewAll ?: 'View all' }} &rarr;</a>
+			</div>
+		</div>
+		<div class="nav-dropdown nav-dropdown-icon">
+			<a class="nav-link nav-icon-btn" href="/reports">
+				<svg class="nav-icon nav-icon-lg" viewBox="0 0 16 16"><path d="M3 1h7l3 3v11H3V1zm7 0v3h3M6 7h4M6 10h4"/></svg>
+				<check if="{{ @nav_rep_count }}"><span class="nav-badge-dot">{{ @nav_rep_count }}</span></check>
+			</a>
+			<div class="nav-dropdown-menu">
+				<div class="dropdown-label">{{ @lang.reports ?: 'Reports' }}</div>
+				<check if="{{ isset(@nav_recent_reps) && count(@nav_recent_reps) }}">
+					<true>
+						<repeat group="{{ @nav_recent_reps }}" value="{{ @rrep }}">
+							<a href="/reports/view/{{ @rrep.id }}" class="dropdown-msg-item">
+								<span class="dropdown-msg-subject">{{ @rrep.subject }}</span>
+								<span class="dropdown-msg-time">{{ @rrep.sent }}</span>
+							</a>
+						</repeat>
+					</true>
+					<false>
+						<div class="dropdown-empty">{{ @lang.noReports ?: 'No reports.' }}</div>
+					</false>
+				</check>
+				<div class="dropdown-divider"></div>
+				<a href="/reports" class="dropdown-view-all">{{ @lang.viewAll ?: 'View all' }} &rarr;</a>
+			</div>
+		</div>
+		<div class="nav-dropdown nav-dropdown-icon" x-data="notificationWidget()" x-init="init()">
+			<a class="nav-link nav-icon-btn" href="#" @click.prevent="toggle()">
+				<svg class="nav-icon nav-icon-lg" viewBox="0 0 16 16"><path d="M8 1a5 5 0 00-5 5v3l-1 2h12l-1-2V6a5 5 0 00-5-5zm-1 13a1 1 0 002 0"/></svg>
+				<span id="notif-badge" class="nav-badge-dot" x-text="count" x-show="count > 0" style="display:none;"></span>
+			</a>
+			<div class="nav-dropdown-menu" x-show="open" @click.outside="close()">
+				<div class="dropdown-label">{{ @lang.notifications ?: 'Notifications' }}
+					<a href="#" @click.prevent="toggle()" style="float:right;font-size:0.8em;opacity:0.7;">{{ @lang.markAllRead ?: 'Mark read' }}</a>
+				</div>
+				<template x-if="notifications.length === 0">
+					<div class="dropdown-empty">{{ @lang.noNotifications ?: 'No new notifications.' }}</div>
+				</template>
+				<template x-for="n in notifications.slice(0,5)" :key="n.id">
+					<a :href="n.url || '#'" class="dropdown-msg-item">
+						<span class="dropdown-msg-subject" x-text="n.text"></span>
+						<span class="dropdown-msg-time" x-text="n.created_at.substring(0,16)"></span>
+					</a>
+				</template>
+			</div>
+		</div>
+		<span class="nav-separator"></span>
+		<div class="nav-dropdown">
+			<a class="nav-link" href="/profile/{{ @SESSION.user.id }}">
+				<img class="nav-user-avatar" src="{{ @user_avatar_sm }}" alt="">
+				{{ @SESSION.user.name }}
+				<span class="nav-xp-badge" style="margin-left:6px;">&#9670;{{ @nav_premium_balance ?: 0 }}</span>
+				<span class="nav-xp-badge">Lv.{{ @nav_xp_level ?: '0' }}</span>
+			</a>
+			<div class="nav-dropdown-menu">
+					<a href="/profile/{{ @SESSION.user.id }}">{{ @lang.profile ?: 'Profile' }}</a>
+					<a href="/profile/edit">{{ @lang.editProfile ?: 'Edit Profile' }}</a>
+					<a href="/profile/{{ @SESSION.user.id }}?tab=inventory">{{ @lang.inventory ?: 'Inventory' }}</a>
+					<div class="dropdown-divider"></div>
+					<a href="/help">{{ @lang.help ?: 'Help' }}</a>
+					<check if="{{ @SESSION.user.level > 3 }}">
+					<div class="dropdown-divider"></div>
+					<a href="/admin">{{ @lang.adminPanel ?: 'Admin' }}</a>
+				</check>
+				<div class="dropdown-divider"></div>
+				<a href="/logout">{{ @lang.logout ?: 'Logout' }}</a>
+			</div>
+		</div>
+	</check>
+	<div class="lang-picker">
+		<span class="lang-picker-current">{{ @current_lang_code }}</span>
+		<div class="lang-picker-menu">
+			<repeat group="{{ @available_languages }}" value="{{ @al }}">
+				<a href="/lang/{{ @al.code }}">{{ @al.label }}</a>
+			</repeat>
+		</div>
+	</div>
+</div>
+</div>

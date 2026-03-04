@@ -1,0 +1,19 @@
+{
+    "name": "devana/game",
+    "description": "Devana - Browser-based strategy game built on Fat-Free Framework",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.0",
+        "bcosca/fatfree-core": "^3.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Devana\\": "app/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

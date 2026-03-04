@@ -1,0 +1,707 @@
+<style>
+/* ── Hall Shell ────────────────────────────────────────────── */
+.hall-shell { text-align: left; }
+
+.hall-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--space-md);
+	flex-wrap: wrap;
+	margin-bottom: var(--space-md);
+	padding: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.55), rgba(37,24,16,0.72));
+}
+.hall-title { margin: 0; color: var(--color-text-heading); font-size: var(--font-size-xl); }
+.hall-sub   { margin: 4px 0 0 0; color: var(--color-text-muted); font-size: var(--font-size-sm); }
+.hall-level {
+	padding: 6px 14px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border-light);
+	background: rgba(0,0,0,0.22);
+	color: var(--color-accent);
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+/* ── Top Info Row ──────────────────────────────────────────── */
+.hall-info-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-md);
+	margin-bottom: var(--space-lg);
+}
+
+.hall-panel {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.18);
+	overflow: hidden;
+}
+.hall-panel-title {
+	margin: 0;
+	padding: 10px 14px;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-heading);
+	background: rgba(0,0,0,0.22);
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+.hall-panel-body { padding: 14px; }
+
+/* ── Tax Panel ─────────────────────────────────────────────── */
+.hall-stat-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 6px 0;
+	border-bottom: 1px solid rgba(199,154,57,0.1);
+	font-size: var(--font-size-sm);
+}
+.hall-stat-row:last-of-type { border-bottom: none; }
+.hall-stat-val { font-weight: 700; color: var(--color-accent); }
+
+.tax-form {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 12px;
+	flex-wrap: wrap;
+}
+.tax-form label { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+
+/* ── Upgrade Panel ─────────────────────────────────────────── */
+.upgrade-cost-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px;
+	margin-bottom: 12px;
+}
+.upgrade-cost-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--font-size-sm);
+	background: rgba(0,0,0,0.15);
+	border-radius: var(--radius-sm);
+	padding: 5px 8px;
+}
+.upgrade-cost-item .res-icon { width: 18px; height: 18px; }
+.upgrade-cost-item .res-val  { font-weight: 700; color: var(--color-accent); margin-left: auto; }
+.upgrade-time {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+	margin-bottom: 12px;
+}
+
+/* ── Section Title ─────────────────────────────────────────── */
+.section-heading {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 var(--space-md) 0;
+}
+.section-heading h3 {
+	margin: 0;
+	font-size: var(--font-size-md);
+	color: var(--color-text-heading);
+}
+.section-heading-line {
+	flex: 1;
+	height: 1px;
+	background: linear-gradient(90deg, rgba(199,154,57,0.35), transparent);
+}
+.section-count {
+	font-size: var(--font-size-xs);
+	background: rgba(199,154,57,0.18);
+	color: var(--color-accent);
+	border: 1px solid rgba(199,154,57,0.3);
+	border-radius: 999px;
+	padding: 2px 9px;
+	font-weight: 700;
+}
+
+/* ── Building Cards Grid ───────────────────────────────────── */
+.bld-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: var(--space-md);
+	margin-bottom: var(--space-lg);
+}
+
+.bld-card {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(160deg, rgba(50,34,20,0.7), rgba(28,18,10,0.8));
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transition: border-color 0.18s, box-shadow 0.18s;
+}
+.bld-card:hover { border-color: rgba(199,154,57,0.5); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+
+/* Status variants */
+.bld-card.status-ready   { border-color: rgba(80,180,100,0.45); }
+.bld-card.status-nomoney { border-color: rgba(199,154,57,0.35); }
+.bld-card.status-locked  { border-color: rgba(100,100,100,0.3); opacity: 0.7; }
+
+/* Card top strip */
+.bld-card-strip {
+	height: 3px;
+	background: var(--color-border);
+}
+.status-ready   .bld-card-strip { background: linear-gradient(90deg, #3db86a, #62d48a); }
+.status-nomoney .bld-card-strip { background: linear-gradient(90deg, #c79a39, #e8bc60); }
+.status-locked  .bld-card-strip { background: linear-gradient(90deg, #555, #777); }
+
+.bld-card-head {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 14px 10px;
+	border-bottom: 1px solid rgba(199,154,57,0.1);
+}
+.bld-card-img {
+	width: 44px;
+	height: 56px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+.status-locked .bld-card-img { filter: grayscale(1) opacity(0.5); }
+
+.bld-card-name {
+	margin: 0;
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	color: var(--color-text-heading);
+	line-height: 1.2;
+}
+.bld-card-desc {
+	margin: 4px 0 0 0;
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	line-height: 1.4;
+}
+
+/* Status badge */
+.bld-status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 10px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	border-radius: 999px;
+	padding: 2px 8px;
+	margin-top: 5px;
+}
+.badge-ready   { background: rgba(61,184,106,0.18); color: #62d48a; border: 1px solid rgba(61,184,106,0.3); }
+.badge-nomoney { background: rgba(199,154,57,0.15); color: #e8bc60; border: 1px solid rgba(199,154,57,0.3); }
+.badge-locked  { background: rgba(120,120,120,0.15); color: #aaa; border: 1px solid rgba(150,150,150,0.2); }
+
+/* Cost grid inside card */
+.bld-card-costs {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4px;
+	padding: 10px 14px;
+	border-bottom: 1px solid rgba(199,154,57,0.08);
+}
+.bld-cost-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+	background: rgba(0,0,0,0.2);
+	border-radius: var(--radius-sm);
+	padding: 5px 4px;
+	font-size: 11px;
+}
+.bld-cost-item img { width: 18px; height: 18px; }
+.bld-cost-label { color: var(--color-text-muted); font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; }
+.bld-cost-val   { font-weight: 700; color: var(--color-accent); }
+.bld-cost-item.cost-zero { opacity: 0.35; }
+
+/* Requirement note */
+.bld-req-note {
+	padding: 6px 14px 2px;
+	font-size: var(--font-size-xs);
+	color: #d59f67;
+	display: flex;
+	align-items: flex-start;
+	gap: 5px;
+}
+
+/* Card footer / action */
+.bld-card-foot {
+	padding: 10px 14px;
+	margin-top: auto;
+}
+
+.bld-btn-build {
+	display: block;
+	width: 100%;
+	padding: 9px 0;
+	border: 1px solid rgba(61,184,106,0.6);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, rgba(50,140,75,0.75), rgba(30,90,50,0.85));
+	color: #d4fce2;
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+	text-align: center;
+	transition: background 0.15s, border-color 0.15s;
+}
+.bld-btn-build:hover {
+	background: linear-gradient(180deg, rgba(60,165,90,0.9), rgba(38,110,60,0.95));
+	border-color: rgba(80,210,110,0.7);
+}
+
+.bld-btn-disabled {
+	display: block;
+	width: 100%;
+	padding: 9px 0;
+	border: 1px solid rgba(120,120,120,0.25);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.2);
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	text-align: center;
+	cursor: not-allowed;
+}
+
+/* ── Demolish Section ──────────────────────────────────────── */
+.demolish-panel {
+	border: 1px solid rgba(201,96,73,0.3);
+	border-radius: var(--radius-md);
+	background: rgba(0,0,0,0.18);
+	overflow: hidden;
+	margin-bottom: var(--space-md);
+}
+.demolish-panel-title {
+	margin: 0;
+	padding: 10px 14px;
+	font-size: var(--font-size-sm);
+	color: #f3c9b8;
+	background: rgba(100,30,20,0.3);
+	border-bottom: 1px solid rgba(201,96,73,0.2);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+.demolish-note {
+	padding: 10px 14px;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+	line-height: 1.5;
+}
+
+/* ── Generic Button ────────────────────────────────────────── */
+.hall-shell .button,
+.hall-shell button.button,
+.hall-shell a.button {
+	display: inline-block;
+	text-decoration: none;
+	padding: 8px 16px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+}
+.hall-shell .button:hover,
+.hall-shell button.button:hover,
+.hall-shell a.button:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: linear-gradient(180deg, rgba(199,154,57,0.15), rgba(0,0,0,0.18));
+}
+.button-danger {
+	border-color: rgba(201,96,73,0.5) !important;
+	color: #f3c9b8 !important;
+	background: linear-gradient(180deg, rgba(117,38,24,0.7), rgba(84,24,16,0.8)) !important;
+}
+.button-danger:hover {
+	border-color: #d97763 !important;
+	background: linear-gradient(180deg, rgba(148,53,35,0.9), rgba(104,32,21,0.9)) !important;
+}
+
+/* ── Confirm Modal ─────────────────────────────────────────── */
+.confirm-toast-backdrop {
+	position: fixed; inset: 0;
+	background: rgba(0,0,0,0.5);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	z-index: 5000;
+}
+.confirm-toast-backdrop.show { display: flex; }
+.confirm-toast {
+	width: min(440px, 100%);
+	border: 1px solid rgba(199,154,57,0.35);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.97), rgba(28,18,12,0.98));
+	box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+	padding: 20px;
+}
+.confirm-toast-title { margin: 0 0 8px; color: var(--color-text-heading); font-size: var(--font-size-md); }
+.confirm-toast-text  { margin: 0; color: var(--color-text-muted); font-size: var(--font-size-sm); line-height: 1.5; }
+.confirm-toast-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); margin-top: 18px; }
+
+@media (max-width: 860px) {
+	.hall-info-row { grid-template-columns: 1fr; }
+	.bld-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="hall-shell">
+
+	<!-- ── Header ──────────────────────────────────────────── -->
+	<div class="hall-header">
+		<div>
+			<h2 class="hall-title">{{ @building.name }}</h2>
+			<p class="hall-sub">{{ @building.description }}</p>
+		</div>
+		<div class="hall-level">{{ @lang.level ?: 'Level' }} {{ @building.level }}</div>
+	</div>
+
+	<!-- ── Top Info: Taxes + Upgrade ───────────────────────── -->
+	<div class="hall-info-row">
+
+		<!-- Gold / Taxes -->
+		<div class="hall-panel">
+			<p class="hall-panel-title">💰 {{ @lang.taxAndGold ?: 'Tax & Gold' }}</p>
+			<div class="hall-panel-body">
+				<div class="hall-stat-row">
+					<span>{{ @lang.goldProduction ?: 'Gold Production' }}</span>
+					<span class="hall-stat-val">{{ @production.gold }}{{ @lang.perHour ?: '/h' }}</span>
+				</div>
+				<div class="hall-stat-row">
+					<span>{{ @lang.morale ?: 'Moral' }}</span>
+					<span class="hall-stat-val">{{ @town.morale }}%</span>
+				</div>
+				<form action="/town/{{ @town.id }}/taxes" method="post" class="tax-form">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<label>{{ @lang.newTaxRate ?: 'New tax rate:' }}</label>
+					<input class="textbox" name="taxes" type="number" min="0" max="210" size="5" value="{{ @production.gold }}" style="width:70px">
+					<button class="button" type="submit">{{ @lang.apply ?: 'Apply' }}</button>
+				</form>
+			</div>
+		</div>
+
+		<!-- Hall Upgrade -->
+		<div class="hall-panel">
+			<p class="hall-panel-title">⬆️ {{ @lang.upgradeHall ?: 'Upgrade Hall' }}</p>
+			<div class="hall-panel-body">
+				<check if="{{ @building.level < @building.max_level }}">
+					<div class="upgrade-cost-grid">
+						<div class="upgrade-cost-item">
+							<img class="res-icon" src="{{ @imgs }}images/resources/0.png" title="{{ @lang.crop ?: 'Crop' }}">
+							<span>{{ @lang.crop ?: 'Crop' }}</span>
+							<span class="res-val">{{ @upgrade_cost.crop }}</span>
+						</div>
+						<div class="upgrade-cost-item">
+							<img class="res-icon" src="{{ @imgs }}images/resources/1.png" title="{{ @lang.lumber ?: 'Lumber' }}">
+							<span>{{ @lang.lumber ?: 'Lumber' }}</span>
+							<span class="res-val">{{ @upgrade_cost.lumber }}</span>
+						</div>
+						<div class="upgrade-cost-item">
+							<img class="res-icon" src="{{ @imgs }}images/resources/2.png" title="{{ @lang.stone ?: 'Stone' }}">
+							<span>{{ @lang.stone ?: 'Stone' }}</span>
+							<span class="res-val">{{ @upgrade_cost.stone }}</span>
+						</div>
+						<div class="upgrade-cost-item">
+							<img class="res-icon" src="{{ @imgs }}images/resources/3.png" title="{{ @lang.iron ?: 'Iron' }}">
+							<span>{{ @lang.iron ?: 'Iron' }}</span>
+							<span class="res-val">{{ @upgrade_cost.iron }}</span>
+						</div>
+					</div>
+					<div class="upgrade-time">⏱ {{ @lang.time ?: 'Time' }}: <strong>{{ @upgrade_cost.time }}</strong></div>
+					<check if="{{ @can_upgrade }}">
+						<form action="/town/{{ @town.id }}/building/{{ @building.slot }}" method="post">
+							<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+							<input type="hidden" name="action" value="upgrade">
+							<button class="bld-btn-build" type="submit">⬆️ {{ @lang.upgradeHall ?: 'Upgrade Hall' }} ({{ @lang.level ?: 'Level' }} {{ @building.level + 1 }})</button>
+						</form>
+					</check>
+					<check if="{{ !@can_upgrade }}">
+						<div class="bld-btn-disabled">❌ {{ @lang.insufficientResources ?: 'Insufficient resources' }}</div>
+					</check>
+				</check>
+				<check if="{{ @building.level >= @building.max_level }}">
+					<div class="bld-btn-disabled">✅ {{ @lang.maxLevelReached ?: 'Maximum level reached' }}</div>
+				</check>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- ── Available Buildings ──────────────────────────────── -->
+	<check if="{{ count(@all_buildings) }}">
+		<div class="section-heading">
+			<h3>🏗️ {{ @lang.buildableBuildings ?: 'Buildable Buildings' }}</h3>
+			<div class="section-heading-line"></div>
+			<span class="section-count">{{ count(@all_buildings) }} {{ @lang.buildingsCount ?: 'buildings' }}</span>
+		</div>
+
+		<!-- Legend -->
+		<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:var(--space-md);font-size:var(--font-size-xs);">
+			<span style="display:flex;align-items:center;gap:5px;">
+				<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#3db86a;"></span>
+				{{ @lang.readyToBuild ?: 'Ready - You can build' }}
+			</span>
+			<span style="display:flex;align-items:center;gap:5px;">
+				<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#c79a39;"></span>
+				{{ @lang.insufficientResources ?: 'Insufficient resources' }}
+			</span>
+			<span style="display:flex;align-items:center;gap:5px;">
+				<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#666;"></span>
+				{{ @lang.lockedRequirement ?: 'Locked - Complete requirements first' }}
+			</span>
+		</div>
+
+		<div class="bld-grid">
+			<repeat group="{{ @all_buildings }}" value="{{ @ab }}">
+
+				<!-- Determine card status class -->
+				<check if="{{ @ab.can_build && @ab.affordable }}">
+					<div class="bld-card status-ready">
+						<div class="bld-card-strip"></div>
+						<div class="bld-card-head">
+							<img class="bld-card-img" src="{{ @imgs }}{{ @fimgs }}b{{ @ab.type }}.png" alt="{{ @ab.name }}">
+							<div>
+								<p class="bld-card-name">{{ @ab.name }}</p>
+								<p class="bld-card-desc">{{ @ab.desc }}</p>
+								<span class="bld-status-badge badge-ready">✔ {{ @lang.ready ?: 'Ready' }}</span>
+							</div>
+						</div>
+						<div class="bld-card-costs">
+							<div class="bld-cost-item">
+								<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+								<span class="bld-cost-label">{{ @lang.crop ?: 'Crop' }}</span>
+								<span class="bld-cost-val">?</span>
+							</div>
+							<div class="bld-cost-item">
+								<img src="{{ @imgs }}images/resources/1.png" alt="{{ @lang.lumber ?: 'Lumber' }}">
+								<span class="bld-cost-label">{{ @lang.lumber ?: 'Lumber' }}</span>
+								<span class="bld-cost-val">?</span>
+							</div>
+							<div class="bld-cost-item">
+								<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+								<span class="bld-cost-label">{{ @lang.iron ?: 'Iron' }}</span>
+								<span class="bld-cost-val">?</span>
+							</div>
+						</div>
+						<div class="bld-card-foot">
+							<form action="/town/{{ @town.id }}/building/{{ @ab.type }}" method="post">
+								<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+								<input type="hidden" name="action" value="build">
+								<button class="bld-btn-build" type="submit">🔨 {{ @lang.build ?: 'Build' }}</button>
+							</form>
+						</div>
+					</div>
+				</check>
+
+				<check if="{{ @ab.can_build && !@ab.affordable }}">
+					<div class="bld-card status-nomoney">
+						<div class="bld-card-strip"></div>
+						<div class="bld-card-head">
+							<img class="bld-card-img" src="{{ @imgs }}{{ @fimgs }}b{{ @ab.type }}.png" alt="{{ @ab.name }}">
+							<div>
+								<p class="bld-card-name">{{ @ab.name }}</p>
+								<p class="bld-card-desc">{{ @ab.desc }}</p>
+								<span class="bld-status-badge badge-nomoney">⚠ {{ @lang.insufficientResources ?: 'Insufficient resources' }}</span>
+							</div>
+						</div>
+						<div class="bld-card-costs">
+							<div class="bld-cost-item">
+								<img src="{{ @imgs }}images/resources/0.png" alt="{{ @lang.crop ?: 'Crop' }}">
+								<span class="bld-cost-label">{{ @lang.crop ?: 'Crop' }}</span>
+								<span class="bld-cost-val">?</span>
+							</div>
+							<div class="bld-cost-item">
+								<img src="{{ @imgs }}images/resources/1.png" alt="{{ @lang.lumber ?: 'Lumber' }}">
+								<span class="bld-cost-label">{{ @lang.lumber ?: 'Lumber' }}</span>
+								<span class="bld-cost-val">?</span>
+							</div>
+							<div class="bld-cost-item">
+								<img src="{{ @imgs }}images/resources/3.png" alt="{{ @lang.iron ?: 'Iron' }}">
+								<span class="bld-cost-label">{{ @lang.iron ?: 'Iron' }}</span>
+								<span class="bld-cost-val">?</span>
+							</div>
+						</div>
+						<div class="bld-card-foot">
+							<div class="bld-btn-disabled">⚠️ {{ @lang.collectThenBuild ?: 'Collect resources, then build' }}</div>
+						</div>
+					</div>
+				</check>
+
+				<check if="{{ !@ab.can_build }}">
+					<div class="bld-card status-locked">
+						<div class="bld-card-strip"></div>
+						<div class="bld-card-head">
+							<img class="bld-card-img" src="{{ @imgs }}{{ @fimgs }}b{{ @ab.type }}.png" alt="{{ @ab.name }}">
+							<div>
+								<p class="bld-card-name">{{ @ab.name }}</p>
+								<p class="bld-card-desc">{{ @ab.desc }}</p>
+								<span class="bld-status-badge badge-locked">🔒 {{ @lang.locked ?: 'Locked' }}</span>
+							</div>
+						</div>
+						<check if="{{ @ab.requirements }}">
+							<div class="bld-req-note">
+								📋 <strong>{{ @lang.requirement ?: 'Requirement' }}:</strong> {{ @ab.requirements }}
+							</div>
+						</check>
+						<div class="bld-card-foot">
+							<div class="bld-btn-disabled">🔒 {{ @lang.completeRequirementsFirst ?: 'Complete requirements first' }}</div>
+						</div>
+					</div>
+				</check>
+
+			</repeat>
+		</div>
+	</check>
+
+	<check if="{{ !count(@all_buildings) }}">
+		<div style="padding:var(--space-md);border:1px solid var(--color-border);border-radius:var(--radius-md);text-align:center;color:var(--color-text-muted);margin-bottom:var(--space-md);">
+			✅ {{ @lang.allBuildingsBuilt ?: 'All buildings are already built!' }}
+		</div>
+	</check>
+
+	<!-- ── Demolish Section ─────────────────────────────────── -->
+	<div class="demolish-panel">
+		<p class="demolish-panel-title">🔥 {{ @lang.dangerZoneDemolish ?: 'Danger Zone - Demolition' }}</p>
+		<div class="demolish-note">
+			{{ @lang.demolishDescription ?: 'Select a building or land improvement to demolish. This action is irreversible and gives no resource refund.' }}
+		</div>
+			<div style="padding:0 14px 14px;">
+				<button class="button button-danger" type="button" id="open-demolish-modal-btn">
+					🔥 {{ @lang.openDemolishPanel ?: 'Open Demolition Panel' }}
+				</button>
+			</div>
+	</div>
+
+	<!-- Demolish Modal -->
+	<div id="demolish-modal" class="confirm-toast-backdrop" onclick="if(event.target===this)this.classList.remove('show')">
+		<div class="confirm-toast">
+			<p class="confirm-toast-title">🔥 {{ @lang.whatToDemolish ?: 'What do you want to demolish?' }}</p>
+			<p class="confirm-toast-text">{{ @lang.selectDemolishTarget ?: 'Select the building or land you want to demolish. This action cannot be undone.' }}</p>
+
+			<form id="demolish-form" action="/town/{{ @town.id }}/demolish" method="post" style="margin-top:14px;">
+				<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+
+				<!-- Hidden inputs updated by JS -->
+				<input type="hidden" name="a" id="demolish-a" value="">
+				<input type="hidden" name="b" id="demolish-b" value="">
+
+				<!-- JS-rendered target selector will go here -->
+				<div id="demolish-target-list" style="max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+					<p style="color:var(--color-text-muted);font-size:var(--font-size-xs);">{{ @lang.loading ?: 'Loading...' }}</p>
+				</div>
+
+				<div class="confirm-toast-actions">
+					<button type="button" class="button" onclick="document.getElementById('demolish-modal').classList.remove('show')">{{ @lang.cancel ?: 'Cancel' }}</button>
+					<button type="submit" class="button button-danger" id="demolish-submit-btn" disabled>🔥 {{ @lang.demolish ?: 'Demolish' }}</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Back -->
+	<div style="margin-top:var(--space-md);">
+		<a class="button" href="/town/{{ @town.id }}">← {{ @lang.backToTown ?: 'Back to Town' }}</a>
+	</div>
+
+</div>
+
+<script>
+(function () {
+	try {
+	// Raw data injected from PHP via template vars
+	var bldPairs = "{{ @demolish_buildings }}".split(',').map(Number);
+	var land0 = "{{ @demolish_land_0 }}".split(',').map(Number);
+	var land1 = "{{ @demolish_land_1 }}".split(',').map(Number);
+	var land2 = "{{ @demolish_land_2 }}".split(',').map(Number);
+	var land3 = "{{ @demolish_land_3 }}".split(',').map(Number);
+
+	var landLabels = ['{{ @lang.cropField ?: "Crop Field" }}','{{ @lang.lumberForest ?: "Lumber Forest" }}','{{ @lang.stoneQuarry ?: "Stone Quarry" }}','{{ @lang.ironMine ?: "Iron Mine" }}'];
+	var buildingNames = {
+		0:'{{ @lang.cropField ?: "Crop Field" }}', 1:'{{ @lang.lumberForest ?: "Lumber Forest" }}', 2:'{{ @lang.stoneQuarry ?: "Stone Quarry" }}', 3:'{{ @lang.ironMine ?: "Iron Mine" }}',
+		4:'{{ @lang.granary ?: "Granary" }}', 5:'{{ @lang.warehouse ?: "Warehouse" }}', 6:'{{ @lang.stoneStorage ?: "Stone Storage" }}',
+		7:'Hall ({{ @lang.notDemolishable ?: "Cannot be demolished" }})', 8:'{{ @lang.ironStorage ?: "Iron Storage" }}',
+		9:'{{ @lang.house ?: "House" }}', 10:'{{ @lang.church ?: "Church" }}', 11:'{{ @lang.cathedral ?: "Cathedral" }}',
+		13:'{{ @lang.market ?: "Market" }}', 14:'{{ @lang.port ?: "Port" }}', 15:'{{ @lang.barracks ?: "Barracks" }}',
+		16:'{{ @lang.academy ?: "Academy" }}', 17:'{{ @lang.blacksmith ?: "Blacksmith" }}', 18:'{{ @lang.weaponShop ?: "Weapon Shop" }}',
+		19:'{{ @lang.stable ?: "Stable" }}', 20:'{{ @lang.siegeWorkshop ?: "Siege Workshop" }}', 21:'{{ @lang.goldVault ?: "Gold Vault" }}'
+	};
+
+	function buildDemolishList() {
+		var list = document.getElementById('demolish-target-list');
+		list.innerHTML = '';
+
+		// Land improvements
+		var lands = [land0, land1, land2, land3];
+		lands.forEach(function(arr, aIdx) {
+			arr.forEach(function(level, slotIdx) {
+				if (level > 0) {
+					list.appendChild(createItem('🌾 ' + landLabels[aIdx] + ' #' + (slotIdx+1) + ' ({{ @lang.level ?: "Level" }} ' + level + ')', aIdx, slotIdx));
+				}
+			});
+		});
+
+		// Buildings from pairs [type, level, type, level, ...]
+		for (var i = 0; i < bldPairs.length; i += 2) {
+			var bType = bldPairs[i], bLevel = bldPairs[i+1];
+			if (bType === 7 || bLevel <= 0) continue; // Hall cannot be demolished
+			var name = buildingNames[bType] || ('{{ @lang.building ?: "Building" }} #' + bType);
+			list.appendChild(createItem('🏛 ' + name + ' ({{ @lang.level ?: "Level" }} ' + bLevel + ')', 4, bType));
+		}
+
+		if (!list.children.length) {
+			list.innerHTML = '<p style="color:var(--color-text-muted);font-size:var(--font-size-xs);">{{ @lang.noDemolishTargets ?: "No demolishable building or land." }}</p>';
+		}
+	}
+
+	function createItem(label, aVal, bVal) {
+		var btn = document.createElement('button');
+		btn.type = 'button';
+		btn.style.cssText = 'text-align:left;padding:8px 10px;border:1px solid rgba(201,96,73,0.25);border-radius:4px;background:rgba(100,30,20,0.2);color:var(--color-text-heading);font-size:13px;cursor:pointer;transition:background 0.15s;';
+		btn.textContent = label;
+		btn.onclick = function() {
+			document.querySelectorAll('#demolish-target-list button').forEach(function(b){ b.style.background='rgba(100,30,20,0.2)'; b.style.borderColor='rgba(201,96,73,0.25)'; });
+			this.style.background = 'rgba(150,40,25,0.5)';
+			this.style.borderColor = 'rgba(201,96,73,0.6)';
+			document.getElementById('demolish-a').value = aVal;
+			document.getElementById('demolish-b').value = bVal;
+			document.getElementById('demolish-submit-btn').disabled = false;
+		};
+		return btn;
+	}
+
+	var openBtn = document.getElementById('open-demolish-modal-btn');
+	var modal = document.getElementById('demolish-modal');
+	if (!openBtn || !modal) {
+		return;
+	}
+
+	openBtn.addEventListener('click', function() {
+		buildDemolishList();
+		modal.classList.add('show');
+	});
+	} catch (e) {
+		console.error('Demolish modal initialization failed:', e);
+	}
+})();
+</script>

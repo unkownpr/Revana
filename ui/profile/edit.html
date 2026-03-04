@@ -1,0 +1,1130 @@
+<style>
+.profile-edit-shell {
+	text-align: left;
+}
+
+.profile-intro {
+	margin-bottom: var(--space-lg);
+	padding: var(--space-md) var(--space-lg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.5), rgba(37,24,16,0.7));
+}
+
+.profile-intro h2 {
+	margin: 0;
+	font-size: var(--font-size-xl);
+	color: var(--color-text-heading);
+}
+
+.profile-intro p {
+	margin: var(--space-xs) 0 0;
+	font-size: var(--font-size-sm);
+	color: var(--color-text-muted);
+}
+
+.profile-main-tabs {
+	display: flex;
+	gap: var(--space-sm);
+	flex-wrap: wrap;
+	margin-bottom: var(--space-md);
+}
+
+.profile-main-tab-btn {
+	padding: var(--space-xs) var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: var(--color-surface-alt);
+	color: var(--color-text);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.profile-main-tab-btn:hover {
+	background: var(--color-surface-hover);
+}
+
+.profile-main-tab-btn.active {
+	background: var(--color-accent);
+	border-color: var(--color-accent);
+	color: #1c1208;
+}
+
+.profile-main-panel {
+	display: none;
+}
+
+.profile-main-panel.active {
+	display: block;
+}
+
+.avatar-editor-grid {
+	display: grid;
+	grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+	gap: var(--space-lg);
+}
+
+.avatar-preview-card {
+	padding: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: var(--color-surface-alt);
+	position: sticky;
+	top: var(--space-md);
+}
+
+.avatar-preview-frame {
+	display: flex;
+	justify-content: center;
+	margin-bottom: var(--space-md);
+}
+
+.avatar-preview-frame img {
+	width: 140px;
+	height: 140px;
+	border-radius: 50%;
+	border: 3px solid var(--color-border-light);
+	box-shadow: var(--shadow-md);
+	background: #1c1208;
+}
+
+.builder-actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-md);
+}
+
+.builder-actions .button,
+.builder-actions button.button {
+	padding: var(--space-xs) var(--space-sm);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(180deg, var(--color-surface-hover), var(--color-surface-alt));
+	color: var(--color-text-heading);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.builder-actions .button:hover,
+.builder-actions button.button:hover {
+	border-color: var(--color-accent);
+	color: var(--color-accent);
+	background: linear-gradient(180deg, rgba(199,154,57,0.15), rgba(0,0,0,0.18));
+}
+
+.avatar-variants {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--space-sm);
+}
+
+.avatar-variant {
+	width: 100%;
+	height: 68px;
+	object-fit: contain;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+
+.avatar-variant-active {
+	outline: 2px solid var(--color-accent);
+}
+
+.avatar-seed-quick {
+	display: flex;
+	gap: var(--space-xs);
+	flex-wrap: wrap;
+	margin-top: var(--space-sm);
+}
+
+.avatar-seed-chip {
+	padding: 4px 8px;
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	background: rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+
+.avatar-seed-chip:hover {
+	color: var(--color-accent);
+	border-color: var(--color-accent-dark);
+}
+
+.builder-control-card {
+	padding: var(--space-md);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	background: var(--color-surface-alt);
+}
+
+.avatar-tabs {
+	margin-top: var(--space-sm);
+}
+
+.avatar-tab-buttons {
+	display: flex;
+	gap: var(--space-xs);
+	flex-wrap: wrap;
+}
+
+.avatar-tab-btn {
+	padding: 6px 10px;
+	border: 1px solid var(--color-border);
+	background: var(--color-surface);
+	color: var(--color-text);
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	font-size: var(--font-size-sm);
+	font-family: var(--font-family);
+	font-weight: 700;
+}
+
+.avatar-tab-btn.active {
+	background: var(--color-accent);
+	border-color: var(--color-accent);
+	color: #1c1208;
+}
+
+.avatar-tab-panels {
+	margin-top: var(--space-md);
+}
+
+.avatar-tab-panel {
+	display: none;
+}
+
+.avatar-tab-panel.active {
+	display: block;
+}
+
+.form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+	gap: var(--space-md);
+	margin-bottom: var(--space-md);
+}
+
+.form-grid.slider-grid label {
+	display: block;
+}
+
+.avatar-tab-panel input[type="range"] {
+	width: 100%;
+	margin-top: 4px;
+	-webkit-appearance: none;
+	appearance: none;
+	accent-color: #c79a39;
+	height: 8px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border);
+	background: linear-gradient(180deg, rgba(20,12,8,0.6), rgba(48,30,18,0.7));
+}
+
+.avatar-tab-panel input[type="range"]::-webkit-slider-runnable-track {
+	height: 8px;
+	border-radius: 999px;
+	background: linear-gradient(180deg, rgba(20,12,8,0.55), rgba(58,35,20,0.75));
+}
+
+.avatar-tab-panel input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 18px;
+	height: 18px;
+	margin-top: -6px;
+	border-radius: 50%;
+	border: 1px solid #c79a39;
+	background: radial-gradient(circle at 30% 30%, #f3d38a 0%, #c79a39 55%, #8c5f1f 100%);
+	box-shadow: 0 0 0 1px rgba(15,10,6,0.65), 0 2px 6px rgba(0,0,0,0.35);
+	cursor: pointer;
+}
+
+.avatar-tab-panel input[type="range"]::-moz-range-track {
+	height: 8px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border);
+	background: linear-gradient(180deg, rgba(20,12,8,0.55), rgba(58,35,20,0.75));
+}
+
+.avatar-tab-panel input[type="range"]::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 1px solid #c79a39;
+	background: radial-gradient(circle at 30% 30%, #f3d38a 0%, #c79a39 55%, #8c5f1f 100%);
+	box-shadow: 0 0 0 1px rgba(15,10,6,0.65), 0 2px 6px rgba(0,0,0,0.35);
+	cursor: pointer;
+}
+
+.avatar-tab-panel input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	margin-right: 8px;
+	border: 1px solid var(--color-border-light);
+	border-radius: 4px;
+	background: linear-gradient(180deg, rgba(18,11,7,0.7), rgba(44,28,18,0.8));
+	position: relative;
+	cursor: pointer;
+}
+
+.avatar-tab-panel input[type="checkbox"]:checked {
+	border-color: #c79a39;
+	background: linear-gradient(180deg, #d7ae56, #b17f2c);
+}
+
+.avatar-tab-panel input[type="checkbox"]:checked::after {
+	content: "";
+	position: absolute;
+	left: 6px;
+	top: 2px;
+	width: 5px;
+	height: 10px;
+	border: solid #1c1208;
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+.avatar-tab-panel input[type="checkbox"]:focus-visible,
+.avatar-tab-panel input[type="range"]:focus-visible {
+	outline: 2px solid rgba(199,154,57,0.45);
+	outline-offset: 2px;
+}
+
+.avatar-multi {
+	min-height: 120px;
+}
+
+.visually-hidden-select {
+	display: none;
+}
+
+.visual-picker {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+	gap: var(--space-xs);
+	margin-top: 6px;
+}
+
+.visual-picker-item {
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(0,0,0,0.18);
+	color: var(--color-text-muted);
+	cursor: pointer;
+	padding: 6px;
+	text-align: center;
+	font-size: 11px;
+	min-height: 64px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 4px;
+}
+
+.visual-picker-item:hover {
+	border-color: var(--color-accent);
+	color: var(--color-text);
+}
+
+.visual-picker-item.active {
+	border-color: var(--color-accent);
+	box-shadow: inset 0 0 0 1px rgba(199,154,57,0.45);
+	background: rgba(199,154,57,0.12);
+}
+
+.visual-picker-thumb {
+	width: 100%;
+	height: 38px;
+	object-fit: contain;
+}
+
+.visual-picker-fallback {
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	margin: 0 auto;
+	display: grid;
+	place-items: center;
+	border: 1px solid var(--color-border-light);
+	background: radial-gradient(circle at 30% 30%, rgba(199,154,57,0.35), rgba(44,28,18,0.9));
+	color: var(--color-text-heading);
+	font-size: 11px;
+	font-weight: 700;
+}
+
+.visual-picker-swatch {
+	width: 28px;
+	height: 28px;
+	border-radius: 999px;
+	border: 1px solid rgba(255,255,255,0.35);
+	margin: 0 auto;
+}
+
+.value {
+	color: var(--color-accent);
+	font-size: var(--font-size-xs);
+	margin-left: var(--space-xs);
+}
+
+.identity-actions {
+	display: flex;
+	justify-content: flex-end;
+	padding-top: var(--space-sm);
+}
+
+@media (max-width: 860px) {
+	.avatar-editor-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.avatar-preview-card {
+		position: static;
+	}
+
+	.builder-actions {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+<div class="profile-edit-shell">
+	<div class="profile-intro">
+		<h2>{{ @lang.editProfile ?? 'Edit Profile' }}</h2>
+		<p>{{ @lang.profileManageHint ?? 'Manage avatar, personal information, security, and account settings from one place.' }}</p>
+	</div>
+
+	<div class="profile-main-tabs" id="profileMainTabs">
+		<button type="button" class="profile-main-tab-btn active" data-panel="identity">{{ @lang.profileTabIdentity ?? 'Avatar & Profile' }}</button>
+		<button type="button" class="profile-main-tab-btn" data-panel="security">{{ @lang.profileTabSecurity ?? 'Security' }}</button>
+		<button type="button" class="profile-main-tab-btn" data-panel="messaging">{{ @lang.profileTabMessaging ?? 'Messaging' }}</button>
+		<button type="button" class="profile-main-tab-btn" data-panel="danger">{{ @lang.profileTabDanger ?? 'Danger Zone' }}</button>
+	</div>
+
+	<div class="profile-main-panel active" data-panel="identity">
+		<form action="/profile/edit" method="post">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<input type="hidden" name="avatar_seed" id="avatarSeedHidden" value="{{ @user.avatar_seed }}">
+			<input type="hidden" name="avatar_options" id="avatarOptionsInput" value="{{ @user.avatar_options_json }}">
+
+			<div class="edit-section">
+				<div class="edit-section-header">{{ @lang.avatarBuilder ?? 'Avatar Builder' }}</div>
+				<div class="edit-section-body">
+					<div class="avatar-editor-grid">
+						<div class="avatar-preview-card">
+							<div class="avatar-preview-frame">
+								<img id="avatarPreview" src="{{ @user.avatar_url }}" alt="{{ @user.name }}">
+							</div>
+							<div class="builder-actions">
+								<button type="button" class="button" id="avatarRandomize">{{ @lang.randomize ?? 'Randomize' }}</button>
+								<button type="button" class="button" id="avatarPresetExplorer">{{ @lang.presets ?? 'Presets' }}</button>
+							</div>
+							<div id="avatarVariants" class="avatar-variants"></div>
+						</div>
+
+						<div class="builder-control-card">
+							<div class="form-group">
+								<label>{{ @lang.avatarSeed ?? 'Avatar seed' }}</label>
+								<input class="textbox" type="text" id="avatarSeedInput" value="{{ @user.avatar_seed }}" placeholder="{{ @lang.avatarSeed ?? 'Avatar seed' }}">
+								<div class="avatar-seed-quick">
+									<button type="button" class="avatar-seed-chip" data-seed="{{ @user.name }}">{{ @lang.seedPresetMe ?? 'Me' }}</button>
+									<button type="button" class="avatar-seed-chip" data-seed="warrior">{{ @lang.seedPresetWarrior ?? 'Warrior' }}</button>
+									<button type="button" class="avatar-seed-chip" data-seed="trader">{{ @lang.seedPresetTrader ?? 'Trader' }}</button>
+									<button type="button" class="avatar-seed-chip" data-seed="captain">{{ @lang.seedPresetCaptain ?? 'Captain' }}</button>
+								</div>
+							</div>
+
+							<div class="avatar-tabs">
+								<div class="avatar-tab-buttons">
+									<button type="button" class="avatar-tab-btn active" data-tab="basic">{{ @lang.basic ?? 'Basic' }}</button>
+									<button type="button" class="avatar-tab-btn" data-tab="face">{{ @lang.faceHair ?? 'Face & Hair' }}</button>
+									<button type="button" class="avatar-tab-btn" data-tab="outfit">{{ @lang.outfit ?? 'Outfit' }}</button>
+									<button type="button" class="avatar-tab-btn" data-tab="extras">{{ @lang.extras ?? 'Extras' }}</button>
+									<button type="button" class="avatar-tab-btn" data-tab="background">{{ @lang.background ?? 'Background' }}</button>
+								</div>
+
+								<div class="avatar-tab-panels">
+									<div class="avatar-tab-panel active" data-tab="basic">
+										<div class="form-grid slider-grid">
+											<label>{{ @lang.scale ?? 'Scale' }} <span class="value" id="valScale"></span><input type="range" min="50" max="150" id="avatarScale"></label>
+											<label>{{ @lang.rotate ?? 'Rotate' }} <span class="value" id="valRotate"></span><input type="range" min="0" max="360" id="avatarRotate"></label>
+											<label>{{ @lang.radius ?? 'Radius' }} <span class="value" id="valRadius"></span><input type="range" min="0" max="50" id="avatarRadius"></label>
+										</div>
+										<div class="form-grid slider-grid">
+											<label>{{ @lang.translateX ?? 'Move X' }} <span class="value" id="valTranslateX"></span><input type="range" min="-100" max="100" id="translateX"></label>
+											<label>{{ @lang.translateY ?? 'Move Y' }} <span class="value" id="valTranslateY"></span><input type="range" min="-100" max="100" id="translateY"></label>
+											<label>{{ @lang.backgroundRotation ?? 'Gradient rotation' }} <span class="value" id="valBgRot"></span><input type="range" min="0" max="360" id="backgroundRotation"></label>
+										</div>
+										<div class="form-grid">
+											<label><input type="checkbox" id="avatarFlip"> {{ @lang.flip ?? 'Flip' }}</label>
+											<label><input type="checkbox" id="avatarClip" checked> {{ @lang.clip ?? 'Clip' }}</label>
+											<label><input type="checkbox" id="avatarRandomIds"> {{ @lang.randomIds ?? 'Randomize IDs' }}</label>
+										</div>
+									</div>
+
+									<div class="avatar-tab-panel" data-tab="face">
+										<div class="form-grid">
+											<div class="form-group"><label>{{ @lang.skinColor ?? 'Skin color' }}</label><select id="skinColor" class="textbox avatar-multi" multiple></select></div>
+											<div class="form-group"><label>{{ @lang.eyes ?? 'Eyes' }}</label><select id="eyes" class="textbox avatar-multi" multiple></select></div>
+											<div class="form-group"><label>{{ @lang.eyesColor ?? 'Eye color' }}</label><select id="eyesColor" class="textbox avatar-multi" multiple></select></div>
+										</div>
+										<div class="form-grid">
+											<div class="form-group"><label>{{ @lang.mouth ?? 'Mouth' }}</label><select id="mouth" class="textbox avatar-multi" multiple></select></div>
+											<div class="form-group"><label>{{ @lang.mouthColor ?? 'Mouth color' }}</label><select id="mouthColor" class="textbox avatar-multi" multiple></select></div>
+										</div>
+									</div>
+
+									<div class="avatar-tab-panel" data-tab="outfit">
+										<div class="form-grid">
+											<div class="form-group">
+												<label>{{ @lang.hair ?? 'Hair' }}</label>
+												<select id="hair" class="textbox avatar-multi visually-hidden-select" multiple></select>
+												<div id="hairPicker" class="visual-picker" aria-label="{{ @lang.hair ?? 'Hair' }}"></div>
+											</div>
+											<div class="form-group">
+												<label>{{ @lang.hairColor ?? 'Hair color' }}</label>
+												<select id="hairColor" class="textbox avatar-multi visually-hidden-select" multiple></select>
+												<div id="hairColorPicker" class="visual-picker" aria-label="{{ @lang.hairColor ?? 'Hair color' }}"></div>
+											</div>
+										</div>
+										<div class="form-grid">
+											<div class="form-group">
+												<label>{{ @lang.clothing ?? 'Clothing' }}</label>
+												<select id="clothing" class="textbox avatar-multi visually-hidden-select" multiple></select>
+												<div id="clothingPicker" class="visual-picker" aria-label="{{ @lang.clothing ?? 'Clothing' }}"></div>
+											</div>
+											<div class="form-group">
+												<label>{{ @lang.clothingColor ?? 'Clothing color' }}</label>
+												<select id="clothingColor" class="textbox avatar-multi visually-hidden-select" multiple></select>
+												<div id="clothingColorPicker" class="visual-picker" aria-label="{{ @lang.clothingColor ?? 'Clothing color' }}"></div>
+											</div>
+										</div>
+									</div>
+
+									<div class="avatar-tab-panel" data-tab="extras">
+										<div class="form-grid">
+											<div class="form-group"><label>{{ @lang.hat ?? 'Hat' }}</label><select id="hat" class="textbox avatar-multi" multiple></select></div>
+											<div class="form-group"><label>{{ @lang.hatColor ?? 'Hat color' }}</label><select id="hatColor" class="textbox avatar-multi" multiple></select></div>
+											<label>{{ @lang.hatProbability ?? 'Hat chance' }} <span class="value" id="valHatProb"></span><input type="range" min="0" max="100" id="hatProbability"></label>
+										</div>
+										<div class="form-grid">
+											<div class="form-group"><label>{{ @lang.glasses ?? 'Glasses' }}</label><select id="glasses" class="textbox avatar-multi" multiple></select></div>
+											<div class="form-group"><label>{{ @lang.glassesColor ?? 'Glasses color' }}</label><select id="glassesColor" class="textbox avatar-multi" multiple></select></div>
+											<label>{{ @lang.glassesProbability ?? 'Glasses chance' }} <span class="value" id="valGlassesProb"></span><input type="range" min="0" max="100" id="glassesProbability"></label>
+										</div>
+										<div class="form-grid">
+											<div class="form-group"><label>{{ @lang.accessories ?? 'Accessories' }}</label><select id="accessories" class="textbox avatar-multi" multiple></select></div>
+											<div class="form-group"><label>{{ @lang.accessoriesColor ?? 'Accessories color' }}</label><select id="accessoriesColor" class="textbox avatar-multi" multiple></select></div>
+											<label>{{ @lang.accessoriesProbability ?? 'Accessories chance' }} <span class="value" id="valAccessoriesProb"></span><input type="range" min="0" max="100" id="accessoriesProbability"></label>
+										</div>
+										<div class="form-grid">
+											<div class="form-group"><label>{{ @lang.beard ?? 'Beard' }}</label><select id="beard" class="textbox avatar-multi" multiple></select></div>
+											<label>{{ @lang.beardProbability ?? 'Beard chance' }} <span class="value" id="valBeardProb"></span><input type="range" min="0" max="100" id="beardProbability"></label>
+										</div>
+									</div>
+
+									<div class="avatar-tab-panel" data-tab="background">
+										<div class="form-grid">
+											<div class="form-group">
+												<label>{{ @lang.backgroundType ?? 'Background type' }}</label>
+												<select id="backgroundType" class="textbox avatar-multi" multiple>
+													<option value="solid">{{ @lang.backgroundSolid ?? 'Solid' }}</option>
+													<option value="gradientLinear">{{ @lang.backgroundGradient ?? 'Gradient' }}</option>
+												</select>
+											</div>
+											<div class="form-group"><label>{{ @lang.backgroundColor ?? 'Background color' }}</label><select id="backgroundColor" class="textbox avatar-multi" multiple></select></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="edit-section">
+				<div class="edit-section-header">{{ @lang.editProfile ?? 'Edit Profile' }}</div>
+				<div class="edit-section-body">
+					<div class="form-stack">
+						<div class="form-group">
+							<label>{{ @lang.email ?? 'Email' }}</label>
+							<input class="textbox" type="email" name="email" value="{{ @user.email }}">
+						</div>
+						<div class="form-group">
+							<label>{{ @lang.description ?? 'Description' }}</label>
+							<textarea class="textbox" name="description" rows="5">{{ @user.description }}</textarea>
+						</div>
+						<div class="identity-actions">
+							<input class="button" type="submit" name="save" value="{{ @lang.save ?? 'Save' }}">
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="profile-main-panel" data-panel="security">
+		<div class="edit-section">
+			<div class="edit-section-header">{{ @lang.changePassword ?? 'Change Password' }}</div>
+			<div class="edit-section-body">
+				<form action="/profile/password" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="form-stack">
+						<div class="form-group">
+							<label>{{ @lang.currentPass ?? 'Current Password' }}</label>
+							<input class="textbox" type="password" name="current_password">
+						</div>
+						<div class="form-group">
+							<label>{{ @lang.newPass ?? 'New Password' }}</label>
+							<input class="textbox" type="password" name="new_password">
+						</div>
+						<div class="form-group">
+							<label>{{ @lang.retypePass ?? 'Retype Password' }}</label>
+							<input class="textbox" type="password" name="confirm_password">
+						</div>
+						<div class="form-actions">
+							<input class="button" type="submit" name="change_pass" value="{{ @lang.changePassword ?? 'Change Password' }}">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="profile-main-panel" data-panel="messaging">
+		<div class="edit-section">
+			<div class="edit-section-header">{{ @lang.preferences ?? 'Preferences' }}</div>
+			<div class="edit-section-body">
+				<form action="/profile/preferences" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="form-stack">
+						<label><input type="checkbox" name="allianceReports" value="1" {{ @preferences.allianceReports == '1' ? 'checked' : '' }}> {{ @lang.allianceReports ?? 'Alliance reports' }}</label>
+						<label><input type="checkbox" name="combatReports" value="1" {{ @preferences.combatReports == '1' ? 'checked' : '' }}> {{ @lang.combatReports ?? 'Combat reports' }}</label>
+						<label><input type="checkbox" name="tradeReports" value="1" {{ @preferences.tradeReports == '1' ? 'checked' : '' }}> {{ @lang.tradeReports ?? 'Trade reports' }}</label>
+						<div class="form-actions">
+							<input class="button" type="submit" value="{{ @lang.save ?? 'Save' }}">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="edit-section">
+			<div class="edit-section-header">{{ @lang.navTownPref ?? 'Navigation Town' }}</div>
+			<div class="edit-section-body">
+				<p class="text-muted" style="font-size:0.88em;margin-bottom:var(--space-md);">{{ @lang.navTownPrefDesc ?? 'Choose which town appears as a shortcut in the navigation bar.' }}</p>
+				<form action="/profile/nav-town" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="form-stack">
+						<div class="form-group">
+							<label>{{ @lang.selectTown ?? 'Select Town' }}</label>
+							<select class="dropdown" name="town_id">
+								<repeat group="{{ @user_towns }}" value="{{ @ut }}">
+									<option value="{{ @ut.id }}" {{ @preferences.nav_town_id == @ut.id ? 'selected' : '' }}>{{ @ut.name }}</option>
+								</repeat>
+							</select>
+						</div>
+						<div class="form-actions">
+							<input class="button" type="submit" value="{{ @lang.save ?? 'Save' }}">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div class="edit-section">
+			<div class="edit-section-header">{{ @lang.blocklist ?? 'Blocklist' }}</div>
+			<div class="edit-section-body">
+				<form action="/profile/blocklist/add" method="post" style="margin-bottom:var(--space-md);">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="form-stack">
+						<div class="form-group">
+							<label>{{ @lang.username ?? 'Username' }}</label>
+							<input class="textbox" type="text" name="block_name" placeholder="{{ @lang.username ?? 'Username' }}">
+						</div>
+						<div class="form-actions">
+							<input class="button" type="submit" value="{{ @lang.blockUser ?? 'Block User' }}">
+						</div>
+					</div>
+				</form>
+
+				<div class="form-stack">
+					<check if="{{ @blocked_users }}">
+						<repeat group="{{ @blocked_users }}" value="{{ @blocked }}">
+							<form action="/profile/blocklist/remove" method="post" style="display:flex; justify-content:space-between; align-items:center; gap:var(--space-sm); border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:var(--space-sm) var(--space-md);">
+								<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+								<input type="hidden" name="sender_id" value="{{ @blocked.id }}">
+								<span>{{ @blocked.name ?: ('User #' . @blocked.id) }}</span>
+								<input class="button" type="submit" value="{{ @lang.unblock ?? 'Unblock' }}">
+							</form>
+						</repeat>
+					</check>
+					<check if="{{ !@blocked_users }}">
+						<div style="color:var(--color-text-muted);">{{ @lang.noBlockedUsers ?? 'No blocked users.' }}</div>
+					</check>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="profile-main-panel" data-panel="danger">
+		<div class="edit-section danger-zone">
+			<div class="edit-section-header">{{ @lang.deleteAccount ?? 'Delete Account' }}</div>
+			<div class="edit-section-body">
+				<p style="color:var(--color-text-muted); font-size:var(--font-size-sm); margin:0 0 var(--space-md) 0; text-align:left;">
+					{{ @lang.deleteAccountDesc ?? 'Warning: This action is permanent. All your towns and data will be deleted.' }}
+				</p>
+				<form action="/profile/delete" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<div class="form-stack">
+						<div class="form-group">
+							<label>{{ @lang.password ?? 'Password' }}</label>
+							<input class="textbox" type="password" name="confirm_pass">
+						</div>
+						<div class="form-actions">
+							<input class="button" type="submit" name="delete_account" value="{{ @lang.deleteAccount ?? 'Delete Account' }}" onclick="return confirm('{{ @lang.confirmDeleteAccount ?? 'Are you absolutely sure? This cannot be undone!' }}');">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div style="text-align:center; margin-top:var(--space-md);">
+		<a class="q_link" href="/profile/{{ @user.id }}">{{ @lang.backToProfile ?? 'Back to Profile' }}</a>
+	</div>
+</div>
+
+<script>
+(function() {
+	var seedInput = document.getElementById('avatarSeedInput');
+	var seedHidden = document.getElementById('avatarSeedHidden');
+	var optionsInput = document.getElementById('avatarOptionsInput');
+	var preview = document.getElementById('avatarPreview');
+	var randomBtn = document.getElementById('avatarRandomize');
+	var variantsDiv = document.getElementById('avatarVariants');
+	var mainTabButtons = document.querySelectorAll('.profile-main-tab-btn');
+	var mainPanels = document.querySelectorAll('.profile-main-panel');
+	var avatarTabButtons = document.querySelectorAll('.avatar-tab-btn');
+	var avatarTabPanels = document.querySelectorAll('.avatar-tab-panel');
+	var debounceTimer = null;
+
+	if (mainTabButtons.length) {
+		mainTabButtons.forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				var panel = this.dataset.panel;
+				mainTabButtons.forEach(function(b){ b.classList.toggle('active', b.dataset.panel === panel); });
+				mainPanels.forEach(function(p){ p.classList.toggle('active', p.dataset.panel === panel); });
+			});
+		});
+	}
+
+	if (!seedInput || !seedHidden || !optionsInput || !preview) {
+		return;
+	}
+
+	var selects = ['skinColor','eyes','eyesColor','mouth','mouthColor','hair','hairColor','clothing','clothingColor','hat','hatColor','glasses','glassesColor','accessories','accessoriesColor','beard','backgroundType','backgroundColor'];
+	var ranges = {
+		scale: document.getElementById('avatarScale'),
+		rotate: document.getElementById('avatarRotate'),
+		radius: document.getElementById('avatarRadius'),
+		hatProbability: document.getElementById('hatProbability'),
+		glassesProbability: document.getElementById('glassesProbability'),
+		accessoriesProbability: document.getElementById('accessoriesProbability'),
+		beardProbability: document.getElementById('beardProbability'),
+		translateX: document.getElementById('translateX'),
+		translateY: document.getElementById('translateY'),
+		backgroundRotation: document.getElementById('backgroundRotation')
+	};
+
+	var toggles = {
+		flip: document.getElementById('avatarFlip'),
+		clip: document.getElementById('avatarClip'),
+		randomizeIds: document.getElementById('avatarRandomIds')
+	};
+
+	var palette = {
+		skinColor: ['8d5524','a26d3d','b68655','cb9e6e','e0b687','eac393','f5cfa0','ffdbac'],
+		eyesColor: ['5b7c8b','647b90','697b94','76778b','588387','876658'],
+		mouthColor: ['c98276','d29985','de0f0d','e35d6a'],
+		hairColor: ['009bbd','91cb15','603a14','611c17','28150a','83623b','603015','612616','a78961','bd1700','cab188'],
+		clothingColor: ['00b159','5bc0de','44c585','88d8b0','428bca','03396c','ae0001','d11141','ff6f69','ffc425','ffd969','ffeead'],
+		glassesColor: ['4b4b4b','5f705c','43677d','191919','323232','a04b5d'],
+		accessoriesColor: ['a9a9a9','d3d3d3','daa520','fafad2','ffd700'],
+		hatColor: ['2e1e05','3d8a6b','614f8a','2663a3','989789','a62116','cc6192'],
+		backgroundColor: ['b6e3f4','c0aede','d1d4f9','ffd5dc','ffdfbf','transparent']
+	};
+
+	var variants = {
+		eyes: ['variant01','variant02','variant03','variant04','variant05','variant06','variant07','variant08','variant09','variant10','variant11','variant12'],
+		mouth: ['happy01','happy02','happy03','happy04','happy05','happy06','happy07','happy08','happy09','happy10','happy11','happy12','happy13','sad01','sad02','sad03','sad04','sad05','sad06','sad07','sad08','sad09','sad10'],
+		hair: ['long01','long02','long03','long04','long05','long06','long07','long08','long09','long10','long11','long12','long13','long14','long15','long16','long17','long18','long19','long20','long21','short01','short02','short03','short04','short05','short06','short07','short08','short09','short10','short11','short12','short13','short14','short15','short16','short17','short18','short19','short20','short21','short22','short23','short24'],
+		clothing: ['variant01','variant02','variant03','variant04','variant05','variant06','variant07','variant08','variant09','variant10','variant11','variant12','variant13','variant14','variant15','variant16','variant17','variant18','variant19','variant20','variant21','variant22','variant23'],
+		hat: ['variant01','variant02','variant03','variant04','variant05','variant06','variant07','variant08','variant09','variant10'],
+		glasses: ['dark01','dark02','dark03','dark04','dark05','dark06','dark07','light01','light02','light03','light04','light05','light06','light07'],
+		accessories: ['variant01','variant02','variant03','variant04'],
+		beard: ['variant01','variant02','variant03','variant04','variant05','variant06','variant07','variant08']
+	};
+
+	var visualPickerFields = [
+		'skinColor','eyes','eyesColor','mouth','mouthColor',
+		'hair','hairColor','clothing','clothingColor',
+		'hat','hatColor','glasses','glassesColor','accessories','accessoriesColor','beard',
+		'backgroundType','backgroundColor'
+	];
+
+	function fillSelect(id, items) {
+		var el = document.getElementById(id);
+		if (!el || el.options.length) return;
+		items.forEach(function(val) {
+			var opt = document.createElement('option');
+			opt.value = val;
+			opt.textContent = val;
+			el.appendChild(opt);
+		});
+	}
+
+	Object.keys(variants).forEach(function(key) { fillSelect(key, variants[key]); });
+	Object.keys(palette).forEach(function(key) { fillSelect(key, palette[key]); });
+
+	function isColorField(fieldName) {
+		return fieldName.indexOf('Color') !== -1;
+	}
+
+	function toggleSelectValue(selectEl, value) {
+		if (!selectEl) return;
+		var changed = false;
+		Array.from(selectEl.options).forEach(function(opt) {
+			if (opt.value === value) {
+				opt.selected = !opt.selected;
+				changed = true;
+			}
+		});
+		if (changed) {
+			updatePreview();
+			syncVisualPickersFromSelects();
+		}
+	}
+
+	function optionPreviewUrl(fieldName, value) {
+		var params = new URLSearchParams();
+		params.set('seed', 'picker_' + fieldName + '_' + value);
+		params.set('size', '58');
+		params.set('clip', 'true');
+		params.set('backgroundType', 'solid');
+		params.set('backgroundColor', 'b6e3f4');
+		params.set('skinColor', 'cb9e6e');
+		params.set('eyes', 'variant05');
+		params.set('mouth', 'happy05');
+		params.set('hair', fieldName === 'hair' ? value : 'short05');
+		params.set('hairColor', fieldName === 'hairColor' ? value : '603015');
+		params.set('clothing', fieldName === 'clothing' ? value : 'variant08');
+		params.set('clothingColor', fieldName === 'clothingColor' ? value : '428bca');
+		return 'https://api.dicebear.com/9.x/pixel-art/svg?' + params.toString();
+	}
+
+	function createVisualPicker(fieldName) {
+		var selectEl = document.getElementById(fieldName);
+		if (!selectEl) return;
+
+		selectEl.classList.add('visually-hidden-select');
+		var pickerId = fieldName + 'Picker';
+		var picker = document.getElementById(pickerId);
+		if (!picker) {
+			picker = document.createElement('div');
+			picker.id = pickerId;
+			picker.className = 'visual-picker';
+			selectEl.insertAdjacentElement('afterend', picker);
+		}
+		picker.innerHTML = '';
+
+		Array.from(selectEl.options).forEach(function(opt) {
+			var item = document.createElement('button');
+			item.type = 'button';
+			item.className = 'visual-picker-item';
+			item.dataset.value = opt.value;
+			item.dataset.field = fieldName;
+			item.title = opt.value;
+
+			if (fieldName === 'backgroundType') {
+				var typeBadge = document.createElement('span');
+				typeBadge.className = 'visual-picker-swatch';
+				typeBadge.style.background = opt.value === 'gradientLinear'
+					? 'linear-gradient(135deg,#d1d4f9,#ffd5dc,#ffdfbf)'
+					: '#b6e3f4';
+				item.appendChild(typeBadge);
+			} else if (isColorField(fieldName)) {
+				var swatch = document.createElement('span');
+				swatch.className = 'visual-picker-swatch';
+				if (opt.value === 'transparent') {
+					swatch.style.background = 'linear-gradient(45deg,#8f8f8f 25%,#444 25%,#444 50%,#8f8f8f 50%,#8f8f8f 75%,#444 75%,#444 100%)';
+					swatch.style.backgroundSize = '10px 10px';
+				} else {
+					swatch.style.background = '#' + opt.value;
+				}
+				item.appendChild(swatch);
+			} else {
+				var img = document.createElement('img');
+				img.className = 'visual-picker-thumb';
+				img.loading = 'lazy';
+				img.alt = opt.value;
+				var showFallback = function() {
+					if (img.dataset.fallbackReady === '1') return;
+					img.dataset.fallbackReady = '1';
+					img.remove();
+					var fb = document.createElement('span');
+					fb.className = 'visual-picker-fallback';
+					fb.textContent = (opt.value || '?').replace(/[^a-zA-Z0-9]/g, '').slice(0, 2).toUpperCase() || '?';
+					item.insertBefore(fb, caption);
+				};
+				img.addEventListener('error', showFallback);
+				img.addEventListener('load', function() {
+					if (!img.naturalWidth || !img.naturalHeight) {
+						showFallback();
+					}
+				});
+				img.src = optionPreviewUrl(fieldName, opt.value);
+				item.appendChild(img);
+			}
+
+			var caption = document.createElement('span');
+			caption.textContent = opt.value;
+			item.appendChild(caption);
+
+			item.addEventListener('click', function() {
+				toggleSelectValue(selectEl, opt.value);
+			});
+			picker.appendChild(item);
+		});
+	}
+
+	function syncVisualPickersFromSelects() {
+		visualPickerFields.forEach(function(fieldName) {
+			var selectEl = document.getElementById(fieldName);
+			var picker = document.getElementById(fieldName + 'Picker');
+			if (!selectEl || !picker) return;
+			var selected = collectSelectValues(fieldName);
+			Array.from(picker.querySelectorAll('.visual-picker-item')).forEach(function(item) {
+				item.classList.toggle('active', selected.indexOf(item.dataset.value) !== -1);
+			});
+		});
+	}
+
+	visualPickerFields.forEach(function(fieldName) {
+		createVisualPicker(fieldName);
+	});
+
+	function readOptions() {
+		try {
+			return JSON.parse(optionsInput.value || '{}');
+		} catch(e) {
+			return {};
+		}
+	}
+
+	function writeOptions(opts) {
+		optionsInput.value = JSON.stringify(opts);
+	}
+
+	function setText(id, val) {
+		var el = document.getElementById(id);
+		if (el) el.textContent = val;
+	}
+
+	function updateRangeLabels() {
+		setText('valScale', ranges.scale ? ranges.scale.value : '');
+		setText('valRotate', ranges.rotate ? ranges.rotate.value + '°' : '');
+		setText('valRadius', ranges.radius ? ranges.radius.value : '');
+		setText('valHatProb', ranges.hatProbability ? ranges.hatProbability.value + '%' : '');
+		setText('valGlassesProb', ranges.glassesProbability ? ranges.glassesProbability.value + '%' : '');
+		setText('valAccessoriesProb', ranges.accessoriesProbability ? ranges.accessoriesProbability.value + '%' : '');
+		setText('valBeardProb', ranges.beardProbability ? ranges.beardProbability.value + '%' : '');
+		setText('valTranslateX', ranges.translateX ? ranges.translateX.value : '');
+		setText('valTranslateY', ranges.translateY ? ranges.translateY.value : '');
+		setText('valBgRot', ranges.backgroundRotation ? ranges.backgroundRotation.value + '°' : '');
+	}
+
+	function ensureArray(val) {
+		if (Array.isArray(val)) return val;
+		if (typeof val === 'string' && val) return [val];
+		return [];
+	}
+
+	function collectSelectValues(id) {
+		var el = document.getElementById(id);
+		if (!el) return [];
+		return Array.from(el.selectedOptions).map(function(o) { return o.value; });
+	}
+
+	function buildOptionsFromUi() {
+		var opts = readOptions();
+		opts.seed = seedInput.value.trim() || seedHidden.value || 'player';
+		opts.style = opts.style || 'pixel-art';
+		opts.scale = parseInt(ranges.scale.value, 10);
+		opts.rotate = parseInt(ranges.rotate.value, 10);
+		opts.radius = parseInt(ranges.radius.value, 10);
+		opts.hatProbability = parseInt(ranges.hatProbability.value, 10);
+		opts.glassesProbability = parseInt(ranges.glassesProbability.value, 10);
+		opts.accessoriesProbability = parseInt(ranges.accessoriesProbability.value, 10);
+		opts.beardProbability = parseInt(ranges.beardProbability.value, 10);
+		opts.translateX = parseInt(ranges.translateX.value, 10);
+		opts.translateY = parseInt(ranges.translateY.value, 10);
+		opts.backgroundRotation = [parseInt(ranges.backgroundRotation.value, 10), 360];
+
+		opts.flip = toggles.flip.checked;
+		opts.clip = toggles.clip.checked;
+		opts.randomizeIds = toggles.randomizeIds.checked;
+
+		selects.forEach(function(key) {
+			opts[key] = collectSelectValues(key);
+		});
+
+		writeOptions(opts);
+		return opts;
+	}
+
+	function avatarUrl(opts) {
+		var params = new URLSearchParams();
+		params.set('seed', opts.seed || 'player');
+		params.set('size', '220');
+		['flip','clip','randomizeIds'].forEach(function(k){ if (opts[k] !== undefined) params.set(k, String(!!opts[k])); });
+		['rotate','scale','radius','translateX','translateY','hatProbability','glassesProbability','accessoriesProbability','beardProbability'].forEach(function(k){ if (opts[k] !== undefined) params.set(k, String(opts[k])); });
+		selects.forEach(function(k){ var arr = ensureArray(opts[k]); if (arr.length) params.set(k, arr.join(',')); });
+		if (opts.backgroundRotation) { params.set('backgroundRotation', opts.backgroundRotation.join(',')); }
+		return 'https://api.dicebear.com/9.x/' + (opts.style || 'pixel-art') + '/svg?' + params.toString();
+	}
+
+	function updatePreview() {
+		updateRangeLabels();
+		var opts = buildOptionsFromUi();
+		preview.src = avatarUrl(opts);
+		seedHidden.value = opts.seed;
+	}
+
+	function syncUiFromOptions() {
+		var opts = readOptions();
+		seedInput.value = opts.seed || seedHidden.value || '';
+		seedHidden.value = seedInput.value;
+
+		ranges.scale.value = opts.scale || 100;
+		ranges.rotate.value = opts.rotate || 0;
+		ranges.radius.value = opts.radius || 0;
+		ranges.hatProbability.value = opts.hatProbability || 5;
+		ranges.glassesProbability.value = opts.glassesProbability || 20;
+		ranges.accessoriesProbability.value = opts.accessoriesProbability || 10;
+		ranges.beardProbability.value = opts.beardProbability || 5;
+		ranges.translateX.value = opts.translateX || 0;
+		ranges.translateY.value = opts.translateY || 0;
+		ranges.backgroundRotation.value = (opts.backgroundRotation && opts.backgroundRotation[0]) || 0;
+
+		toggles.flip.checked = !!opts.flip;
+		toggles.clip.checked = opts.clip !== false;
+		toggles.randomizeIds.checked = !!opts.randomizeIds;
+
+		selects.forEach(function(key) {
+			var el = document.getElementById(key);
+			if (!el) return;
+			var current = ensureArray(opts[key] || []);
+			Array.from(el.options).forEach(function(o) { o.selected = current.indexOf(o.value) !== -1; });
+		});
+
+		syncVisualPickersFromSelects();
+		updatePreview();
+	}
+
+	function generateVariants(baseSeed) {
+		if (!variantsDiv) return;
+		variantsDiv.innerHTML = '';
+		for (var i = 0; i < 6; i++) {
+			var varSeed = baseSeed + '_v' + i + '_' + Math.random().toString(36).substring(2, 6);
+			var img = document.createElement('img');
+			img.src = 'https://api.dicebear.com/9.x/pixel-art/svg?seed=' + encodeURIComponent(varSeed) + '&size=64';
+			img.className = 'avatar-variant';
+			img.dataset.seed = varSeed;
+			img.title = varSeed;
+			img.addEventListener('click', function() {
+				seedInput.value = this.dataset.seed;
+				updatePreview();
+				var active = variantsDiv.querySelector('.avatar-variant-active');
+				if (active) active.classList.remove('avatar-variant-active');
+				this.classList.add('avatar-variant-active');
+			});
+			variantsDiv.appendChild(img);
+		}
+	}
+
+	seedInput.addEventListener('input', function() {
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(function() {
+			updatePreview();
+			generateVariants(seedInput.value.trim() || 'player');
+		}, 250);
+	});
+
+	if (randomBtn) {
+		randomBtn.addEventListener('click', function() {
+			var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+			var seed = '';
+			for (var i = 0; i < 8; i++) { seed += chars.charAt(Math.floor(Math.random() * chars.length)); }
+			seedInput.value = seed;
+			updatePreview();
+			generateVariants(seed);
+		});
+	}
+
+	var presetBtn = document.getElementById('avatarPresetExplorer');
+	if (presetBtn) {
+		presetBtn.addEventListener('click', function() {
+			var presets = [
+				{seed:'classic_' + Math.random().toString(36).substring(2,6), clothing:['variant05'], hair:['short05'], skinColor:['cb9e6e'], eyes:['variant04'], mouth:['happy05']},
+				{seed:'explorer_' + Math.random().toString(36).substring(2,6), hat:['variant03'], clothing:['variant12'], accessories:['variant02'], backgroundColor:['d1d4f9']},
+				{seed:'warrior_' + Math.random().toString(36).substring(2,6), beard:['variant04'], accessories:['variant04'], clothing:['variant18'], hair:['long07'], skinColor:['a26d3d']}
+			];
+			var pick = presets[Math.floor(Math.random() * presets.length)];
+			var opts = Object.assign(readOptions(), pick);
+			writeOptions(opts);
+			syncUiFromOptions();
+			generateVariants(opts.seed || 'player');
+		});
+	}
+
+	Object.values(ranges).forEach(function(el) { if (el) el.addEventListener('input', updatePreview); });
+	Object.values(toggles).forEach(function(el) { if (el) el.addEventListener('change', updatePreview); });
+	selects.forEach(function(key) {
+		var el = document.getElementById(key);
+		if (el) el.addEventListener('change', updatePreview);
+	});
+
+	avatarTabButtons.forEach(function(btn) {
+		btn.addEventListener('click', function() {
+			var tab = this.dataset.tab;
+			avatarTabButtons.forEach(function(b){ b.classList.toggle('active', b.dataset.tab === tab); });
+			avatarTabPanels.forEach(function(p){ p.classList.toggle('active', p.dataset.tab === tab); });
+		});
+	});
+
+	document.querySelectorAll('.avatar-seed-chip').forEach(function(btn) {
+		btn.addEventListener('click', function() {
+			seedInput.value = this.dataset.seed || 'player';
+			updatePreview();
+			generateVariants(seedInput.value);
+		});
+	});
+
+	syncUiFromOptions();
+	if (seedInput.value) {
+		generateVariants(seedInput.value);
+	}
+})();
+</script>

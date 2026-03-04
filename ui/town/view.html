@@ -1,0 +1,2585 @@
+<script type="text/javascript">
+var res_start0={{ floor(@resources.crop) }}; var res_start1={{ floor(@resources.lumber) }}; var res_start2={{ floor(@resources.stone) }}; var res_start3={{ floor(@resources.iron) }}; var res_start4={{ floor(@resources.gold) }};
+var res_limit0={{ @limits.crop }}; var res_limit1={{ @limits.resources }}; var res_limit2={{ @limits.resources }}; var res_limit3={{ @limits.resources }}; var res_limit4={{ @limits.gold }};
+var res_ph0={{ @crop_net }}; var res_ph1={{ @production.lumber }}; var res_ph2={{ @production.stone }}; var res_ph3={{ @production.iron }}; var res_ph4={{ @production.gold }};
+var res_sec0=0; var res_sec1=0; var res_sec2=0; var res_sec3=0; var res_sec4=0;
+var server_hour=parseInt('{{ @server_hour ?: "12" }}', 10) || 12;
+var server_minute=parseInt('{{ @server_minute ?: "0" }}', 10) || 0;
+var id = {};
+
+function toggleDispatchPanel() {
+	var backdrop = document.getElementById('dispatch-backdrop');
+	if (!backdrop) return;
+	if (backdrop.classList.contains('show')) {
+		backdrop.classList.remove('show');
+		document.getElementById('dispatch-toast-btn').classList.remove('town-nav-btn--active');
+	} else {
+		backdrop.classList.add('show');
+		document.getElementById('dispatch-toast-btn').classList.add('town-nav-btn--active');
+	}
+}
+
+function toggleStatsPanel() {
+	var backdrop = document.getElementById('stats-backdrop');
+	var btn = document.getElementById('stats-toast-btn');
+	if (!backdrop) return;
+	if (backdrop.classList.contains('show')) {
+		backdrop.classList.remove('show');
+		if (btn) btn.classList.remove('town-nav-btn--active');
+	} else {
+		backdrop.classList.add('show');
+		if (btn) btn.classList.add('town-nav-btn--active');
+	}
+}
+
+function toggleMarketPanel() {
+	var panel = document.getElementById('market-panel');
+	var btn = document.getElementById('market-toast-btn');
+	if (!panel) return;
+	var open = panel.style.display !== 'none' && panel.style.display !== '';
+	panel.style.display = open ? 'none' : 'block';
+	if (btn) btn.classList.toggle('town-nav-btn--active', !open);
+}
+
+function toggleMapPanel() {
+	var panel = document.getElementById('map-panel');
+	var btn = document.getElementById('map-toast-btn');
+	if (!panel) return;
+	var open = panel.style.display !== 'none' && panel.style.display !== '';
+	panel.style.display = open ? 'none' : 'block';
+	if (btn) btn.classList.toggle('town-nav-btn--active', !open);
+}
+
+function toggleMissionsPanel() {
+	var panel = document.getElementById('missions-panel');
+	if (!panel) return;
+	if (panel.style.display === 'none' || panel.style.display === '') {
+		panel.style.display = 'block';
+		document.getElementById('missions-toast-btn').classList.add('town-nav-btn--active');
+	} else {
+		panel.style.display = 'none';
+		document.getElementById('missions-toast-btn').classList.remove('town-nav-btn--active');
+	}
+}
+
+var townEditorConfig = {
+	townId: {{ @town.id }},
+	csrfToken: '{{ @CSRF }}',
+	imgBase: '{{ @imgs }}{{ @fimgs }}',
+	initialPositions: {{ json_encode(@layout.positions) }},
+	initialBackground: '{{ @layout.background }}',
+	availableBackgrounds: {{ json_encode(@available_backgrounds) }},
+	premiumBackgroundMeta: {{ json_encode(@background_premium_meta) }},
+	backgroundBuyUrl: '/town/{{ @town.id }}/background/buy',
+	backgroundMasks: {{ json_encode(@background_masks) }},
+	buildingLevels: {{ json_encode(@building_levels) }},
+	buildingNames: {{ json_encode(@building_names) }},
+	buildingImages: {
+		<check if="{{ @building_levels.0 }}">0: {normal:'b0.png', hover:'b0_.png'},</check>
+		<check if="{{ @building_levels.1 }}">1: {normal:'b1.png', hover:'b1_.png'},</check>
+		<check if="{{ @building_levels.2 }}">2: {normal:'b2.png', hover:'b2_.png'},</check>
+		<check if="{{ @building_levels.3 }}">3: {normal:'b3.png', hover:'b3_.png'},</check>
+		<check if="{{ @building_levels.4 }}">4: {normal:'b4.png', hover:'b4_.png'},</check>
+		<check if="{{ @building_levels.5 }}">5: {normal:'b5.png', hover:'b5_.png'},</check>
+		<check if="{{ @building_levels.6 }}">6: {normal:'b6.png', hover:'b6_.png'},</check>
+		<check if="{{ @building_levels.7 == 10 }}">7: {normal:'b22.png', hover:'b22_.png'},</check>
+		<check if="{{ @building_levels.7 > 0 && @building_levels.7 < 10 }}">7: {normal:'b7.png', hover:'b7_.png'},</check>
+		<check if="{{ @building_levels.8 }}">8: {normal:'b8.png', hover:'b8_.png'},</check>
+		<check if="{{ @building_levels.9 }}">9: {normal:'b9.png', hover:'b9_.png'},</check>
+		<check if="{{ @building_levels.10 }}">10: {normal:'b10.png', hover:'b10_.png'},</check>
+		<check if="{{ @building_levels.11 }}">11: {normal:'b11.png', hover:'b11_.png'},</check>
+		<check if="{{ @building_levels.12 }}">12: {normal:'b12.png', hover:'b12_.png'},</check>
+		<check if="{{ @building_levels.13 }}">13: {normal:'b13.png', hover:'b13_.png'},</check>
+		<check if="{{ @building_levels.14 }}">14: {normal:'b14.png', hover:'b14_.png'},</check>
+		<check if="{{ @building_levels.15 }}">15: {normal:'b15.png', hover:'b15_.png'},</check>
+		<check if="{{ @building_levels.16 }}">16: {normal:'b16.png', hover:'b16_.png'},</check>
+		<check if="{{ @building_levels.17 }}">17: {normal:'b17.png', hover:'b17_.png'},</check>
+		<check if="{{ @building_levels.18 }}">18: {normal:'b18.png', hover:'b18_.png'},</check>
+		<check if="{{ @building_levels.19 }}">19: {normal:'b19.png', hover:'b19_.png'},</check>
+		<check if="{{ @building_levels.20 }}">20: {normal:'b20.png', hover:'b20_.png'},</check>
+		<check if="{{ @building_levels.21 }}">21: {normal:'b21.png', hover:'b21_.png'},</check>
+	}
+};
+</script>
+
+<script>
+(function () {
+	function nightOpacity(hour, minute) {
+		var t = (hour % 24) + (minute / 60);
+		if (t >= 7 && t < 17) return 0;
+		if (t >= 6 && t < 7) return 0.45 * (1 - (t - 6));
+		if (t >= 17 && t < 18) return 0.45 * (t - 17);
+		return 0.45;
+	}
+
+	var _townTimeLabels = {
+		night:     {{ json_encode(@lang.timeNight ?: 'Night') }},
+		morning:   {{ json_encode(@lang.timeMorning ?: 'Morning') }},
+		noon:      {{ json_encode(@lang.timeNoon ?: 'Noon') }},
+		afternoon: {{ json_encode(@lang.timeAfternoon ?: 'Afternoon') }},
+		evening:   {{ json_encode(@lang.timeEvening ?: 'Evening') }},
+	};
+
+	function getTimePeriod(h) {
+		h = h % 24;
+		if (h >= 21 || h < 6)  return { label: _townTimeLabels.night,     icon: '🌙', isNight: true };
+		if (h >= 6  && h < 11) return { label: _townTimeLabels.morning,   icon: '🌅', isNight: false };
+		if (h >= 11 && h < 13) return { label: _townTimeLabels.noon,      icon: '☀️',  isNight: false };
+		if (h >= 13 && h < 18) return { label: _townTimeLabels.afternoon, icon: '🌤️', isNight: false };
+		return                         { label: _townTimeLabels.evening,   icon: '🌆', isNight: false };
+	}
+
+	function applyTownDayNight() {
+		var overlay = document.getElementById('townDayNightOverlay');
+		var indicator = document.getElementById('townTimeIndicator');
+		var op = nightOpacity(server_hour, server_minute);
+		var hh = String(server_hour).padStart(2, '0');
+		var mm = String(server_minute).padStart(2, '0');
+		var period = getTimePeriod(server_hour);
+
+		if (overlay) {
+			overlay.style.opacity = op.toFixed(3);
+		}
+
+		if (indicator) {
+			indicator.classList.toggle('is-night', period.isNight);
+			indicator.classList.toggle('is-day', !period.isNight);
+			indicator.textContent = period.icon + ' ' + period.label + ' • ' + hh + ':' + mm;
+		}
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', applyTownDayNight);
+	} else {
+		applyTownDayNight();
+	}
+})();
+</script>
+
+<style>
+.game-wrapper::before {
+	display: none;
+}
+
+.node {
+	--town-scale: 1.34;
+}
+
+.town-view {
+	position: relative;
+	margin: 14px auto 0;
+	width: calc(640px * var(--town-scale));
+	height: calc(372px * var(--town-scale));
+	max-width: 100%;
+}
+
+.town-view-inner {
+	position: relative;
+	width: 640px;
+	height: 372px;
+	transform: scale(var(--town-scale));
+	transform-origin: top left;
+}
+
+	.town-daynight-overlay {
+		position: absolute;
+		left: 0;
+	top: 0;
+	width: 640px;
+	height: 372px;
+	pointer-events: none;
+	z-index: 35;
+	background:
+		radial-gradient(140% 100% at 50% -8%, rgba(125, 173, 255, 0.14), rgba(22, 36, 70, 0.55)),
+		linear-gradient(180deg, rgba(18, 30, 58, 0.42), rgba(10, 16, 32, 0.6));
+	opacity: 0;
+		transition: opacity 0.4s ease;
+	}
+
+	.town-time-indicator {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 5px 12px;
+		border-radius: 999px;
+		border: 1px solid rgba(180, 140, 78, 0.55);
+		font-size: var(--font-size-xs);
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		line-height: 1.1;
+		white-space: nowrap;
+		background:
+			linear-gradient(180deg, rgba(62, 39, 22, 0.82), rgba(32, 19, 10, 0.88));
+		color: #e2c78f;
+		text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 226, 165, 0.12),
+			0 4px 14px rgba(0, 0, 0, 0.28);
+		backdrop-filter: blur(1.5px);
+		pointer-events: none;
+	}
+
+	.town-time-indicator.is-night {
+		border-color: rgba(171, 134, 72, 0.62);
+		color: #ecd7a6;
+		background:
+			linear-gradient(180deg, rgba(48, 31, 20, 0.88), rgba(24, 15, 9, 0.92));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 212, 138, 0.11),
+			0 0 0 1px rgba(126, 87, 40, 0.26),
+			0 4px 14px rgba(0, 0, 0, 0.34);
+	}
+
+	.town-time-indicator.is-day {
+		border-color: rgba(214, 171, 92, 0.58);
+		color: #f2d89e;
+		background:
+			linear-gradient(180deg, rgba(86, 58, 30, 0.83), rgba(44, 29, 14, 0.9));
+		box-shadow:
+			inset 0 1px 0 rgba(255, 223, 152, 0.16),
+			0 0 0 1px rgba(158, 108, 42, 0.24),
+			0 4px 14px rgba(0, 0, 0, 0.28);
+	}
+
+@media (max-width: 1180px) {
+	.node {
+		--town-scale: 1.18;
+	}
+}
+
+	@media (max-width: 980px) {
+		.node {
+			--town-scale: 1.05;
+		}
+
+		.town-time-indicator {
+			grid-column: 1 / -1;
+			justify-self: center;
+			margin-top: 2px;
+		}
+	}
+
+@media (max-width: 760px) {
+	.node {
+		--town-scale: clamp(0.40, calc((100vw - 24px) / 760), 0.86);
+	}
+
+	.town-view {
+		margin-top: 8px;
+		overflow: hidden !important;
+		border-radius: 8px;
+	}
+
+	.town-view-inner {
+		overflow: hidden !important;
+	}
+
+	.town-nav {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.town-nav-btn {
+		font-size: 11px;
+		padding: 7px 6px;
+	}
+}
+
+@media (max-width: 420px) {
+	.node {
+		--town-scale: clamp(0.36, calc((100vw - 14px) / 760), 0.72);
+	}
+
+	.town-time-indicator {
+		font-size: 11px;
+		padding: 4px 10px;
+	}
+}
+
+@media (max-width: 980px) {
+	.node-resources {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+	}
+
+	.node-res-row {
+		flex-wrap: wrap;
+		justify-content: center;
+		row-gap: 6px;
+	}
+
+	.town-nav {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px;
+	}
+
+	.town-nav-btn {
+		justify-content: center;
+		width: 100%;
+		min-width: 0;
+		padding: 8px 6px;
+		font-size: 12px;
+	}
+
+	.leftQueue,
+	.rightQueue,
+	.right-sidebar {
+		position: static !important;
+		top: auto !important;
+		right: auto !important;
+		left: auto !important;
+		width: 100% !important;
+		max-height: none !important;
+	}
+
+	.right-sidebar {
+		margin-top: 10px;
+		overflow: visible;
+	}
+
+	.missions-panel {
+		max-height: min(50vh, 360px);
+	}
+}
+
+@media (max-width: 760px) {
+	.town-nav {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.town-nav-btn {
+		font-size: 11px;
+		padding: 7px 6px;
+	}
+}
+
+@media (max-width: 600px) {
+	.town-view {
+		margin-top: 10px;
+	}
+
+	.dispatch-modal {
+		width: 100%;
+		max-height: calc(100vh - 18px);
+		border-radius: 10px;
+	}
+
+	.dispatch-modal-body {
+		padding: 10px;
+	}
+
+	.dm-table input.textbox,
+	.dm-target-row .textbox,
+	.dm-target-row .dropdown {
+		width: 100% !important;
+		max-width: none !important;
+	}
+
+	.dm-coords {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.dm-actions {
+		position: static;
+		margin: 0;
+		padding: 10px 0 0;
+		flex-wrap: wrap;
+	}
+
+	.dm-actions .btn {
+		width: 100%;
+	}
+
+	.minimap-outer {
+		width: 100%;
+		max-width: 240px;
+	}
+}
+
+.node-res-row + .node-res-row {
+	border-top: none;
+}
+
+/* Toast Panels — .toast-stack container içinde dizilir */
+.missions-panel {
+	width: 100%;
+	max-height: min(45vh, 380px);
+	overflow-y: auto;
+	background: linear-gradient(180deg, rgba(46,32,21,0.97), rgba(37,24,16,0.97));
+	border: 1px solid var(--color-border);
+	border-radius: 10px;
+	box-shadow: 0 14px 34px rgba(0,0,0,0.5);
+	backdrop-filter: blur(2px);
+	font-size: var(--font-size-xs);
+	animation: missionsPanelSlide 0.15s ease-out;
+}
+/* ── Building Quick-Action Popup ───────────────────────────── */
+@keyframes bpopupBackdrop { from { opacity:0; } to { opacity:1; } }
+@keyframes bpopupSlide    { from { opacity:0; transform:translateY(14px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+.bpopup-wrap {
+	position: fixed;
+	inset: 0;
+	z-index: 12050;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.58);
+	backdrop-filter: blur(3px);
+	animation: bpopupBackdrop 0.15s ease-out;
+}
+
+/* Town modals must stay above footer/chat layers. */
+.game-content:has(.node .bpopup-wrap),
+.game-content:has(.node .dispatch-backdrop.show),
+.game-content:has(.node .town-edit-modal-backdrop.show),
+.game-content:has(.node .queue-confirm-backdrop.show) {
+	z-index: 12;
+}
+.bpopup {
+	background: linear-gradient(160deg, #2c1e0f 0%, #190f06 100%);
+	border: 1px solid rgba(199,154,57,0.22);
+	border-radius: 14px;
+	box-shadow: 0 28px 70px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04);
+	width: min(400px, calc(100vw - 20px));
+	max-height: 88vh;
+	overflow-y: auto;
+	padding: 0;
+	animation: bpopupSlide 0.2s cubic-bezier(0.22,0.9,0.32,1);
+}
+
+/* Loading */
+.bpopup-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px;
+}
+.bpopup-spinner {
+	display: inline-block;
+	width: 26px; height: 26px;
+	border: 3px solid rgba(199,154,57,0.2);
+	border-top-color: var(--color-accent);
+	border-radius: 50%;
+	animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Header */
+.bpopup-head {
+	display: flex;
+	align-items: flex-start;
+	gap: 11px;
+	padding: 15px 15px 13px;
+	border-bottom: 1px solid rgba(199,154,57,0.12);
+	background: linear-gradient(180deg, rgba(199,154,57,0.07) 0%, transparent 100%);
+	border-radius: 14px 14px 0 0;
+}
+.bpopup-icon {
+	width: 44px; height: 44px;
+	border-radius: 9px;
+	background: rgba(199,154,57,0.08);
+	border: 1px solid rgba(199,154,57,0.18);
+	display: flex; align-items: center; justify-content: center;
+	flex-shrink: 0;
+	overflow: hidden;
+}
+.bpopup-icon img { width: 38px; height: 38px; object-fit: contain; image-rendering: pixelated; }
+.bpopup-title {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+.bpopup-name {
+	font-size: 15px;
+	font-weight: 700;
+	color: #f0dc96;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.2;
+}
+.bpopup-lv-row {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+}
+.bpopup-lv {
+	font-size: 11px;
+	font-weight: 600;
+	color: rgba(199,154,57,0.65);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+.bpopup-lv-bar {
+	flex: 1;
+	height: 3px;
+	background: rgba(255,255,255,0.07);
+	border-radius: 2px;
+	overflow: hidden;
+}
+.bpopup-lv-fill {
+	height: 100%;
+	background: linear-gradient(90deg, #c49a27, #e8c84a);
+	border-radius: 2px;
+	transition: width 0.4s ease;
+}
+.bpopup-close {
+	background: rgba(255,255,255,0.05);
+	border: 1px solid rgba(255,255,255,0.08);
+	color: rgba(255,255,255,0.45);
+	font-size: 15px;
+	cursor: pointer;
+	line-height: 1;
+	padding: 5px 9px;
+	border-radius: 7px;
+	flex-shrink: 0;
+	transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.bpopup-close:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.15); }
+
+/* Sections */
+.bpopup-section {
+	padding: 12px 15px;
+	border-bottom: 1px solid rgba(255,255,255,0.045);
+}
+.bpopup-section:last-of-type { border-bottom: none; }
+.bpopup-section-title {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: rgba(199,154,57,0.55);
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+.bpopup-note {
+	font-size: 12px;
+	color: rgba(255,255,255,0.35);
+	margin: 2px 0;
+	text-align: center;
+	padding: 4px 0;
+}
+
+/* Resource costs — 3-column grid, icon on top */
+.bpopup-costs {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+	margin-bottom: 10px;
+}
+.bpopup-cost {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 3px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #cdb97a;
+	background: rgba(255,255,255,0.035);
+	border: 1px solid rgba(255,255,255,0.07);
+	border-radius: 8px;
+	padding: 7px 5px 5px;
+	transition: border-color 0.15s;
+}
+.bpopup-cost img.resource { width: 20px; height: 20px; }
+.bpopup-cost--short {
+	color: #e06060;
+	background: rgba(224,85,85,0.07);
+	border-color: rgba(224,85,85,0.28);
+}
+.bpopup-cost-time {
+	color: rgba(255,255,255,0.38);
+	background: transparent;
+	border-color: rgba(255,255,255,0.05);
+	font-weight: 500;
+	font-size: 11px;
+}
+
+/* Buttons */
+.bpopup-btn {
+	width: 100%;
+	text-align: center;
+	margin-top: 0;
+	padding: 9px 12px;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.4px;
+	border-radius: 8px;
+	transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.bpopup-btn.btn-primary {
+	background: linear-gradient(180deg, #c49a27 0%, #9a7414 100%);
+	border: 1px solid rgba(255,220,80,0.18);
+	color: #fff;
+	text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+}
+.bpopup-btn.btn-primary:not(:disabled):hover {
+	background: linear-gradient(180deg, #d4aa37 0%, #aa8420 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+}
+.bpopup-btn.btn-primary:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+}
+.bpopup-btn.btn-secondary {
+	background: rgba(255,255,255,0.05);
+	border: 1px solid rgba(255,255,255,0.09);
+	color: rgba(255,255,255,0.55);
+}
+.bpopup-btn.btn-secondary:hover {
+	background: rgba(255,255,255,0.09);
+	color: rgba(255,255,255,0.8);
+}
+
+/* Unit/Weapon tables */
+.bpopup-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--font-size-xs);
+	margin-bottom: 8px;
+}
+.bpopup-table tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.bpopup-table tr:last-child { border-bottom: none; }
+.bpopup-table td { padding: 5px 3px; color: var(--color-text); }
+.bpopup-unit-name { font-weight: 600; max-width: 130px; }
+.bpopup-unit-stat { color: var(--color-text-muted); white-space: nowrap; }
+.bpopup-qty { width: 54px !important; padding: 2px 4px; font-size: 12px; }
+.bpopup-locked { opacity: 0.35; }
+.bpopup-footer {
+	padding: 10px 15px 14px;
+}
+
+/* Minimap (harita paneli içi) */
+.minimap-outer {
+	position: relative;
+	width: 240px;
+	height: 160px;
+	overflow: hidden;
+	margin: 0 auto;
+	border-radius: 4px;
+}
+.minimap-inner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 240px;
+	height: 160px;
+}
+.minimap-tile {
+	position: absolute;
+	width: 80px;
+	height: 80px;
+}
+.minimap-marker {
+	position: absolute;
+	left: 120px;
+	top: 80px;
+	transform: translate(-50%, -50%);
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: radial-gradient(circle at 38% 32%, #ffd97a, #c9a020 60%, #7a5a0a);
+	box-shadow: 0 0 6px 2px rgba(220,170,15,0.8), 0 0 12px 4px rgba(180,130,10,0.4);
+	animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* Sağ kenar çubuğu: inşaat kuyruğu + toast paneller alt alta */
+.right-sidebar {
+	position: fixed;
+	top: 160px;
+	right: 12px;
+	z-index: 10020;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: min(320px, calc(100vw - 24px));
+	max-height: calc(100vh - 170px);
+	overflow-y: auto;
+}
+.toast-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	width: 100%;
+}
+/* Sevket modalı form içi kart boşlukları */
+.dispatch-modal-body form {
+	display: grid;
+	gap: 12px;
+}
+@keyframes missionsPanelSlide {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+.missions-panel-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	color: var(--color-accent);
+	font-weight: 700;
+	font-size: var(--font-size-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.missions-panel-link {
+	margin-left: auto;
+	color: var(--color-accent);
+	font-size: var(--font-size-xs);
+	text-decoration: none;
+	opacity: 0.75;
+	white-space: nowrap;
+}
+.missions-panel-link:hover { opacity: 1; text-decoration: underline; }
+.missions-panel-close {
+	background: none;
+	border: none;
+	color: var(--color-text);
+	cursor: pointer;
+	font-size: 1em;
+	padding: 0 2px;
+	opacity: 0.5;
+	line-height: 1;
+}
+.missions-panel-close:hover { opacity: 1; }
+.missions-panel-body { padding: var(--space-sm); text-align: right; }
+.mp-row {
+	padding: 3px 0;
+	border-bottom: 1px solid rgba(255,255,255,0.06);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+.mp-row:last-child { border-bottom: none; }
+.mp-label {
+	flex: 1;
+	color: var(--color-text);
+	font-size: var(--font-size-xs);
+	text-align: left;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+.mp-count { color: rgba(210,175,120,0.7); font-size: var(--font-size-xs); white-space: nowrap; }
+.mp-tag { font-size: 0.72em; padding: 0 4px; border-radius: 3px; }
+.mp-tag-ready  { color: #80d060; }
+.mp-tag-claimed { color: rgba(180,140,80,0.6); }
+.mp-claimed { opacity: 0.4; }
+.mp-empty { color: var(--color-text); opacity: 0.4; text-align: center; padding: 4px 0; margin: 0; }
+.mp-section-title { font-size: var(--font-size-xs); color: rgba(200,169,110,0.7); text-transform: uppercase; letter-spacing: .05em; padding: 6px 0 3px; border-top: 1px solid rgba(136,103,65,0.25); margin-top: 4px; }
+
+/* Make missions button match town-nav-btn style */
+button.town-nav-btn {
+	cursor: pointer;
+	font-family: inherit;
+}
+button.town-nav-btn--active {
+	background: rgba(136, 103, 65, 0.2);
+	border-color: rgba(136, 103, 65, 0.6);
+	color: var(--color-accent);
+}
+
+.town-edit-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	z-index: 6000;
+}
+
+.town-edit-modal-backdrop.show {
+	display: flex;
+}
+
+.town-edit-modal {
+	width: min(560px, 100%);
+	border: 1px solid rgba(199,154,57,0.35);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.96), rgba(28,18,12,0.97));
+	box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+	overflow: hidden;
+}
+
+.town-edit-modal-head {
+	padding: 12px 14px;
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	color: var(--color-text-heading);
+	font-size: var(--font-size-md);
+	font-weight: 700;
+}
+
+.town-edit-modal-body {
+	padding: 14px;
+	display: grid;
+	gap: 12px;
+}
+
+.town-edit-label {
+	display: grid;
+	gap: 6px;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+}
+
+.town-edit-input,
+.town-edit-textarea {
+	width: 100%;
+	padding: 9px 10px;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-sm);
+	background: rgba(20,13,9,0.85);
+	color: var(--color-text);
+	font-family: var(--font-family);
+	font-size: var(--font-size-sm);
+}
+
+.town-edit-textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+.town-edit-actions {
+	display: flex;
+	gap: var(--space-sm);
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.town-edit-actions .town-edit-toggle {
+	min-width: 140px;
+	padding: 8px 14px;
+}
+
+.queue-confirm-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	z-index: 6100;
+}
+
+.queue-confirm-backdrop.show {
+	display: flex;
+}
+
+.queue-confirm {
+	width: min(460px, 100%);
+	border: 1px solid rgba(199,154,57,0.35);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(58,40,24,0.96), rgba(28,18,12,0.97));
+	box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+	overflow: hidden;
+}
+
+.queue-confirm-head {
+	padding: 12px 14px;
+	border-bottom: 1px solid rgba(199,154,57,0.2);
+	color: var(--color-text-heading);
+	font-size: var(--font-size-md);
+	font-weight: 700;
+}
+
+.queue-confirm-body {
+	padding: 14px;
+	display: grid;
+	gap: 12px;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-sm);
+	line-height: 1.45;
+}
+
+.queue-confirm-actions {
+	display: flex;
+	gap: var(--space-sm);
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.blocked-zone {
+	position: absolute;
+	border: 2px dashed rgba(214, 76, 56, 0.95);
+	background: rgba(214, 76, 56, 0.2);
+	box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+	pointer-events: none;
+	z-index: 3;
+}
+
+.blocked-zone--circle {
+	border-radius: 50%;
+}
+
+.blocked-zone--poly {
+	border-style: solid;
+}
+
+/* ── Dispatch Modal ─────────────────────────────────────────────── */
+.dispatch-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.55);
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	z-index: 7000;
+	backdrop-filter: blur(2px);
+}
+.dispatch-backdrop.show { display: flex; }
+
+.dispatch-modal {
+	width: min(700px, 100%);
+	max-height: calc(100vh - 32px);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid rgba(199, 154, 57, 0.4);
+	border-radius: var(--radius-md);
+	background: linear-gradient(180deg, rgba(46, 30, 18, 0.98), rgba(22, 14, 9, 0.99));
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+	animation: dispatchSlide 0.18s ease-out;
+}
+@keyframes dispatchSlide {
+	from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+	to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dispatch-modal-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border-bottom: 1px solid rgba(199, 154, 57, 0.25);
+}
+.dispatch-modal-title {
+	font-size: var(--font-size-md);
+	font-weight: 700;
+	color: var(--color-accent);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.dispatch-modal-close {
+	background: none;
+	border: none;
+	color: var(--color-text-muted);
+	font-size: 1.2em;
+	cursor: pointer;
+	padding: 2px 6px;
+	border-radius: 4px;
+	line-height: 1;
+}
+.dispatch-modal-close:hover { color: var(--color-text); background: rgba(255,255,255,0.06); }
+
+.dispatch-modal-head {
+	flex-shrink: 0;
+}
+
+.dispatch-modal-body {
+	padding: 16px;
+	display: grid;
+	gap: 12px;
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
+}
+
+.dm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .dm-grid { grid-template-columns: 1fr; } }
+
+.dm-card {
+	border: 1px solid rgba(136, 103, 65, 0.35);
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.18);
+	overflow: hidden;
+}
+.dm-card-head {
+	padding: 8px 12px;
+	font-size: var(--font-size-xs);
+	font-weight: 700;
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	background: rgba(0, 0, 0, 0.2);
+	border-bottom: 1px solid rgba(136, 103, 65, 0.2);
+}
+.dm-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--font-size-xs);
+}
+.dm-table td {
+	padding: 7px 10px;
+	border-bottom: 1px solid rgba(136, 103, 65, 0.1);
+	color: var(--color-text);
+}
+.dm-table tr:last-child td { border-bottom: none; }
+.dm-table .dm-val { text-align: right; color: var(--color-accent); font-weight: 600; }
+.dm-table input.textbox {
+	width: 60px;
+	padding: 4px 6px;
+	text-align: center;
+	font-size: var(--font-size-xs);
+	background: rgba(20, 13, 9, 0.9);
+	border: 1px solid rgba(136, 103, 65, 0.4);
+	border-radius: 4px;
+	color: var(--color-text);
+}
+.dm-target-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	align-items: center;
+}
+@media (max-width: 600px) { .dm-target-row { grid-template-columns: 1fr; } }
+.dm-label {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-muted);
+	margin-bottom: 4px;
+}
+.dm-coords { display: flex; gap: 6px; }
+.dm-coords input { width: 70px; }
+.dm-empty {
+	padding: 14px;
+	color: var(--color-text-muted);
+	font-size: var(--font-size-xs);
+	text-align: center;
+}
+
+.dm-mini-bar {
+	height: 5px;
+	background: rgba(40, 28, 18, 0.9);
+	border-radius: 3px;
+	overflow: hidden;
+	border: 1px solid rgba(100, 75, 45, 0.3);
+	width: 80px;
+}
+.dm-mini-fill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--color-accent-dark, #7d571b), var(--color-accent, #c79a39));
+	border-radius: 3px;
+}
+.dm-actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	padding-top: 4px;
+	position: sticky;
+	bottom: 0;
+	padding-bottom: 0;
+	background: linear-gradient(to top, rgba(22,14,9,0.99) 80%, transparent);
+	margin: 0 -16px;
+	padding: 12px 16px 0;
+}
+
+/* ── Live Production Tooltip ─────────────────────────────── */
+#prod-live-tip {
+	position: fixed;
+	z-index: 9999;
+	pointer-events: none;
+	display: none;
+	min-width: 170px;
+	padding: 10px 12px;
+	background: linear-gradient(180deg, rgba(52,34,20,0.98), rgba(22,14,8,0.99));
+	border: 1px solid rgba(199,154,57,0.5);
+	border-radius: 8px;
+	box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+	font-size: 12px;
+	color: #e8d8b5;
+}
+.plt-name {
+	font-weight: 700;
+	color: var(--color-accent);
+	font-size: 13px;
+	margin-bottom: 7px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid rgba(199,154,57,0.25);
+}
+.plt-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	margin: 3px 0;
+}
+.plt-lbl { color: rgba(200,180,140,0.65); font-size: 11px; }
+.plt-val { font-weight: 600; color: #e8d8b5; }
+.plt-green { color: #7dff7d; font-weight: 700; }
+.plt-bar-wrap {
+	height: 4px;
+	background: rgba(255,255,255,0.1);
+	border-radius: 2px;
+	overflow: hidden;
+	margin: 5px 0;
+}
+.plt-bar {
+	height: 100%;
+	border-radius: 2px;
+	transition: width 0.4s ease;
+}
+.plt-sep { border-top: 1px solid rgba(199,154,57,0.2); margin: 6px 0; }
+.prod-live-item { cursor: default; }
+</style>
+
+<check if="{{ @view_mode == '' }}">
+
+<div class="node" x-data="townEditor()" x-cloak>
+	<!-- Resource Bar (inside node, top) -->
+	<div class="node-resources">
+		<div class="node-res-row">
+			<span class="town-res-item" data-tooltip="{{ @lang.crop ?: 'Crop' }}"><img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource" alt=""> <span id="res0">{{ floor(@resources.crop) }}</span>/{{ @limits.crop }}</span>
+			<span class="town-res-item" data-tooltip="{{ @lang.lumber ?: 'Lumber' }}"><img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource" alt=""> <span id="res1">{{ floor(@resources.lumber) }}</span>/{{ @limits.resources }}</span>
+			<span class="town-res-item" data-tooltip="{{ @lang.stone ?: 'Stone' }}"><img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource" alt=""> <span id="res2">{{ floor(@resources.stone) }}</span>/{{ @limits.resources }}</span>
+			<span class="town-res-item" data-tooltip="{{ @lang.iron ?: 'Iron' }}"><img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource" alt=""> <span id="res3">{{ floor(@resources.iron) }}</span>/{{ @limits.resources }}</span>
+			<span class="town-res-item" data-tooltip="{{ @lang.gold ?: 'Gold' }}"><img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource" alt=""> <span id="res4">{{ floor(@resources.gold) }}</span>/{{ @limits.gold }}</span>
+			<span class="town-res-sep"></span>
+			<span class="town-res-item" data-tooltip="{{ @lang.upkeep ?: 'Upkeep' }}"><img src="{{ @imgs }}{{ @fimgs }}house_.gif" class="resource" alt=""> {{ @town.population + @town.upkeep }}/{{ @limits.housing }}</span>
+			<span class="town-res-item" data-tooltip="{{ @lang.morale ?: 'Morale' }}"><img src="{{ @imgs }}{{ @fimgs }}morale_.gif" class="resource" alt=""> {{ @town.morale }}%</span>
+		</div>
+		<div class="node-res-row node-res-production">
+			<span class="town-res-label">{{ @lang.production ?: 'Production' }}:</span>
+			<span class="town-res-item prod-live-item" data-prod-idx="0"><img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource" alt=""> <span id="prod-rate-0">{{ @crop_net }}/h</span></span>
+			<span class="town-res-item prod-live-item" data-prod-idx="1"><img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource" alt=""> <span id="prod-rate-1">{{ @production.lumber }}/h</span></span>
+			<span class="town-res-item prod-live-item" data-prod-idx="2"><img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource" alt=""> <span id="prod-rate-2">{{ @production.stone }}/h</span></span>
+			<span class="town-res-item prod-live-item" data-prod-idx="3"><img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource" alt=""> <span id="prod-rate-3">{{ @production.iron }}/h</span></span>
+			<span class="town-res-item prod-live-item" data-prod-idx="4"><img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource" alt=""> <span id="prod-rate-4">{{ @production.gold }}/h</span></span>
+		</div>
+		<div class="town-nav">
+			<button class="town-nav-btn" id="missions-toast-btn" onclick="toggleMissionsPanel()" type="button">
+				<svg class="town-nav-icon" viewBox="0 0 16 16"><path d="M8 1l1.5 4.5H15l-4.5 3.3 1.7 5.2L8 11l-4.2 3 1.7-5.2L1 5.5h5.5z"/></svg>
+				{{ @lang.missions ?: 'Missions' }}
+			</button>
+			<button class="town-nav-btn" id="stats-toast-btn" onclick="toggleStatsPanel()" type="button">
+				<svg class="town-nav-icon" viewBox="0 0 16 16"><path d="M1 14V9h3v5H1zm4 0V5h3v9H5zm5 0V2h3v12h-3z"/></svg>
+				{{ @lang.townStats ?: 'Stats' }}
+			</button>
+			<a class="town-nav-btn" href="/town/{{ @town.id }}/edit" onclick="return openTownEditModal(event);">
+				<svg class="town-nav-icon" viewBox="0 0 16 16"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg>
+				{{ @lang.townEdit ?: 'Edit' }}
+			</a>
+			<button class="town-nav-btn" id="market-toast-btn" onclick="toggleMarketPanel()" type="button">
+				<svg class="town-nav-icon" viewBox="0 0 16 16"><path d="M2 3h12v10H2V3zm2 2h3v2H4V5zm5 0h3v2H9V5zm-5 4h8v2H4V9z"/></svg>
+				{{ @lang.marketplace ?: 'Market' }}
+			</button>
+			<button class="town-nav-btn" id="dispatch-toast-btn" onclick="toggleDispatchPanel()" type="button">
+				<svg class="town-nav-icon" viewBox="0 0 16 16"><path d="M2 14V6l3-4h6l3 4v8" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 3v7m-3-3l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+				{{ @lang.dispatch ?: 'Dispatch' }}
+			</button>
+				<button class="town-nav-btn" id="map-toast-btn" onclick="toggleMapPanel()" type="button">
+					<svg class="town-nav-icon" viewBox="0 0 16 16"><path d="M1 3l5-2 4 2 5-2v12l-5 2-4-2-5 2V3zm5-1v11m4-9v11"/></svg>
+					{{ @lang.map ?: 'Map' }}
+				</button>
+				<div id="townTimeIndicator" class="town-time-indicator"></div>
+			</div>
+
+		<!-- Dispatch Modal -->
+	<div id="dispatch-backdrop" class="dispatch-backdrop" onclick="if(event.target===this)toggleDispatchPanel()">
+		<div class="dispatch-modal">
+			<div class="dispatch-modal-head">
+				<div class="dispatch-modal-title">
+					<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14V6l3-4h6l3 4v8"/><path d="M8 3v7m-3-3l3 3 3-3"/></svg>
+					{{ @lang.dispatch ?: 'Dispatch' }} — {{ @town.name }}
+				</div>
+				<button class="dispatch-modal-close" onclick="toggleDispatchPanel()" type="button">&times;</button>
+			</div>
+			<div class="dispatch-modal-body">
+				<form action="/town/{{ @town.id }}/dispatch" method="post">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+
+					<div class="dm-grid">
+						<!-- Units -->
+						<div class="dm-card">
+							<div class="dm-card-head">{{ @lang.selectUnits ?: 'Units' }}</div>
+							<check if="{{ count(@dispatch_army) }}">
+							<table class="dm-table">
+								<repeat group="{{ @dispatch_army }}" value="{{ @du }}">
+								<check if="{{ @du.count > 0 }}">
+								<tr>
+									<td>{{ @du.name }}</td>
+									<td class="dm-val">{{ @du.count }}</td>
+									<td class="dm-val"><input class="textbox" type="number" name="units[{{ @du.id }}]" value="0" min="0" max="{{ @du.count }}"></td>
+								</tr>
+								</check>
+								</repeat>
+							</table>
+							</check>
+							<check if="{{ !count(@dispatch_army) }}">
+							<div class="dm-empty">{{ @lang.noArmy ?: 'No army available.' }}</div>
+							</check>
+						</div>
+
+						<!-- Resources -->
+						<div class="dm-card">
+							<div class="dm-card-head">{{ @lang.sendResources ?: 'Resources' }}</div>
+							<table class="dm-table">
+								<tr><td>{{ @lang.crop ?: 'Crop' }}</td><td class="dm-val">{{ floor(@resources.crop) }}</td><td class="dm-val"><input class="textbox" type="number" name="res_crop" value="0" min="0"></td></tr>
+								<tr><td>{{ @lang.lumber ?: 'Lumber' }}</td><td class="dm-val">{{ floor(@resources.lumber) }}</td><td class="dm-val"><input class="textbox" type="number" name="res_lumber" value="0" min="0"></td></tr>
+								<tr><td>{{ @lang.stone ?: 'Stone' }}</td><td class="dm-val">{{ floor(@resources.stone) }}</td><td class="dm-val"><input class="textbox" type="number" name="res_stone" value="0" min="0"></td></tr>
+								<tr><td>{{ @lang.iron ?: 'Iron' }}</td><td class="dm-val">{{ floor(@resources.iron) }}</td><td class="dm-val"><input class="textbox" type="number" name="res_iron" value="0" min="0"></td></tr>
+							</table>
+						</div>
+					</div>
+
+					<!-- Target -->
+					<div class="dm-card">
+						<div class="dm-card-head">{{ @lang.target ?: 'Target' }}</div>
+						<div style="padding:12px;display:grid;gap:10px;">
+							<div class="dm-target-row">
+								<div>
+									<div class="dm-label">{{ @lang.targetTown ?: 'Town name' }}</div>
+									<input class="textbox" type="text" name="target" value="" placeholder="{{ @lang.townName ?: 'Town name' }}" style="width:100%;max-width:220px;">
+								</div>
+								<div>
+									<div class="dm-label">{{ @lang.orCoords ?: 'Or coordinates' }}</div>
+									<div class="dm-coords">
+										<input class="textbox" type="number" name="target_x" value="" placeholder="X" style="width:70px;">
+										<input class="textbox" type="number" name="target_y" value="" placeholder="Y" style="width:70px;">
+									</div>
+								</div>
+							</div>
+							<div>
+								<div class="dm-label">{{ @lang.actionType ?: 'Action' }}</div>
+								<select class="dropdown" name="action" style="max-width:220px;">
+									<option value="reinforce">{{ @lang.reinforce ?: 'Reinforce' }}</option>
+									<option value="attack">{{ @lang.attack ?: 'Attack' }}</option>
+									<option value="raid">{{ @lang.raid ?: 'Raid' }}</option>
+									<option value="spy">{{ @lang.spy ?: 'Spy' }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div class="dm-actions">
+						<button type="button" class="btn btn-secondary btn-sm" onclick="toggleDispatchPanel()">{{ @lang.cancel ?: 'Cancel' }}</button>
+						<button type="submit" name="dispatch" class="btn btn-primary">{{ @lang.sendArmy ?: 'Send Army' }}</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Stats Modal -->
+	<div id="stats-backdrop" class="dispatch-backdrop" onclick="if(event.target===this)toggleStatsPanel()">
+		<div class="dispatch-modal">
+			<div class="dispatch-modal-head">
+				<div class="dispatch-modal-title">
+					<svg viewBox="0 0 16 16" width="16" height="16"><path d="M1 14V9h3v5H1zm4 0V5h3v9H5zm5 0V2h3v12h-3z"/></svg>
+					{{ @town.name }} — {{ @lang.statistics ?: 'Statistics' }}
+				</div>
+				<button class="dispatch-modal-close" onclick="toggleStatsPanel()" type="button">&times;</button>
+			</div>
+			<div class="dispatch-modal-body">
+				<div class="dm-grid">
+					<!-- Resources -->
+					<div class="dm-card">
+						<div class="dm-card-head">{{ @lang.resources ?: 'Resources' }}</div>
+						<table class="dm-table">
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource" style="width:14px;height:14px"> {{ @lang.crop ?: 'Crop' }}</td><td class="dm-val">{{ floor(@resources.crop) }}/{{ @limits.crop }}</td><td style="width:80px"><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @resource_fill.crop }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource" style="width:14px;height:14px"> {{ @lang.lumber ?: 'Lumber' }}</td><td class="dm-val">{{ floor(@resources.lumber) }}/{{ @limits.resources }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @resource_fill.lumber }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource" style="width:14px;height:14px"> {{ @lang.stone ?: 'Stone' }}</td><td class="dm-val">{{ floor(@resources.stone) }}/{{ @limits.resources }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @resource_fill.stone }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource" style="width:14px;height:14px"> {{ @lang.iron ?: 'Iron' }}</td><td class="dm-val">{{ floor(@resources.iron) }}/{{ @limits.resources }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @resource_fill.iron }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource" style="width:14px;height:14px"> {{ @lang.gold ?: 'Gold' }}</td><td class="dm-val">{{ floor(@resources.gold) }}/{{ @limits.gold }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @resource_fill.gold }}%"></div></div></td></tr>
+						</table>
+					</div>
+					<!-- Production -->
+					<div class="dm-card">
+						<div class="dm-card-head">{{ @lang.production ?: 'Production' }} /h</div>
+						<table class="dm-table">
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource" style="width:14px;height:14px"> {{ @lang.crop ?: 'Crop' }}</td><td class="dm-val">{{ @crop_net }}</td><td style="width:80px"><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @production_fill.crop }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource" style="width:14px;height:14px"> {{ @lang.lumber ?: 'Lumber' }}</td><td class="dm-val">{{ @production.lumber }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @production_fill.lumber }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource" style="width:14px;height:14px"> {{ @lang.stone ?: 'Stone' }}</td><td class="dm-val">{{ @production.stone }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @production_fill.stone }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource" style="width:14px;height:14px"> {{ @lang.iron ?: 'Iron' }}</td><td class="dm-val">{{ @production.iron }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @production_fill.iron }}%"></div></div></td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource" style="width:14px;height:14px"> {{ @lang.gold ?: 'Gold' }}</td><td class="dm-val">{{ @production.gold }}</td><td><div class="dm-mini-bar"><div class="dm-mini-fill" style="width:{{ @production_fill.gold }}%"></div></div></td></tr>
+						</table>
+					</div>
+				</div>
+				<div class="dm-grid">
+					<!-- Town Info -->
+					<div class="dm-card">
+						<div class="dm-card-head">{{ @lang.townInfo ?: 'Town Info' }}</div>
+						<table class="dm-table">
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}house_.gif" class="resource" style="width:14px;height:14px;vertical-align:middle"> {{ @lang.population ?: 'Population' }}</td><td class="dm-val">{{ @town.population }}</td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}house_.gif" class="resource" style="width:14px;height:14px;vertical-align:middle;opacity:0.55"> {{ @lang.upkeep ?: 'Upkeep' }}</td><td class="dm-val">{{ @town.upkeep }}</td></tr>
+							<tr><td><img src="{{ @imgs }}{{ @fimgs }}morale_.gif" class="resource" style="width:14px;height:14px;vertical-align:middle"> {{ @lang.morale ?: 'Morale' }}</td><td class="dm-val">{{ @town.morale }}%</td></tr>
+							<tr><td><svg viewBox="0 0 14 14" width="14" height="14" style="vertical-align:middle;opacity:0.65"><circle cx="7" cy="5" r="2.5" fill="currentColor"/><path d="M7 7.5 C7 7.5 3.5 11 3.5 13 L10.5 13 C10.5 11 7 7.5 7 7.5Z" fill="currentColor" opacity="0.4"/></svg> {{ @lang.coordinates ?: 'Coords' }}</td><td class="dm-val">{{ @town.x }}, {{ @town.y }}</td></tr>
+						</table>
+					</div>
+					<!-- Army -->
+					<div class="dm-card">
+						<div class="dm-card-head">{{ @lang.army ?: 'Army' }}</div>
+						<check if="{{ count(@stats_army) }}">
+						<table class="dm-table">
+							<repeat group="{{ @stats_army }}" value="{{ @sa }}">
+							<tr><td>{{ @sa.name }}</td><td class="dm-val">{{ @sa.count }}</td></tr>
+							</repeat>
+						</table>
+						</check>
+						<check if="{{ !count(@stats_army) }}">
+						<div class="dm-empty">{{ @lang.noArmy ?: 'No army.' }}</div>
+						</check>
+					</div>
+				</div>
+				<div class="dm-actions">
+					<a href="/town/{{ @town.id }}/stats" class="btn btn-secondary btn-sm">{{ @lang.fullStats ?: 'Full Stats' }} &rarr;</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- LEFT Queue: Army Movements -->
+	<check if="{{ count(@army_movements) }}">
+	<div class="queue leftQueue">
+		<div class="queue-header"><a class="small">{{ @lang.incQueue ?: 'Army' }}</a></div>
+		<repeat group="{{ @army_movements }}" key="{{ @i }}" value="{{ @aq }}">
+		<div>
+			<div class="cell"><a class="small">{{ @aq.label }}</a></div>
+			<div class="cell"><span id="it{{ @i }}">{{ @aq.timeLeft }}</span><script type="text/javascript"> timer('it{{ @i }}', '/town/{{ @town.id }}'); </script></div>
+		</div>
+		</repeat>
+	</div>
+	</check>
+
+	<!-- Right Sidebar: İnşaat kuyruğu + Toast paneller (çakışmasın diye ortak flex kapsayıcıda) -->
+	<div class="right-sidebar">
+
+	<!-- RIGHT Queue: Construction -->
+	<check if="{{ count(@construction_queue) || count(@unit_queue) || count(@weapon_queue) }}">
+	<div class="queue rightQueue">
+		<check if="{{ count(@construction_queue) }}">
+		<div class="queue-header"><a class="small">{{ @lang.constQueue ?: 'Build' }}</a></div>
+		<repeat group="{{ @construction_queue }}" key="{{ @i }}" value="{{ @cq }}">
+		<div>
+			<div class="cell">
+					<form action="/town/{{ @town.id }}/cancel/construction" method="post" style="display:inline;" class="js-cancel-construction-form" data-building="{{ @cq.name }} Lv{{ @cq.level }}">
+						<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+						<input type="hidden" name="b" value="{{ @cq.b }}">
+						<input type="hidden" name="subB" value="{{ @cq.subB }}">
+						<button class="small" type="submit">x</button>
+					</form>
+			</div>
+			<div class="cell"><a class="small">{{ @cq.name }} Lv{{ @cq.level }}</a></div>
+			<div class="cell"><span id="cq{{ @i }}">{{ @cq.timeLeft }}</span><script type="text/javascript"> timer('cq{{ @i }}', '/town/{{ @town.id }}'); </script></div>
+		</div>
+		</repeat>
+		</check>
+
+		<check if="{{ count(@unit_queue) }}">
+		<div class="queue-header"><a class="small">{{ @lang.trainQueue ?: 'Train' }}</a></div>
+		<repeat group="{{ @unit_queue }}" key="{{ @i }}" value="{{ @uq }}">
+		<div>
+			<div class="cell">
+				<form action="/town/{{ @town.id }}/cancel/unit" method="post" style="display:inline;">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input type="hidden" name="type" value="{{ @uq.type }}">
+					<button class="small" type="submit">x</button>
+				</form>
+			</div>
+			<div class="cell"><a class="small">{{ @uq.name }} x{{ @uq.quantity }}</a></div>
+			<div class="cell"><span id="uq{{ @i }}">{{ @uq.timeLeft }}</span><script type="text/javascript"> timer('uq{{ @i }}', '/town/{{ @town.id }}'); </script></div>
+		</div>
+		</repeat>
+		</check>
+
+		<check if="{{ count(@weapon_queue) }}">
+		<div class="queue-header"><a class="small">{{ @lang.forgeQueue ?: 'Forge' }}</a></div>
+		<repeat group="{{ @weapon_queue }}" key="{{ @i }}" value="{{ @wq }}">
+		<div>
+			<div class="cell">
+				<form action="/town/{{ @town.id }}/cancel/weapon" method="post" style="display:inline;">
+					<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+					<input type="hidden" name="type" value="{{ @wq.type }}">
+					<button class="small" type="submit">x</button>
+				</form>
+			</div>
+			<div class="cell"><a class="small">{{ @wq.name }} x{{ @wq.quantity }}</a></div>
+			<div class="cell"><span id="wq{{ @i }}">{{ @wq.timeLeft }}</span><script type="text/javascript"> timer('wq{{ @i }}', '/town/{{ @town.id }}'); </script></div>
+		</div>
+		</repeat>
+		</check>
+	</div>
+	</check>
+
+	<!-- Toast Stack: market, harita, görevler panelleri -->
+	<div class="toast-stack">
+
+	<!-- Market Panel -->
+	<div id="market-panel" class="missions-panel" style="display:none;">
+		<div class="missions-panel-header">
+			<span>&#9776; {{ @lang.marketplace ?: 'Market' }}</span>
+			<span style="margin-left:auto;font-size:0.85em;color:var(--color-accent)">{{ @merchants_avail }}/{{ @merchants_total }}</span>
+			<a href="/town/{{ @town.id }}/market" class="missions-panel-link">{{ @lang.openMarket ?: 'Open' }} &rarr;</a>
+			<button class="missions-panel-close" onclick="toggleMarketPanel()" type="button">&times;</button>
+		</div>
+		<div class="missions-panel-body">
+			<check if="{{ count(@market_offers) }}">
+			<repeat group="{{ @market_offers }}" value="{{ @mo }}">
+			<div class="mp-row">
+				<div class="mp-label">{{ @mo.sell }}</div>
+				<div class="mp-count">&#8594; {{ @mo.buy }}</div>
+			</div>
+			</repeat>
+			</check>
+			<check if="{{ !count(@market_offers) }}">
+			<p class="mp-empty">{{ @lang.noMarketOffers ?: 'No active offers.' }}</p>
+			</check>
+		</div>
+	</div>
+
+	<!-- Map Panel -->
+	<div id="map-panel" class="missions-panel" style="display:none;">
+		<div class="missions-panel-header">
+			<span>&#9654; {{ @lang.map ?: 'Map' }}</span>
+			<span style="margin-left:auto;font-size:0.82em;color:var(--color-accent)">{{ @town.x }}, {{ @town.y }}</span>
+			<a href="/map?x={{ @town.x ?: 0 }}&y={{ @town.y ?: 0 }}" class="missions-panel-link">{{ @lang.openMap ?: 'Open' }} &rarr;</a>
+			<button class="missions-panel-close" onclick="toggleMapPanel()" type="button">&times;</button>
+		</div>
+		<div class="missions-panel-body" style="padding:10px;">
+			<check if="{{ count(@mini_tiles) }}">
+			<a href="/map?x={{ @town.x ?: 0 }}&y={{ @town.y ?: 0 }}" style="display:block;text-decoration:none;">
+				<div class="minimap-outer">
+					<div class="minimap-inner">
+						<repeat group="{{ @mini_tiles }}" value="{{ @mt }}">
+						<img class="minimap-tile" style="left:{{ @mt.st_x }}px;top:{{ @mt.st_y }}px;" src="{{ @mt.img }}" alt="">
+						</repeat>
+						<span class="minimap-marker"></span>
+					</div>
+				</div>
+			</a>
+			</check>
+		</div>
+	</div>
+
+	<!-- Missions Toast Panel -->
+	<div id="missions-panel" class="missions-panel" style="display:none;">
+		<div class="missions-panel-header">
+			<span>&#9733; {{ @lang.dailyMissions ?: 'Daily Missions' }}</span>
+			<a href="/missions" class="missions-panel-link">{{ @lang.viewAll ?: 'View all' }} &rarr;</a>
+			<button class="missions-panel-close" onclick="toggleMissionsPanel()" type="button">&times;</button>
+		</div>
+		<div class="missions-panel-body">
+			<check if="{{ count(@town_missions) }}">
+			<repeat group="{{ @town_missions }}" value="{{ @tm }}">
+			<div class="mp-row {{ @tm.claimed ? 'mp-claimed' : '' }}">
+				<div class="mp-label">
+					{{ @tm.label }}
+					<check if="{{ @tm.claimed }}"><span class="mp-tag mp-tag-claimed">&#10003;</span></check>
+					<check if="{{ !@tm.claimed && @tm.complete }}"><span class="mp-tag mp-tag-ready">&#9733;</span></check>
+				</div>
+				<div class="mp-count">{{ @tm.progress }}/{{ @tm.target }}</div>
+			</div>
+			</repeat>
+			</check>
+			<check if="{{ !count(@town_missions) }}">
+			<p class="mp-empty">{{ @lang.noMissions ?: 'No missions today.' }}</p>
+			</check>
+
+			<div class="mp-section-title">&#128197; {{ @lang.weeklyMissions ?: 'Weekly Missions' }}</div>
+			<check if="{{ count(@town_weekly_missions) }}">
+			<repeat group="{{ @town_weekly_missions }}" value="{{ @wm }}">
+			<div class="mp-row {{ @wm.claimed ? 'mp-claimed' : '' }}">
+				<div class="mp-label">
+					{{ @wm.label }}
+					<check if="{{ @wm.claimed }}"><span class="mp-tag mp-tag-claimed">&#10003;</span></check>
+					<check if="{{ !@wm.claimed && @wm.complete }}"><span class="mp-tag mp-tag-ready">&#9733;</span></check>
+				</div>
+				<div class="mp-count">{{ @wm.progress }}/{{ @wm.target }}</div>
+			</div>
+			</repeat>
+			</check>
+			<check if="{{ !count(@town_weekly_missions) }}">
+			<p class="mp-empty">{{ @lang.noMissions ?: 'No missions this week.' }}</p>
+			</check>
+		</div>
+	</div>
+
+	</div><!-- /toast-stack -->
+	</div><!-- /right-sidebar -->
+
+	<!-- Town Isometric View (center) -->
+		<div class="town-view" :class="{'town-view--editing': editMode}"
+			 style="overflow:visible;"
+			 x-ref="townView"
+			 @touchstart="startPan($event)"
+			 @touchmove.prevent="onPan($event)"
+			 @touchend="endPan()"
+			 @touchcancel="endPan()">
+			<div class="town-view-inner" x-ref="townInner" :style="townInnerStyle()">
+			<img :src="imgBase + background" width="640" height="372" style="position:absolute; left:0; top:0;">
+			<canvas id="town-fx" width="640" height="372" style="position:absolute; left:0; top:0; pointer-events:none; z-index:1;"></canvas>
+		<div id="townDayNightOverlay" class="town-daynight-overlay"></div>
+		<template x-if="editMode">
+			<div>
+				<template x-for="(zone, zidx) in currentBlockedZones()" :key="'bz-' + zidx">
+					<div class="blocked-zone" :class="zoneVisualClass(zone)" :style="zoneVisualStyle(zone)"></div>
+				</template>
+			</div>
+		</template>
+
+		<check if="{{ @town.water > -1 }}">
+			<img src="{{ @imgs }}{{ @fimgs }}water.png" width="227" height="60" style="position:absolute; left:3px; top:310px;">
+		</check>
+
+		<!-- Wall (b13) behind other buildings -->
+		<check if="{{ @building_levels.13 }}">
+		<div class="town-building" data-b="13"
+			 :style="'position:absolute; left:'+positions[13].x+'px; top:'+positions[13].y+'px; z-index:2;'"
+			 @mousedown="editMode && startDrag($event, 13)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/13'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(13)" width="434" height="259"
+					 @mouseover="!editMode && hoverBuilding(13)"
+					 @mouseout="!editMode && unhoverBuilding(13)">
+			</a>
+		</div>
+		</check>
+
+		<!-- Buildings 0-12, 14-21 (standard z-index) -->
+		<check if="{{ @building_levels.0 }}">
+		<div class="town-building" data-b="0"
+			 :style="'position:absolute; left:'+positions[0].x+'px; top:'+positions[0].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 0)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/0'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(0)"
+					 @mouseover="!editMode && hoverBuilding(0)"
+					 @mouseout="!editMode && unhoverBuilding(0)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.1 }}">
+		<div class="town-building" data-b="1"
+			 :style="'position:absolute; left:'+positions[1].x+'px; top:'+positions[1].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 1)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/1'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(1)"
+					 @mouseover="!editMode && hoverBuilding(1)"
+					 @mouseout="!editMode && unhoverBuilding(1)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.2 }}">
+		<div class="town-building" data-b="2"
+			 :style="'position:absolute; left:'+positions[2].x+'px; top:'+positions[2].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 2)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/2'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(2)"
+					 @mouseover="!editMode && hoverBuilding(2)"
+					 @mouseout="!editMode && unhoverBuilding(2)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.3 }}">
+		<div class="town-building" data-b="3"
+			 :style="'position:absolute; left:'+positions[3].x+'px; top:'+positions[3].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 3)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/3'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(3)"
+					 @mouseover="!editMode && hoverBuilding(3)"
+					 @mouseout="!editMode && unhoverBuilding(3)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.4 }}">
+		<div class="town-building" data-b="4"
+			 :style="'position:absolute; left:'+positions[4].x+'px; top:'+positions[4].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 4)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/4'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(4)"
+					 @mouseover="!editMode && hoverBuilding(4)"
+					 @mouseout="!editMode && unhoverBuilding(4)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.5 }}">
+		<div class="town-building" data-b="5"
+			 :style="'position:absolute; left:'+positions[5].x+'px; top:'+positions[5].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 5)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/5'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(5)"
+					 @mouseover="!editMode && hoverBuilding(5)"
+					 @mouseout="!editMode && unhoverBuilding(5)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.6 }}">
+		<div class="town-building" data-b="6"
+			 :style="'position:absolute; left:'+positions[6].x+'px; top:'+positions[6].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 6)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/6'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(6)"
+					 @mouseover="!editMode && hoverBuilding(6)"
+					 @mouseout="!editMode && unhoverBuilding(6)">
+			</a>
+		</div>
+		</check>
+
+		<!-- Hall: b7 at level 10 shows b22 image, level 1-9 shows b7 image -->
+		<check if="{{ @building_levels.7 == 10 }}">
+		<div class="town-building" data-b="7"
+			 :style="'position:absolute; left:'+positions[7].x+'px; top:'+positions[7].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 7)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/7'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(7)"
+					 @mouseover="!editMode && hoverBuilding(7)"
+					 @mouseout="!editMode && unhoverBuilding(7)">
+			</a>
+		</div>
+		</check>
+		<check if="{{ @building_levels.7 > 0 && @building_levels.7 < 10 }}">
+		<div class="town-building" data-b="7"
+			 :style="'position:absolute; left:'+positions[7].x+'px; top:'+positions[7].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 7)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/7'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(7)"
+					 @mouseover="!editMode && hoverBuilding(7)"
+					 @mouseout="!editMode && unhoverBuilding(7)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.8 }}">
+		<div class="town-building" data-b="8"
+			 :style="'position:absolute; left:'+positions[8].x+'px; top:'+positions[8].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 8)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/8'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(8)"
+					 @mouseover="!editMode && hoverBuilding(8)"
+					 @mouseout="!editMode && unhoverBuilding(8)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.9 }}">
+		<div class="town-building" data-b="9"
+			 :style="'position:absolute; left:'+positions[9].x+'px; top:'+positions[9].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 9)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/9'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(9)"
+					 @mouseover="!editMode && hoverBuilding(9)"
+					 @mouseout="!editMode && unhoverBuilding(9)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.10 }}">
+		<div class="town-building" data-b="10"
+			 :style="'position:absolute; left:'+positions[10].x+'px; top:'+positions[10].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 10)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/10'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(10)"
+					 @mouseover="!editMode && hoverBuilding(10)"
+					 @mouseout="!editMode && unhoverBuilding(10)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.11 }}">
+		<div class="town-building" data-b="11"
+			 :style="'position:absolute; left:'+positions[11].x+'px; top:'+positions[11].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 11)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/11'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(11)"
+					 @mouseover="!editMode && hoverBuilding(11)"
+					 @mouseout="!editMode && unhoverBuilding(11)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.12 }}">
+		<div class="town-building" data-b="12"
+			 :style="'position:absolute; left:'+positions[12].x+'px; top:'+positions[12].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 12)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/12'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(12)"
+					 @mouseover="!editMode && hoverBuilding(12)"
+					 @mouseout="!editMode && unhoverBuilding(12)">
+			</a>
+		</div>
+		</check>
+
+		<!-- b13 (wall) already rendered above with z-index:2 -->
+
+		<check if="{{ @building_levels.14 }}">
+		<div class="town-building" data-b="14"
+			 :style="'position:absolute; left:'+positions[14].x+'px; top:'+positions[14].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 14)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/14'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(14)"
+					 @mouseover="!editMode && hoverBuilding(14)"
+					 @mouseout="!editMode && unhoverBuilding(14)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.15 }}">
+		<div class="town-building" data-b="15"
+			 :style="'position:absolute; left:'+positions[15].x+'px; top:'+positions[15].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 15)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/15'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(15)"
+					 @mouseover="!editMode && hoverBuilding(15)"
+					 @mouseout="!editMode && unhoverBuilding(15)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.16 }}">
+		<div class="town-building" data-b="16"
+			 :style="'position:absolute; left:'+positions[16].x+'px; top:'+positions[16].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 16)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/16'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(16)"
+					 @mouseover="!editMode && hoverBuilding(16)"
+					 @mouseout="!editMode && unhoverBuilding(16)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.17 }}">
+		<div class="town-building" data-b="17"
+			 :style="'position:absolute; left:'+positions[17].x+'px; top:'+positions[17].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 17)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/17'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(17)"
+					 @mouseover="!editMode && hoverBuilding(17)"
+					 @mouseout="!editMode && unhoverBuilding(17)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.18 }}">
+		<div class="town-building" data-b="18"
+			 :style="'position:absolute; left:'+positions[18].x+'px; top:'+positions[18].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 18)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/18'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(18)"
+					 @mouseover="!editMode && hoverBuilding(18)"
+					 @mouseout="!editMode && unhoverBuilding(18)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.19 }}">
+		<div class="town-building" data-b="19"
+			 :style="'position:absolute; left:'+positions[19].x+'px; top:'+positions[19].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 19)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/19'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(19)"
+					 @mouseover="!editMode && hoverBuilding(19)"
+					 @mouseout="!editMode && unhoverBuilding(19)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.20 }}">
+		<div class="town-building" data-b="20"
+			 :style="'position:absolute; left:'+positions[20].x+'px; top:'+positions[20].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 20)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/20'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(20)"
+					 @mouseover="!editMode && hoverBuilding(20)"
+					 @mouseout="!editMode && unhoverBuilding(20)">
+			</a>
+		</div>
+		</check>
+
+		<check if="{{ @building_levels.21 }}">
+		<div class="town-building" data-b="21"
+			 :style="'position:absolute; left:'+positions[21].x+'px; top:'+positions[21].y+'px; z-index:5;'"
+			 @mousedown="editMode && startDrag($event, 21)">
+			<a :href="editMode ? 'javascript:void(0)' : '/town/{{ @town.id }}/building/21'"
+			   @click="editMode ? $event.preventDefault() : showBuildingPopup($event)">
+				<img :src="imgBase + getBuildingImg(21)"
+					 @mouseover="!editMode && hoverBuilding(21)"
+					 @mouseout="!editMode && unhoverBuilding(21)">
+			</a>
+		</div>
+		</check>
+
+		<!-- Town edit icon (not draggable) -->
+		<a href="/town/{{ @town.id }}/edit" onclick="return openTownEditModal(event);" style="position:absolute; left:460px; top:332px; z-index:10;">
+			<img src="{{ @imgs }}{{ @fimgs }}t_edit.png" width="34" height="36" id="town_edit_img"
+				 onmouseover="this.src='{{ @imgs }}{{ @fimgs }}t_edit_.png'; showtext('{{ @town.name }}')"
+				 onmouseout="this.src='{{ @imgs }}{{ @fimgs }}t_edit.png'; showtext('-')">
+		</a>
+
+		<!-- Crossroad icon (not draggable) -->
+		<a href="/town/{{ @town.id }}/dispatch" style="position:absolute; left:526px; top:319px; z-index:10;">
+			<img src="{{ @imgs }}{{ @fimgs }}crossroad.png" id="crossroad_img"
+				 onmouseover="this.src='{{ @imgs }}{{ @fimgs }}crossroad_.png'; showtext('{{ @lang.crossroad ?: 'Crossroad' }}')"
+				 onmouseout="this.src='{{ @imgs }}{{ @fimgs }}crossroad.png'; showtext('-')">
+		</a>
+
+		</div>
+	</div>
+
+	<!-- Edit Mode Toggle + Background Selector (below map) -->
+	<div class="town-edit-bar">
+		<button class="town-edit-toggle" @click="toggleEdit()" :class="{'active': editMode}">
+			<span x-text="editMode ? '{{ @lang.done ?: 'Done' }}' : '{{ @lang.editLayout ?: 'Edit Layout' }}'"></span>
+		</button>
+
+		<div class="bg-selector" x-show="editMode" x-transition>
+			<template x-for="bg in availableBackgrounds" :key="bg">
+				<div class="bg-thumb-wrap">
+					<img class="bg-thumb"
+						:class="{'bg-thumb--active': background === bg, 'bg-thumb--locked': isBackgroundLocked(bg)}"
+						:src="imgBase + bg" @click="changeBackground(bg)"
+						:title="isBackgroundLocked(bg) ? ('🔒 ' + (getBackgroundPrice(bg)) + ' {{ @lang.gems ?: 'Gems' }}') : bg"
+						width="96" height="56">
+					<span class="bg-lock-badge" x-show="isBackgroundLocked(bg)" x-text="'🔒 ' + getBackgroundPrice(bg)"></span>
+				</div>
+			</template>
+		</div>
+	</div>
+
+	<!-- ── Building Quick-Action Popup ──────────────────────────── -->
+	<template x-if="buildingPopup">
+		<div class="bpopup-wrap" @click.self="closeBuildingPopup()">
+			<div class="bpopup">
+
+				<!-- Loading -->
+				<template x-if="buildingPopup.loading">
+					<div class="bpopup-loading">
+						<span class="bpopup-spinner"></span>
+					</div>
+				</template>
+
+				<!-- Loaded -->
+				<template x-if="!buildingPopup.loading && buildingPopup.data && buildingPopup.data.ok">
+					<div>
+						<!-- Header: icon + name + level bar + close -->
+						<div class="bpopup-head">
+							<div class="bpopup-icon">
+								<img :src="'{{ @imgs }}{{ @fimgs }}b' + buildingPopup.bId + '.png'" :alt="buildingPopup.data.building.name"
+									onerror="this.style.display='none'">
+							</div>
+							<div class="bpopup-title">
+								<span class="bpopup-name" x-text="buildingPopup.data.building.name"></span>
+								<div class="bpopup-lv-row">
+									<span class="bpopup-lv" x-text="'Lv ' + buildingPopup.data.building.level + ' / ' + buildingPopup.data.building.max_level"></span>
+									<div class="bpopup-lv-bar">
+										<div class="bpopup-lv-fill"
+											:style="'width:' + Math.round(buildingPopup.data.building.level / buildingPopup.data.building.max_level * 100) + '%'">
+										</div>
+									</div>
+								</div>
+							</div>
+							<button class="bpopup-close" @click="closeBuildingPopup()" type="button">&times;</button>
+						</div>
+
+						<!-- Upgrade Section -->
+						<div class="bpopup-section">
+							<div class="bpopup-section-title">{{ @lang.upgrade ?: 'Upgrade' }}</div>
+
+							<template x-if="buildingPopup.data.upgrade.at_max">
+								<p class="bpopup-note">&#10003; {{ @lang.maxLevel ?: 'Max level reached.' }}</p>
+							</template>
+
+							<template x-if="!buildingPopup.data.upgrade.at_max && buildingPopup.data.upgrade.already_queued">
+								<p class="bpopup-note">&#9203; {{ @lang.alreadyInConstructionQueue ?: 'Already queued.' }}</p>
+							</template>
+
+							<template x-if="!buildingPopup.data.upgrade.at_max && !buildingPopup.data.upgrade.already_queued">
+								<div>
+									<div class="bpopup-costs">
+										<template x-if="buildingPopup.data.upgrade.cost.crop > 0">
+											<span class="bpopup-cost" title="{{ @lang.crop ?: 'Crop' }}"
+												:class="{'bpopup-cost--short': buildingPopup.data.resources.crop < buildingPopup.data.upgrade.cost.crop}">
+												<img src="{{ @imgs }}{{ @fimgs }}00.gif" class="resource">
+												<span x-text="buildingPopup.data.upgrade.cost.crop"></span>
+											</span>
+										</template>
+										<template x-if="buildingPopup.data.upgrade.cost.lumber > 0">
+											<span class="bpopup-cost" title="{{ @lang.lumber ?: 'Lumber' }}"
+												:class="{'bpopup-cost--short': buildingPopup.data.resources.lumber < buildingPopup.data.upgrade.cost.lumber}">
+												<img src="{{ @imgs }}{{ @fimgs }}01.gif" class="resource">
+												<span x-text="buildingPopup.data.upgrade.cost.lumber"></span>
+											</span>
+										</template>
+										<template x-if="buildingPopup.data.upgrade.cost.stone > 0">
+											<span class="bpopup-cost" title="{{ @lang.stone ?: 'Stone' }}"
+												:class="{'bpopup-cost--short': buildingPopup.data.resources.stone < buildingPopup.data.upgrade.cost.stone}">
+												<img src="{{ @imgs }}{{ @fimgs }}02.gif" class="resource">
+												<span x-text="buildingPopup.data.upgrade.cost.stone"></span>
+											</span>
+										</template>
+										<template x-if="buildingPopup.data.upgrade.cost.iron > 0">
+											<span class="bpopup-cost" title="{{ @lang.iron ?: 'Iron' }}"
+												:class="{'bpopup-cost--short': buildingPopup.data.resources.iron < buildingPopup.data.upgrade.cost.iron}">
+												<img src="{{ @imgs }}{{ @fimgs }}03.gif" class="resource">
+												<span x-text="buildingPopup.data.upgrade.cost.iron"></span>
+											</span>
+										</template>
+										<template x-if="buildingPopup.data.upgrade.cost.gold > 0">
+											<span class="bpopup-cost" title="{{ @lang.gold ?: 'Gold' }}"
+												:class="{'bpopup-cost--short': buildingPopup.data.resources.gold < buildingPopup.data.upgrade.cost.gold}">
+												<img src="{{ @imgs }}{{ @fimgs }}04.gif" class="resource">
+												<span x-text="buildingPopup.data.upgrade.cost.gold"></span>
+											</span>
+										</template>
+										<span class="bpopup-cost bpopup-cost-time" title="{{ @lang.duration ?: 'Duration' }}">
+											&#9200;
+											<span x-text="buildingPopup.data.upgrade.cost.time"></span>
+										</span>
+									</div>
+									<form :action="'/town/{{ @town.id }}/building/' + buildingPopup.bId" method="post">
+										<input type="hidden" name="csrf_token" :value="csrfToken">
+										<input type="hidden" name="action" value="upgrade">
+										<button type="submit" class="btn btn-primary btn-sm bpopup-btn"
+											:disabled="!buildingPopup.data.upgrade.can_upgrade">
+											{{ @lang.upgrade ?: 'Upgrade' }} &rarr;
+										</button>
+									</form>
+								</div>
+							</template>
+						</div>
+
+						<!-- Train Section (military: barracks/port/siege) -->
+						<template x-if="buildingPopup.data.can_train && buildingPopup.data.trainable_units.length > 0">
+							<div class="bpopup-section">
+								<div class="bpopup-section-title">{{ @lang.train ?: 'Train' }}</div>
+								<form :action="'/town/{{ @town.id }}/building/' + buildingPopup.bId" method="post">
+									<input type="hidden" name="csrf_token" :value="csrfToken">
+									<input type="hidden" name="action" value="train">
+									<table class="bpopup-table">
+										<template x-for="u in buildingPopup.data.trainable_units" :key="u.id">
+											<tr :class="{'bpopup-locked': !u.researched}"
+												:title="!u.researched ? '{{ @lang.unitNotResearched ?: 'Research required' }}' : ''">
+												<td class="bpopup-unit-name" x-text="u.name"></td>
+												<td class="bpopup-unit-stat">&#9876; <span x-text="u.attack"></span></td>
+												<td class="bpopup-unit-stat">&#9737; <span x-text="u.defense"></span></td>
+												<td><input type="number" :name="'qty[' + u.id + ']'" value="0" min="0" class="textbox bpopup-qty" :disabled="!u.researched"></td>
+											</tr>
+										</template>
+									</table>
+									<button type="submit" class="btn btn-primary btn-sm bpopup-btn">
+										{{ @lang.train ?: 'Train' }} &rarr;
+									</button>
+								</form>
+							</div>
+						</template>
+
+						<!-- Forge Section (war shop / stable) -->
+						<template x-if="buildingPopup.data.can_forge && buildingPopup.data.forgeable_weapons.length > 0">
+							<div class="bpopup-section">
+								<div class="bpopup-section-title">{{ @lang.forge ?: 'Forge' }}</div>
+								<form :action="'/town/{{ @town.id }}/building/' + buildingPopup.bId" method="post">
+									<input type="hidden" name="csrf_token" :value="csrfToken">
+									<input type="hidden" name="action" value="forge">
+									<table class="bpopup-table">
+										<template x-for="w in buildingPopup.data.forgeable_weapons" :key="w.id">
+											<tr>
+												<td class="bpopup-unit-name" x-text="w.name"></td>
+												<td class="bpopup-unit-stat" x-text="'&#9200; ' + w.time"></td>
+												<td><input type="number" :name="'qty[' + w.id + ']'" value="0" min="0" class="textbox bpopup-qty"></td>
+											</tr>
+										</template>
+									</table>
+									<button type="submit" class="btn btn-primary btn-sm bpopup-btn">
+										{{ @lang.forge ?: 'Forge' }} &rarr;
+									</button>
+								</form>
+							</div>
+						</template>
+
+						<!-- Upgrade Units link (academy / blacksmith) -->
+						<template x-if="buildingPopup.data.can_upgrade_units">
+							<div class="bpopup-section">
+								<div class="bpopup-section-title">{{ @lang.unitUpgQueue ?: 'Upgrade Units' }}</div>
+								<a :href="'/town/{{ @town.id }}/building/' + buildingPopup.bId" class="btn btn-secondary btn-sm bpopup-btn">
+									{{ @lang.unitUpgQueue ?: 'Upgrade Units' }} &rarr;
+								</a>
+							</div>
+						</template>
+
+						<!-- Hall: build new buildings -->
+						<template x-if="buildingPopup.data.building.category === 'hall'">
+							<div class="bpopup-section">
+								<div class="bpopup-section-title">{{ @lang.build ?: 'Build' }}</div>
+								<a href="/town/{{ @town.id }}/building/7" class="btn btn-secondary btn-sm bpopup-btn">
+									{{ @lang.build ?: 'Build' }} &rarr;
+								</a>
+							</div>
+						</template>
+
+						<!-- Footer: detail link -->
+						<div class="bpopup-footer">
+							<a :href="'/town/{{ @town.id }}/building/' + buildingPopup.bId" class="btn btn-secondary btn-sm bpopup-btn">
+								{{ @lang.detail ?: 'Detail' }} &rarr;
+							</a>
+						</div>
+					</div>
+				</template>
+			</div>
+		</div>
+	</template>
+</div>
+
+</check>
+
+<div id="townEditBackdrop" class="town-edit-modal-backdrop" aria-hidden="true">
+	<div class="town-edit-modal" role="dialog" aria-modal="true" aria-labelledby="townEditTitle">
+		<div id="townEditTitle" class="town-edit-modal-head">{{ @lang.editTown ?: 'Edit Town' }}</div>
+		<form action="/town/{{ @town.id }}/edit" method="post" class="town-edit-modal-body">
+			<input type="hidden" name="csrf_token" value="{{ @CSRF }}">
+			<label class="town-edit-label">
+				<span>{{ @lang.townName ?: 'Town Name' }}</span>
+				<input class="town-edit-input" type="text" name="name" value="{{ @town.name }}" maxlength="64" required>
+			</label>
+			<label class="town-edit-label">
+				<span>{{ @lang.description ?: 'Description' }}</span>
+				<textarea class="town-edit-textarea" name="description" maxlength="1000">{{ @town.description }}</textarea>
+			</label>
+			<div class="town-edit-actions">
+				<button type="button" class="town-edit-toggle" id="townEditCancel">{{ @lang.cancel ?: 'Cancel' }}</button>
+				<button type="submit" class="town-edit-toggle active">{{ @lang.save ?: 'Save' }}</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div id="queueCancelBackdrop" class="queue-confirm-backdrop" aria-hidden="true">
+	<div class="queue-confirm" role="dialog" aria-modal="true" aria-labelledby="queueCancelTitle">
+		<div id="queueCancelTitle" class="queue-confirm-head">{{ @lang.cancelConstructionTitle ?: 'Cancel Construction?' }}</div>
+		<div class="queue-confirm-body">
+			<div id="queueCancelText">{{ @lang.cancelConstructionText ?: 'Are you sure you want to remove this building from the construction queue?' }}</div>
+			<div class="queue-confirm-actions">
+				<button type="button" class="town-edit-toggle" id="queueCancelNo">{{ @lang.cancel ?: 'Cancel' }}</button>
+				<button type="button" class="town-edit-toggle active" id="queueCancelYes">{{ @lang.confirmAction ?: 'Confirm' }}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<span id="label" class="building-tooltip"></span>
+<script type="text/javascript">startres();</script>
+<script type="text/javascript">
+function openTownEditModal(ev) {
+	if (ev) ev.preventDefault();
+	var backdrop = document.getElementById('townEditBackdrop');
+	if (!backdrop) return true;
+	backdrop.classList.add('show');
+	backdrop.setAttribute('aria-hidden', 'false');
+	return false;
+}
+
+(function() {
+	var backdrop = document.getElementById('townEditBackdrop');
+	var cancelBtn = document.getElementById('townEditCancel');
+	if (!backdrop || !cancelBtn) return;
+
+	function closeTownEditModal() {
+		backdrop.classList.remove('show');
+		backdrop.setAttribute('aria-hidden', 'true');
+	}
+
+	cancelBtn.addEventListener('click', closeTownEditModal);
+	backdrop.addEventListener('click', function(e) {
+		if (e.target === backdrop) closeTownEditModal();
+	});
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape') closeTownEditModal();
+	});
+})();
+
+(function() {
+	var backdrop = document.getElementById('queueCancelBackdrop');
+	var cancelBtn = document.getElementById('queueCancelNo');
+	var acceptBtn = document.getElementById('queueCancelYes');
+	var textEl = document.getElementById('queueCancelText');
+	var pendingForm = null;
+	var defaultText = textEl ? textEl.textContent : '';
+
+	if (!backdrop || !cancelBtn || !acceptBtn || !textEl) return;
+
+	function closeToast() {
+		backdrop.classList.remove('show');
+		backdrop.setAttribute('aria-hidden', 'true');
+		pendingForm = null;
+		textEl.textContent = defaultText;
+	}
+
+	document.querySelectorAll('.js-cancel-construction-form').forEach(function(form) {
+		form.addEventListener('submit', function(e) {
+			e.preventDefault();
+			pendingForm = form;
+			var buildingName = form.getAttribute('data-building') || '';
+			if (buildingName) {
+				textEl.textContent = defaultText + ' (' + buildingName + ')';
+			}
+			backdrop.classList.add('show');
+			backdrop.setAttribute('aria-hidden', 'false');
+		});
+	});
+
+	cancelBtn.addEventListener('click', closeToast);
+	acceptBtn.addEventListener('click', function() {
+		if (pendingForm) pendingForm.submit();
+	});
+
+	backdrop.addEventListener('click', function(e) {
+		if (e.target === backdrop) closeToast();
+	});
+
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape') closeToast();
+	});
+})();
+
+</script>
+
+<script>
+/* ── Town Ambient FX ─────────────────────────────────────────────────── */
+(function() {
+	var canvas = document.getElementById('town-fx');
+	if (!canvas || !canvas.getContext) return;
+	var ctx = canvas.getContext('2d');
+	var W = 640, H = 372;
+
+	/* ── FX zones from backgroundMasks ──────────────────────────────── */
+	/* backgroundMasks is an object keyed by bg filename: {back2.png: [...]} */
+	var fxZones = { water: [], fire: [], wind: [], smoke: [], road: [] };
+	var roadSprites = [];
+	var preferredFaction = {{ (@SESSION.user.faction ?: 1) - 1 }};
+	if (preferredFaction < 0 || preferredFaction > 2) preferredFaction = 0;
+	try {
+		var cfg = (typeof townEditorConfig !== 'undefined') ? townEditorConfig : null;
+		if (cfg) {
+			var activeBg = cfg.initialBackground || '';
+			var masks = (cfg.backgroundMasks || {})[activeBg] || [];
+			for (var mi = 0; mi < masks.length; mi++) {
+				var mz = masks[mi];
+				if (mz.fx && fxZones[mz.fx]) fxZones[mz.fx].push(mz);
+			}
+		}
+	} catch(e) {}
+
+	(function preloadRoadSprites() {
+		var unitBase = '/default/images/units/';
+		var factions = [preferredFaction, preferredFaction, preferredFaction];
+		for (var f = 0; f < 3; f++) {
+			if (f !== preferredFaction) factions.push(f);
+		}
+		/* Prefer land units for road walkers (avoid siege/naval-looking sprites). */
+		var unitTypes = [0, 1, 2, 3, 4, 5, 6, 11, 12];
+		for (var fi = 0; fi < factions.length; fi++) {
+			for (var ui = 0; ui < unitTypes.length; ui++) {
+				var img = new Image();
+				img.src = unitBase + factions[fi] + '/' + unitTypes[ui] + '.png';
+				roadSprites.push(img);
+			}
+		}
+	})();
+
+	function rand(a, b) { return a + Math.random() * (b - a); }
+	function randInt(a, b) { return Math.floor(rand(a, b + 1)); }
+
+	/* Random point inside a zone */
+	function randInZone(z) {
+		if (!z) return null;
+		if (z.t === 'rect') return { x: rand(z.x, z.x + z.w), y: rand(z.y, z.y + z.h) };
+		if (z.t === 'circle' || z.t === 'brush') {
+			var a = rand(0, Math.PI * 2), r = rand(0, z.r);
+			return { x: z.cx + Math.cos(a) * r, y: z.cy + Math.sin(a) * r };
+		}
+		if (z.t === 'poly' && z.points && z.points.length >= 3) {
+			var xs = z.points.map(function(p){ return p.x; });
+			var ys = z.points.map(function(p){ return p.y; });
+			return { x: rand(Math.min.apply(null,xs), Math.max.apply(null,xs)),
+			         y: rand(Math.min.apply(null,ys), Math.max.apply(null,ys)) };
+		}
+		return null;
+	}
+	function randInZones(zones) {
+		if (!zones || !zones.length) return null;
+		return randInZone(zones[Math.floor(Math.random() * zones.length)]);
+	}
+
+	/* ── Particle pool ───────────────────────────────────────────────── */
+	var particles = [];
+	var MAX_LEAF    = 12;
+	var MAX_DUST    = 18;
+	var MAX_SHIMMER = fxZones.water.length > 0 ? 10 : 0;
+	var MAX_SMOKE   = fxZones.smoke.length > 0 ? 5 : 0;
+	var MAX_FIRE    = fxZones.fire.length  > 0 ? 8 : 0;
+	var MAX_WALKER  = fxZones.road.length  > 0 ? 6 : 0;
+
+	/* ── Spawn helpers ───────────────────────────────────────────────── */
+	function spawnLeaf() {
+		return {
+			type: 'leaf',
+			x: rand(0, W), y: rand(-20, -5),
+			vx: rand(-0.4, 0.4), vy: rand(0.3, 0.7),
+			angle: rand(0, Math.PI * 2), spin: rand(-0.03, 0.03),
+			size: rand(3, 6), alpha: rand(0.55, 0.85), life: 1,
+			color: Math.random() > 0.5 ? '#8a6a3a' : '#5a7a3a'
+		};
+	}
+
+	function spawnDust() {
+		return {
+			type: 'dust',
+			x: rand(40, W - 40), y: rand(H * 0.4, H - 20),
+			vx: rand(-0.15, 0.15), vy: rand(-0.25, -0.08),
+			size: rand(1, 2), alpha: rand(0.2, 0.45), life: 1,
+			fade: rand(0.003, 0.007)
+		};
+	}
+
+	function spawnShimmer() {
+		var pt = randInZones(fxZones.water);
+		if (!pt) return null;
+		return {
+			type: 'shimmer', x: pt.x, y: pt.y,
+			len: rand(6, 18), angle: rand(0, Math.PI),
+			alpha: 0, peakAlpha: rand(0.3, 0.6),
+			phase: 'in', speed: rand(0.015, 0.03)
+		};
+	}
+
+	function spawnSmoke() {
+		var pt = randInZones(fxZones.smoke);
+		if (!pt) return null;
+		return {
+			type: 'smoke',
+			x: pt.x + rand(-3, 3), y: pt.y,
+			vx: rand(-0.08, 0.08), vy: rand(-0.28, -0.12),
+			size: rand(3, 6), alpha: rand(0.14, 0.24), life: 1,
+			fade: rand(0.002, 0.005), grow: rand(0.03, 0.07)
+		};
+	}
+
+	function spawnFire() {
+		var pt = randInZones(fxZones.fire);
+		if (!pt) return null;
+		var hot = Math.random() < 0.6;
+		return {
+			type: 'fire',
+			x: pt.x + rand(-4, 4), y: pt.y + rand(-1, 1),
+			vx: rand(-0.15, 0.15), vy: rand(-0.7, -0.3),
+			size: rand(2, 4),
+			alpha: rand(0.28, 0.48),
+			fade: rand(0.012, 0.022),
+			color: hot ? '#ff6a00' : '#ffcc00'
+		};
+	}
+
+	function spawnWalker() {
+		var pt = randInZones(fxZones.road);
+		if (!pt) return null;
+		var sprite = roadSprites.length ? roadSprites[randInt(0, roadSprites.length - 1)] : null;
+		var ang = rand(0, Math.PI * 2);
+		return {
+			type: 'walker',
+			x: pt.x, y: pt.y,
+			vx: Math.cos(ang) * rand(0.12, 0.3),
+			vy: Math.sin(ang) * rand(0.1, 0.24),
+			size: rand(10, 14),
+			alpha: rand(0.72, 0.92),
+			bob: rand(0, Math.PI * 2),
+			bobSpeed: rand(0.12, 0.2),
+			sprite: sprite,
+			ttl: randInt(420, 760)
+		};
+	}
+
+	/* ── Seed initial particles ──────────────────────────────────────── */
+	for (var i = 0; i < MAX_LEAF;    i++) { var p = spawnLeaf();    if (p) { p.y = rand(0, H); particles.push(p); } }
+	for (var i = 0; i < MAX_DUST;    i++) { var p = spawnDust();    if (p) particles.push(p); }
+	for (var i = 0; i < MAX_SHIMMER; i++) { var p = spawnShimmer(); if (p) particles.push(p); }
+	for (var i = 0; i < MAX_SMOKE;   i++) { var p = spawnSmoke();   if (p) { p.y -= rand(0, 25); particles.push(p); } }
+	for (var i = 0; i < MAX_FIRE;    i++) { var p = spawnFire();    if (p) { p.y -= rand(0, 20); particles.push(p); } }
+	for (var i = 0; i < MAX_WALKER;  i++) { var p = spawnWalker();  if (p) particles.push(p); }
+
+	/* ── Replenish counters ──────────────────────────────────────────── */
+	function countType(type) {
+		var n = 0;
+		for (var i = 0; i < particles.length; i++) if (particles[i].type === type) n++;
+		return n;
+	}
+
+	/* ── Tick ────────────────────────────────────────────────────────── */
+	function tick() {
+		ctx.clearRect(0, 0, W, H);
+		var dead = [];
+
+		for (var i = 0; i < particles.length; i++) {
+			var p = particles[i];
+
+			if (p.type === 'leaf') {
+				p.x += p.vx + Math.sin(Date.now() * 0.001 + i) * 0.18;
+				p.y += p.vy;
+				p.angle += p.spin;
+				if (p.y > H + 10) { dead.push(i); continue; }
+				ctx.save();
+				ctx.globalAlpha = p.alpha;
+				ctx.translate(p.x, p.y);
+				ctx.rotate(p.angle);
+				ctx.fillStyle = p.color;
+				ctx.beginPath();
+				ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.restore();
+
+			} else if (p.type === 'dust') {
+				p.x += p.vx;
+				p.y += p.vy;
+				p.alpha -= p.fade;
+				if (p.alpha <= 0) { dead.push(i); continue; }
+				ctx.globalAlpha = p.alpha;
+				ctx.fillStyle = '#e8d8b8';
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+				ctx.fill();
+
+			} else if (p.type === 'shimmer') {
+				if (p.phase === 'in') {
+					p.alpha += p.speed;
+					if (p.alpha >= p.peakAlpha) p.phase = 'out';
+				} else {
+					p.alpha -= p.speed * 0.7;
+					if (p.alpha <= 0) { dead.push(i); continue; }
+				}
+				ctx.save();
+				ctx.globalAlpha = p.alpha;
+				ctx.strokeStyle = '#cceeff';
+				ctx.lineWidth = 1.5;
+				ctx.translate(p.x, p.y);
+				ctx.rotate(p.angle);
+				ctx.beginPath();
+				ctx.moveTo(-p.len / 2, 0);
+				ctx.lineTo(p.len / 2, 0);
+				ctx.stroke();
+				ctx.restore();
+
+			} else if (p.type === 'smoke') {
+				p.x += p.vx;
+				p.y += p.vy;
+				p.size += p.grow;
+				p.alpha -= p.fade;
+				if (p.alpha <= 0) { dead.push(i); continue; }
+				ctx.globalAlpha = p.alpha;
+				ctx.fillStyle = '#cccccc';
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+				ctx.fill();
+
+			} else if (p.type === 'fire') {
+				p.x += p.vx + Math.sin(Date.now() * 0.004 + i) * 0.2;
+				p.y += p.vy;
+				p.size *= 0.97;
+				p.alpha -= p.fade;
+				if (p.alpha <= 0 || p.size < 0.5) { dead.push(i); continue; }
+				ctx.globalAlpha = p.alpha;
+				ctx.fillStyle = p.color;
+				ctx.beginPath();
+				ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+				ctx.fill();
+
+			} else if (p.type === 'walker') {
+				p.x += p.vx;
+				p.y += p.vy;
+				p.bob += p.bobSpeed;
+				p.ttl -= 1;
+				if (p.ttl <= 0 || p.x < -24 || p.x > W + 24 || p.y < -24 || p.y > H + 24) { dead.push(i); continue; }
+				var yBob = Math.sin(p.bob) * 0.7;
+				var sz = p.size;
+				ctx.globalAlpha = Math.max(0.35, p.alpha - 0.08);
+				ctx.fillStyle = 'rgba(0,0,0,0.45)';
+				ctx.beginPath();
+				ctx.ellipse(p.x, p.y + (sz * 0.42), sz * 0.45, sz * 0.2, 0, 0, Math.PI * 2);
+				ctx.fill();
+				ctx.globalAlpha = p.alpha;
+				if (p.sprite && p.sprite.complete) {
+					var flip = p.vx < 0 ? -1 : 1;
+					ctx.save();
+					ctx.translate(p.x, p.y + yBob);
+					ctx.scale(flip, 1);
+					ctx.drawImage(p.sprite, -sz / 2, -sz / 2, sz, sz);
+					ctx.restore();
+				} else {
+					ctx.fillStyle = '#d5bf86';
+					ctx.fillRect(p.x - (sz * 0.28), p.y - (sz * 0.35) + yBob, sz * 0.56, sz * 0.72);
+				}
+			}
+		}
+
+		/* Remove dead (reverse order to keep indices valid) */
+		for (var d = dead.length - 1; d >= 0; d--) particles.splice(dead[d], 1);
+
+		/* Replenish */
+		if (countType('leaf')    < MAX_LEAF    && Math.random() < 0.02)  { var p = spawnLeaf();    if (p) particles.push(p); }
+		if (countType('dust')    < MAX_DUST    && Math.random() < 0.06)  { var p = spawnDust();    if (p) particles.push(p); }
+		if (countType('shimmer') < MAX_SHIMMER && Math.random() < 0.04)  { var p = spawnShimmer(); if (p) particles.push(p); }
+		if (countType('smoke')   < MAX_SMOKE   && Math.random() < 0.015) { var p = spawnSmoke();   if (p) particles.push(p); }
+		if (countType('fire')    < MAX_FIRE    && Math.random() < 0.06)  { var p = spawnFire();    if (p) particles.push(p); }
+		if (countType('walker')  < MAX_WALKER  && Math.random() < 0.035) { var p = spawnWalker();  if (p) particles.push(p); }
+
+		ctx.globalAlpha = 1;
+		requestAnimationFrame(tick);
+	}
+
+	requestAnimationFrame(tick);
+})();
+</script>
+
+<!-- Live Production Tooltip element -->
+<div id="prod-live-tip"></div>
+
+<script>
+/* ── Live Production Tooltip ─────────────────────────────────────────── */
+(function () {
+	/* Per-hour rates from server (set in the inline script at the top) */
+	var PH   = [res_ph0, res_ph1, res_ph2, res_ph3, res_ph4];
+	var LIMS = [res_limit0, res_limit1, res_limit2, res_limit3, res_limit4];
+	var NAMES = [
+		'{{ @lang.crop    ?: "Crop" }}',
+		'{{ @lang.lumber  ?: "Lumber" }}',
+		'{{ @lang.stone   ?: "Stone" }}',
+		'{{ @lang.iron    ?: "Iron" }}',
+		'{{ @lang.gold    ?: "Gold" }}'
+	];
+
+	/* Update each production-row span to show /s value */
+	function fmtPerSec(v) {
+		if (v >= 10)   return Math.round(v).toString();
+		if (v >= 1)    return v.toFixed(1);
+		if (v >= 0.01) return v.toFixed(3);
+		return v.toFixed(4);
+	}
+	for (var i = 0; i < 5; i++) {
+		var rEl = document.getElementById('prod-rate-' + i);
+		if (rEl) rEl.textContent = fmtPerSec(PH[i] / 3600) + '/s';
+	}
+
+	/* Tooltip logic */
+	var tip      = document.getElementById('prod-live-tip');
+	var hoverIdx = -1;
+	var ivl      = null;
+
+	function currentVal(i) {
+		/* prefer live float from startres(), fall back to DOM floor value */
+		if (window.resFloat && window.resFloat[i] !== undefined) return window.resFloat[i];
+		var el = document.getElementById('res' + i);
+		return el ? parseFloat(el.textContent) : 0;
+	}
+
+	function fmtCur(v) {
+		/* show up to 1 decimal if fractional part is noticeable */
+		var f = v - Math.floor(v);
+		return f > 0.05 ? v.toFixed(1) : Math.floor(v).toString();
+	}
+
+	function updateContent() {
+		if (hoverIdx < 0 || !tip) return;
+		var i       = hoverIdx;
+		var cur     = currentVal(i);
+		var lim     = LIMS[i] || 0;
+		var pct     = lim > 0 ? Math.min(100, cur / lim * 100) : 0;
+		var perSec  = PH[i] / 3600;
+		var fillClr = pct >= 90 ? '#e05555' : pct >= 60 ? '#c9a020' : '#4ab05a';
+
+		tip.innerHTML =
+			'<div class="plt-name">' + NAMES[i] + '</div>' +
+			'<div class="plt-row">' +
+				'<span class="plt-lbl">Toplam</span>' +
+				'<span class="plt-val">' + fmtCur(cur) + ' / ' + lim + '</span>' +
+			'</div>' +
+			'<div class="plt-bar-wrap"><div class="plt-bar" style="width:' + pct.toFixed(2) + '%;background:' + fillClr + '"></div></div>' +
+			'<div class="plt-sep"></div>' +
+			'<div class="plt-row">' +
+				'<span class="plt-lbl">Saniyede</span>' +
+				'<span class="plt-val plt-green">+' + fmtPerSec(perSec) + '/s</span>' +
+			'</div>' +
+			'<div class="plt-row">' +
+				'<span class="plt-lbl">Saatte</span>' +
+				'<span class="plt-val">+' + PH[i] + '/h</span>' +
+			'</div>';
+	}
+
+	function showTip(e) {
+		if (!tip) return;
+		tip.style.display = 'block';
+		updateContent();
+		posTip(e);
+		if (!ivl) ivl = setInterval(updateContent, 100);
+	}
+
+	function hideTip() {
+		hoverIdx = -1;
+		if (tip) tip.style.display = 'none';
+		if (ivl) { clearInterval(ivl); ivl = null; }
+	}
+
+	function posTip(e) {
+		if (!tip) return;
+		var off = 14;
+		var x = e.clientX + off;
+		var y = e.clientY + off;
+		var r = tip.getBoundingClientRect();
+		if (x + r.width  > window.innerWidth  - 8) x = e.clientX - r.width  - off;
+		if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - off;
+		tip.style.left = x + 'px';
+		tip.style.top  = y + 'px';
+	}
+
+	document.addEventListener('mouseover', function (e) {
+		var el = e.target.closest('.prod-live-item');
+		if (!el) return;
+		hoverIdx = parseInt(el.getAttribute('data-prod-idx'), 10);
+		showTip(e);
+	});
+
+	document.addEventListener('mousemove', function (e) {
+		if (hoverIdx < 0) return;
+		posTip(e);
+	});
+
+	document.addEventListener('mouseout', function (e) {
+		var el = e.target.closest('.prod-live-item');
+		if (!el) return;
+		var rel = e.relatedTarget;
+		if (rel && rel.closest && rel.closest('.prod-live-item') === el) return;
+		hideTip();
+	});
+})();
+</script>

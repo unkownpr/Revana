@@ -1,0 +1,6 @@
+<check if="{{ isset(@flash_message) }}">
+<div class="flash-message flash-{{ @flash_type ?: 'info' }}" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition>
+	<span class="flash-text">{{ @flash_message }}</span>
+	<button class="flash-close" @click="show = false">&times;</button>
+</div>
+</check>
