@@ -1,7 +1,7 @@
 <html>
 <link rel="stylesheet" type="text/css" href="/default/1/default.css">
 <head>
-<title>Devana - Installation</title>
+<title>Revana - Installation Wizard</title>
 </head>
 <body class="q_body">
 <div align="center">
@@ -12,43 +12,75 @@
 	</tr>
 	<tr>
 		<td class="td_top_menu">
-			<font class="q_label">Installation Wizard - Step 3: Admin Account</font>
+			<font class="q_label">Installation Wizard &mdash; Step 2 of 3: Admin Account</font>
 		</td>
 	</tr>
 	<tr>
 		<td class="td_content">
 			<br>
+			<table class="q_table" style="border-collapse:collapse" width="540" border="1">
+				<tr><td class="head_table"><font color="green">&#10003; Database Imported Successfully</font></td></tr>
+				<tr><td class="q_text" align="center">
+					<br>
+					All database tables have been created and seed data (buildings, units, weapons, factions) has been imported.<br>
+					The map data has been loaded. Your game world is ready.
+					<br><br>
+				</td></tr>
+			</table>
+			<br>
 			<check if="{{ isset(@errors) }}">
-				<repeat group="{{ @errors }}" value="{{ @err }}">
-					<font color="red"><b>{{ @err }}</b></font><br>
-				</repeat>
+				<table class="q_table" style="border-collapse:collapse" width="540" border="1">
+					<tr><td class="head_table"><font color="red">&#9888; Please fix the following errors</font></td></tr>
+					<tr><td class="q_text" align="left">
+						<br>
+						<repeat group="{{ @errors }}" value="{{ @err }}">
+							&bull; <font color="red"><b>{{ @err }}</b></font><br><br>
+						</repeat>
+					</td></tr>
+				</table>
 				<br>
 			</check>
-			<font class="q_text">Database imported successfully! Now create your admin account.</font>
+			<font class="q_text">
+				Now create your <b>administrator account</b>. This account has full access to the admin panel,
+				including user management, season control, map editor, and game configuration.<br>
+				Choose a strong password &mdash; this is your most privileged account.
+			</font>
 			<br><br>
 			<form method="post" action="/install/step3">
-				<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+				<table class="q_table" style="border-collapse: collapse" width="540" border="1">
 					<tr>
-						<td class="head_table" colspan="2">Admin Account</td>
+						<td class="head_table" colspan="2">Administrator Account</td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right" width="200">Username:</td>
-						<td><input class="textbox" type="text" name="username" value="{{ isset(@username) ? @username : '' }}"></td>
+						<td class="q_text" align="right" width="220">
+							Username:<br>
+							<font color="#888" style="font-size:11px">3&ndash;20 characters, letters &amp; numbers</font>
+						</td>
+						<td><input class="textbox" type="text" name="username" value="{{ isset(@username) ? @username : '' }}" placeholder="admin"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Password:</td>
-						<td><input class="textbox" type="password" name="password"></td>
+						<td class="q_text" align="right">
+							Password:<br>
+							<font color="#888" style="font-size:11px">Minimum 6 characters</font>
+						</td>
+						<td><input class="textbox" type="password" name="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></td>
 					</tr>
 					<tr>
 						<td class="q_text" align="right">Confirm Password:</td>
-						<td><input class="textbox" type="password" name="password_confirm"></td>
+						<td><input class="textbox" type="password" name="password_confirm" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Email:</td>
-						<td><input class="textbox" type="text" name="email" value="{{ isset(@email) ? @email : '' }}"></td>
+						<td class="q_text" align="right">
+							Email Address:<br>
+							<font color="#888" style="font-size:11px">Optional, for password recovery</font>
+						</td>
+						<td><input class="textbox" type="text" name="email" value="{{ isset(@email) ? @email : '' }}" placeholder="admin@example.com"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Faction:</td>
+						<td class="q_text" align="right">
+							Faction:<br>
+							<font color="#888" style="font-size:11px">Your starting faction (changeable later)</font>
+						</td>
 						<td>
 							<select class="dropdown" name="faction">
 								<repeat group="{{ @factions }}" value="{{ @faction }}">
@@ -58,19 +90,32 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">First Town Name:</td>
-						<td><input class="textbox" type="text" name="town_name" value="{{ isset(@town_name) ? @town_name : 'My Town' }}"></td>
+						<td class="head_table" colspan="2">Starting Town</td>
+					</tr>
+					<tr>
+						<td class="q_text" align="right">
+							First Town Name:<br>
+							<font color="#888" style="font-size:11px">Name your starting settlement</font>
+						</td>
+						<td><input class="textbox" type="text" name="town_name" value="{{ isset(@town_name) ? @town_name : 'Capital' }}" placeholder="Capital"></td>
 					</tr>
 					<tr>
 						<td colspan="2" align="center">
 							<br>
-							<input class="button" type="submit" value="Create Admin & Finish">
+							<font class="q_text" color="#888" style="font-size:11px">
+								After finishing, the installer will be locked for security (install.lock is created).<br>
+								To re-run, delete the <b>install.lock</b> file from the project root.
+							</font>
+							<br><br>
+							<input class="button" type="submit" value="Create Account &amp; Finish Installation &rarr;">
 							<br><br>
 						</td>
 					</tr>
 				</table>
 			</form>
 			<br>
+			<font class="q_text" color="#888" style="font-size:11px">Step 2 of 3 &mdash; Administrator Setup</font>
+			<br><br>
 		</td>
 	</tr>
 </table>

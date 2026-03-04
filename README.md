@@ -4,6 +4,13 @@
 
 **[Live Preview →](https://unkownpr.github.io/Revana/)**
 
+![Revana Preview](https://i.hizliresim.com/d7o4wfa.gif)
+
+---
+
+**Read this in other languages:**
+🇹🇷 [Türkçe](./README.tr.md) &nbsp;|&nbsp; 🇫🇷 [Français](./README.fr.md) &nbsp;|&nbsp; 🇩🇪 [Deutsch](./README.de.md)
+
 Build towns, forge alliances, and conquer the world — all in your browser. Revana is a self-hosted, open-source game engine built on PHP 8 and MariaDB. Deploy it on any standard web server and run your own strategy game community.
 
 ---

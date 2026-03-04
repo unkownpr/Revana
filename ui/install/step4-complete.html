@@ -1,7 +1,7 @@
 <html>
 <link rel="stylesheet" type="text/css" href="/default/1/default.css">
 <head>
-<title>Devana - Installation Complete</title>
+<title>Revana - Installation Complete</title>
 </head>
 <body class="q_body">
 <div align="center">
@@ -12,35 +12,83 @@
 	</tr>
 	<tr>
 		<td class="td_top_menu">
-			<font class="q_label">Installation Wizard - Complete!</font>
+			<font class="q_label">Installation Wizard &mdash; Step 3 of 3: Complete!</font>
 		</td>
 	</tr>
 	<tr>
 		<td class="td_content">
 			<br><br>
-			<font color="green"><b>Installation completed successfully!</b></font>
+			<font color="green" style="font-size:16px"><b>&#10003; Revana has been installed successfully!</b></font>
 			<br><br>
-			<table class="q_table" style="border-collapse: collapse" width="400" border="1">
+
+			<table class="q_table" style="border-collapse: collapse" width="500" border="1">
 				<tr>
-					<td class="head_table" align="center">Summary</td>
+					<td class="head_table" colspan="2" align="center">Installation Summary</td>
 				</tr>
 				<tr>
-					<td class="q_text" align="center">
+					<td class="q_text" align="right" width="220">Admin Account:</td>
+					<td class="q_text"><b>{{ @username }}</b></td>
+				</tr>
+				<tr>
+					<td class="q_text" align="right">Database:</td>
+					<td class="q_text"><font color="green">&#10003; All tables created &amp; seed data imported</font></td>
+				</tr>
+				<tr>
+					<td class="q_text" align="right">Map Data:</td>
+					<td class="q_text"><font color="green">&#10003; World map loaded</font></td>
+				</tr>
+				<tr>
+					<td class="q_text" align="right">Config File:</td>
+					<td class="q_text"><font color="green">&#10003; config.ini written</font></td>
+				</tr>
+				<tr>
+					<td class="q_text" align="right">Installer:</td>
+					<td class="q_text"><font color="green">&#10003; Locked (install.lock created)</font></td>
+				</tr>
+			</table>
+
+			<br>
+
+			<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+				<tr>
+					<td class="head_table" align="center">What to do next</td>
+				</tr>
+				<tr>
+					<td class="q_text" align="left">
 						<br>
-						Admin account: <b>{{ @username }}</b>
-						<br><br>
-						Database tables and map data have been imported.
-						<br><br>
-						<a class="q_link" href="/login"><b>Go to Login Page</b></a>
-						<br><br>
+						<b>1. Log in</b> &mdash; Use your admin account at the login page.<br><br>
+						<b>2. Admin Panel</b> &mdash; Go to <b>/admin</b> to manage your game. Configure seasons, edit the map, manage users, set game rules.<br><br>
+						<b>3. Create a Season</b> &mdash; Admin &rarr; Seasons &rarr; Create your first game season before players can register and play.<br><br>
+						<b>4. Design the Map</b> &mdash; Admin &rarr; Map Editor to paint your world with plains, water, and resource tiles.<br><br>
+						<b>5. Open Registration</b> &mdash; Admin &rarr; Config &rarr; Enable &quot;Allow Registration&quot; when you are ready to invite players.<br><br>
+						<b>6. Share your server URL</b> &mdash; Let the conquest begin!<br><br>
 					</td>
 				</tr>
 			</table>
+
+			<br>
+
+			<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+				<tr>
+					<td class="head_table" align="center"><font color="#cc8800">&#9888; Security Checklist</font></td>
+				</tr>
+				<tr>
+					<td class="q_text" align="left">
+						<br>
+						&bull; Keep <b>config.ini</b> secure &mdash; it contains your database credentials.<br><br>
+						&bull; Make sure <b>config.ini</b> is in <b>.gitignore</b> before pushing to any repository.<br><br>
+						&bull; Delete <b>install.lock</b> only if you need to reinstall &mdash; it re-enables the installer.<br><br>
+						&bull; Use a strong admin password and change it if others helped with setup.<br><br>
+					</td>
+				</tr>
+			</table>
+
 			<br><br>
-			<font class="q_text">
-				<i>For security, the installer has been locked.<br>
-				To re-run, delete the <b>install.lock</b> file.</i>
-			</font>
+			<a class="q_link" href="/login"><b>&rarr; Go to Login Page</b></a>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a class="q_link" href="/admin"><b>&rarr; Go to Admin Panel</b></a>
+			<br><br>
+			<font class="q_text" color="#888" style="font-size:11px">Step 3 of 3 &mdash; Installation Complete</font>
 			<br><br>
 		</td>
 	</tr>

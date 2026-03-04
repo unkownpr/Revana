@@ -1,7 +1,7 @@
 <html>
 <link rel="stylesheet" type="text/css" href="/default/1/default.css">
 <head>
-<title>Devana - Installation</title>
+<title>Revana - Installation Wizard</title>
 </head>
 <body class="q_body">
 <div align="center">
@@ -12,55 +12,93 @@
 	</tr>
 	<tr>
 		<td class="td_top_menu">
-			<font class="q_label">Installation Wizard - Step 2: Database Error</font>
+			<font class="q_label">Installation Wizard &mdash; Step 1 of 3: Database Connection Error</font>
 		</td>
 	</tr>
 	<tr>
 		<td class="td_content">
 			<br>
 			<check if="{{ isset(@error) }}">
-				<font color="red"><b>Error: {{ @error }}</b></font>
-				<br><br>
+				<table class="q_table" style="border-collapse:collapse" width="540" border="1">
+					<tr><td class="head_table"><font color="red">&#9888; Connection Failed</font></td></tr>
+					<tr><td class="q_text" align="left">
+						<br>
+						<font color="red"><b>{{ @error }}</b></font>
+						<br><br>
+						<b>Common causes &amp; fixes:</b><br><br>
+						&bull; Wrong credentials &mdash; double-check host, port, username and password.<br><br>
+						&bull; Database does not exist &mdash; create it first:<br>
+						&nbsp;&nbsp;<code>CREATE DATABASE revana CHARACTER SET utf8mb4;</code><br><br>
+						&bull; User lacks privileges &mdash; grant them:<br>
+						&nbsp;&nbsp;<code>GRANT ALL ON revana.* TO 'user'@'localhost';</code><br><br>
+						&bull; MySQL/MariaDB service is not running &mdash; start it with <code>service mysql start</code>.<br><br>
+					</td></tr>
+				</table>
+				<br>
 			</check>
+			<font class="q_text">Please correct your database details below and try again.</font>
+			<br><br>
 			<form method="post" action="/install/step2">
-				<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+				<table class="q_table" style="border-collapse: collapse" width="540" border="1">
 					<tr>
-						<td class="head_table" colspan="2">Database Configuration</td>
+						<td class="head_table" colspan="2">Game &amp; Database Configuration</td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right" width="200">Game Title:</td>
-						<td><input class="textbox" type="text" name="game_title" value="{{ @game_title }}"></td>
+						<td class="q_text" align="right" width="220">
+							Game Title:<br>
+							<font color="#888" style="font-size:11px">Shown in browser title bar</font>
+						</td>
+						<td><input class="textbox" type="text" name="game_title" value="{{ @game_title }}" placeholder="Revana"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Database Host:</td>
-						<td><input class="textbox" type="text" name="db_host" value="{{ @db_host }}"></td>
+						<td class="q_text" align="right">
+							Database Host:<br>
+							<font color="#888" style="font-size:11px">Usually &quot;localhost&quot;</font>
+						</td>
+						<td><input class="textbox" type="text" name="db_host" value="{{ @db_host }}" placeholder="localhost"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Database Port:</td>
-						<td><input class="textbox" type="text" name="db_port" value="{{ @db_port }}"></td>
+						<td class="q_text" align="right">
+							Database Port:<br>
+							<font color="#888" style="font-size:11px">Default: 3306</font>
+						</td>
+						<td><input class="textbox" type="text" name="db_port" value="{{ @db_port }}" placeholder="3306"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Database Name:</td>
-						<td><input class="textbox" type="text" name="db_name" value="{{ @db_name }}"></td>
+						<td class="q_text" align="right">
+							Database Name:<br>
+							<font color="#888" style="font-size:11px">Must exist and be empty</font>
+						</td>
+						<td><input class="textbox" type="text" name="db_name" value="{{ @db_name }}" placeholder="revana"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Database User:</td>
-						<td><input class="textbox" type="text" name="db_user" value="{{ @db_user }}"></td>
+						<td class="q_text" align="right">
+							Database User:<br>
+							<font color="#888" style="font-size:11px">Must have CREATE/INSERT rights</font>
+						</td>
+						<td><input class="textbox" type="text" name="db_user" value="{{ @db_user }}" placeholder="root"></td>
 					</tr>
 					<tr>
-						<td class="q_text" align="right">Database Password:</td>
-						<td><input class="textbox" type="password" name="db_pass" value=""></td>
+						<td class="q_text" align="right">
+							Database Password:<br>
+							<font color="#888" style="font-size:11px">Leave blank if none</font>
+						</td>
+						<td><input class="textbox" type="password" name="db_pass" value="" placeholder=""></td>
 					</tr>
 					<tr>
 						<td colspan="2" align="center">
 							<br>
-							<input class="button" type="submit" value="Retry">
+							<a class="q_link" href="/install">&larr; Back to Step 1</a>
+							&nbsp;&nbsp;&nbsp;
+							<input class="button" type="submit" value="Retry Connection">
 							<br><br>
 						</td>
 					</tr>
 				</table>
 			</form>
 			<br>
+			<font class="q_text" color="#888" style="font-size:11px">Step 1 of 3 &mdash; Database Connection</font>
+			<br><br>
 		</td>
 	</tr>
 </table>

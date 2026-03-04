@@ -1,7 +1,7 @@
 <html>
 <link rel="stylesheet" type="text/css" href="/default/1/default.css">
 <head>
-<title>Devana - Installation</title>
+<title>Revana - Installation Wizard</title>
 </head>
 <body class="q_body">
 <div align="center">
@@ -12,68 +12,99 @@
 	</tr>
 	<tr>
 		<td class="td_top_menu">
-			<font class="q_label">Installation Wizard - Step 1: System Requirements</font>
+			<font class="q_label">Installation Wizard &mdash; Step 1 of 3: System Requirements</font>
 		</td>
 	</tr>
 	<tr>
 		<td class="td_content">
 			<br>
-			<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+			<font class="q_text">
+				Welcome to <b>Revana</b>. This wizard will guide you through the installation process.<br>
+				Before we begin, let&apos;s make sure your server meets all requirements.
+			</font>
+			<br><br>
+			<table class="q_table" style="border-collapse: collapse" width="540" border="1">
 				<tr>
-					<td class="head_table" width="350">Requirement</td>
-					<td class="head_table" width="80">Status</td>
-					<td class="head_table" width="70">Details</td>
+					<td class="head_table" width="320">Requirement</td>
+					<td class="head_table" width="100" align="center">Required</td>
+					<td class="head_table" width="70" align="center">Status</td>
+					<td class="head_table" width="80" align="center">Detected</td>
 				</tr>
 				<repeat group="{{ @checks }}" key="{{ @key }}" value="{{ @check }}">
 				<tr>
 					<td class="q_text" align="left">{{ @check.label }}</td>
+					<td class="q_text" align="center">Required</td>
 					<td align="center">
 						<check if="{{ @check.passed }}">
-							<font color="green"><b>OK</b></font>
+							<font color="green"><b>&#10003; OK</b></font>
 						</check>
 						<check if="{{ !@check.passed }}">
-							<font color="red"><b>FAIL</b></font>
+							<font color="red"><b>&#10007; FAIL</b></font>
 						</check>
 					</td>
-					<td class="q_text">{{ @check.current }}</td>
+					<td class="q_text" align="center">{{ @check.current }}</td>
 				</tr>
 				</repeat>
 			</table>
 			<br>
 			<check if="{{ @all_passed }}">
+				<font color="green"><b>&#10003; All requirements met. Fill in your database details below.</b></font>
+				<br><br>
 				<form method="post" action="/install/step2">
-					<table class="q_table" style="border-collapse: collapse" width="500" border="1">
+					<table class="q_table" style="border-collapse: collapse" width="540" border="1">
 						<tr>
-							<td class="head_table" colspan="2">Database Configuration</td>
+							<td class="head_table" colspan="2">Game &amp; Database Configuration</td>
 						</tr>
 						<tr>
-							<td class="q_text" align="right" width="200">Game Title:</td>
-							<td><input class="textbox" type="text" name="game_title" value="Devana"></td>
+							<td class="q_text" align="right" width="220">
+								Game Title:<br>
+								<font color="#888" style="font-size:11px">Shown in browser title bar</font>
+							</td>
+							<td><input class="textbox" type="text" name="game_title" value="Revana" placeholder="Revana"></td>
 						</tr>
 						<tr>
-							<td class="q_text" align="right">Database Host:</td>
-							<td><input class="textbox" type="text" name="db_host" value="localhost"></td>
+							<td class="q_text" align="right">
+								Database Host:<br>
+								<font color="#888" style="font-size:11px">Usually &quot;localhost&quot;</font>
+							</td>
+							<td><input class="textbox" type="text" name="db_host" value="localhost" placeholder="localhost"></td>
 						</tr>
 						<tr>
-							<td class="q_text" align="right">Database Port:</td>
-							<td><input class="textbox" type="text" name="db_port" value="3306"></td>
+							<td class="q_text" align="right">
+								Database Port:<br>
+								<font color="#888" style="font-size:11px">Default: 3306</font>
+							</td>
+							<td><input class="textbox" type="text" name="db_port" value="3306" placeholder="3306"></td>
 						</tr>
 						<tr>
-							<td class="q_text" align="right">Database Name:</td>
-							<td><input class="textbox" type="text" name="db_name" value="devana"></td>
+							<td class="q_text" align="right">
+								Database Name:<br>
+								<font color="#888" style="font-size:11px">Must exist and be empty</font>
+							</td>
+							<td><input class="textbox" type="text" name="db_name" value="revana" placeholder="revana"></td>
 						</tr>
 						<tr>
-							<td class="q_text" align="right">Database User:</td>
-							<td><input class="textbox" type="text" name="db_user" value="root"></td>
+							<td class="q_text" align="right">
+								Database User:<br>
+								<font color="#888" style="font-size:11px">Must have CREATE/INSERT rights</font>
+							</td>
+							<td><input class="textbox" type="text" name="db_user" value="root" placeholder="root"></td>
 						</tr>
 						<tr>
-							<td class="q_text" align="right">Database Password:</td>
-							<td><input class="textbox" type="password" name="db_pass" value=""></td>
+							<td class="q_text" align="right">
+								Database Password:<br>
+								<font color="#888" style="font-size:11px">Leave blank if none</font>
+							</td>
+							<td><input class="textbox" type="password" name="db_pass" value="" placeholder=""></td>
 						</tr>
 						<tr>
 							<td colspan="2" align="center">
 								<br>
-								<input class="button" type="submit" value="Next: Setup Database">
+								<font class="q_text" color="#888" style="font-size:11px">
+									This will create <b>config.ini</b> and import all database tables with seed data.
+								</font>
+								<br><br>
+								<input class="button" type="submit" value="Next Step: Setup Database &rarr;">
 								<br><br>
 							</td>
 						</tr>
@@ -81,12 +112,24 @@
 				</form>
 			</check>
 			<check if="{{ !@all_passed }}">
-				<br>
-				<font color="red"><b>Please fix the requirements above before continuing.</b></font>
+				<font color="red"><b>&#9888; One or more requirements are not met. Please fix the issues above before continuing.</b></font>
 				<br><br>
-				<a class="q_link" href="/install">Refresh</a>
+				<table class="q_table" style="border-collapse:collapse" width="540" border="1">
+					<tr><td class="head_table">Troubleshooting Tips</td></tr>
+					<tr><td class="q_text" align="left">
+						<br>
+						&bull; <b>PHP 8.0+</b> &mdash; Update your PHP version via your control panel or hosting provider.<br><br>
+						&bull; <b>PDO / PDO MySQL</b> &mdash; Enable <code>extension=pdo_mysql</code> in your <code>php.ini</code>.<br><br>
+						&bull; <b>GD Library</b> &mdash; Enable <code>extension=gd</code> in your <code>php.ini</code>.<br><br>
+						&bull; <b>config.ini writable</b> &mdash; Run <code>chmod 666 config.ini</code> or create an empty file with write permission.<br><br>
+					</td></tr>
+				</table>
+				<br>
+				<a class="q_link" href="/install">&#8635; Refresh &amp; Check Again</a>
 			</check>
 			<br>
+			<font class="q_text" color="#888" style="font-size:11px">Step 1 of 3 &mdash; System Requirements</font>
+			<br><br>
 		</td>
 	</tr>
 </table>
