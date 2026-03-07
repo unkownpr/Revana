@@ -318,6 +318,49 @@ final class MigrationService
             'sql'       => "INSERT INTO seasons (name, start_time, end_time, active)
                             VALUES ('Sezon 1', NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 1)",
         ],
+        '033_announcements_table' => [
+            'check_sql' => "SHOW TABLES LIKE 'announcements'",
+            'sql' => "CREATE TABLE `announcements` (
+                `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `author` INT UNSIGNED NOT NULL DEFAULT 0,
+                `title` VARBINARY(128) NOT NULL,
+                `content` VARBINARY(2048) NOT NULL,
+                `active` TINYINT(1) NOT NULL DEFAULT 1,
+                `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=MyISAM DEFAULT CHARSET=latin1",
+        ],
+        '034_editor_maps_table' => [
+            'check_sql' => "SHOW TABLES LIKE 'editor_maps'",
+            'sql' => "CREATE TABLE `editor_maps` (
+                `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `name` VARCHAR(128) NOT NULL,
+                `width` INT UNSIGNED NOT NULL DEFAULT 49,
+                `height` INT UNSIGNED NOT NULL DEFAULT 49,
+                `created_by` INT UNSIGNED NOT NULL DEFAULT 0,
+                `is_active` TINYINT(1) NOT NULL DEFAULT 0
+            ) ENGINE=MyISAM DEFAULT CHARSET=latin1",
+        ],
+        '035_editor_map_tiles_table' => [
+            'check_sql' => "SHOW TABLES LIKE 'editor_map_tiles'",
+            'sql' => "CREATE TABLE `editor_map_tiles` (
+                `map_id` INT UNSIGNED NOT NULL DEFAULT 0,
+                `x` INT UNSIGNED NOT NULL DEFAULT 0,
+                `y` INT UNSIGNED NOT NULL DEFAULT 0,
+                `type` INT UNSIGNED NOT NULL DEFAULT 0,
+                `subtype` INT UNSIGNED NOT NULL DEFAULT 0,
+                KEY `map_id` (`map_id`),
+                UNIQUE KEY `map_xy` (`map_id`, `x`, `y`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=latin1",
+        ],
+        '036_feats_table' => [
+            'check_sql' => "SHOW TABLES LIKE 'feats'",
+            'sql' => "CREATE TABLE `feats` (
+                `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `name` VARBINARY(128) NOT NULL,
+                `description` VARBINARY(512) DEFAULT NULL,
+                `points` INT UNSIGNED NOT NULL DEFAULT 0
+            ) ENGINE=MyISAM DEFAULT CHARSET=latin1",
+        ],
     ];
 
     /**

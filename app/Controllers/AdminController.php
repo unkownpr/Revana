@@ -997,11 +997,11 @@ final class AdminController extends Controller
 
         // Delete threads with no posts
         $emptyThreads = $this->db->exec(
-            'SELECT t.id FROM forum_threads t LEFT JOIN forum_posts p ON p.thread_id = t.id WHERE p.id IS NULL'
+            'SELECT t.id FROM threads t LEFT JOIN posts p ON p.thread = t.id WHERE p.id IS NULL'
         );
         $count = 0;
         foreach ($emptyThreads as $t) {
-            $this->db->exec('DELETE FROM forum_threads WHERE id = ?', [(int) $t['id']]);
+            $this->db->exec('DELETE FROM threads WHERE id = ?', [(int) $t['id']]);
             $count++;
         }
 

@@ -71,6 +71,27 @@ CREATE TABLE IF NOT EXISTS `a_queue` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `announcements`
+--
+
+CREATE TABLE IF NOT EXISTS `announcements` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `author` int(10) unsigned NOT NULL default '0',
+  `title` varbinary(128) NOT NULL,
+  `content` varbinary(2048) NOT NULL,
+  `active` tinyint(1) NOT NULL default '1',
+  `created_at` datetime NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `announcements`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `buildings`
 --
 
@@ -242,6 +263,48 @@ CREATE TABLE IF NOT EXISTS `c_queue` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `editor_maps`
+--
+
+CREATE TABLE IF NOT EXISTS `editor_maps` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(128) NOT NULL,
+  `width` int(10) unsigned NOT NULL default '49',
+  `height` int(10) unsigned NOT NULL default '49',
+  `created_by` int(10) unsigned NOT NULL default '0',
+  `is_active` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `editor_maps`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `editor_map_tiles`
+--
+
+CREATE TABLE IF NOT EXISTS `editor_map_tiles` (
+  `map_id` int(10) unsigned NOT NULL default '0',
+  `x` int(10) unsigned NOT NULL default '0',
+  `y` int(10) unsigned NOT NULL default '0',
+  `type` int(10) unsigned NOT NULL default '0',
+  `subtype` int(10) unsigned NOT NULL default '0',
+  KEY `map_id` (`map_id`),
+  UNIQUE KEY `map_xy` (`map_id`,`x`,`y`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `editor_map_tiles`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `d_queue`
 --
 
@@ -253,6 +316,25 @@ CREATE TABLE IF NOT EXISTS `d_queue` (
 
 --
 -- Dumping data for table `d_queue`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feats`
+--
+
+CREATE TABLE IF NOT EXISTS `feats` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varbinary(128) NOT NULL,
+  `description` varbinary(512) default NULL,
+  `points` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `feats`
 --
 
 
